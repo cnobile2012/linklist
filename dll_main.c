@@ -18,8 +18,9 @@
 #include "linklist.h"
 
 /* Local Prototypes */
-void       _deleteEntireList(List *list);
-DLL_Return _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *));
+static void       _deleteEntireList(List *list);
+static DLL_Return _addRecord(List *list, Info *info,
+ int (*pFun)(Info *, Info *));
 
 
 /**************************
@@ -549,7 +550,7 @@ DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
  *
  * NOTE: This function is not thread safe.
  */
-DLL_Return
+static DLL_Return
 _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
    {
    Node *newN, *old, *step;
@@ -1116,7 +1117,7 @@ DLL_DeleteEntireList(List *list)
  * Returns  : void
  * NOTE: This function is not thread safe.
  */
-void
+static void
 _deleteEntireList(List *list)
    {
    Info *oldI;

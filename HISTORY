@@ -41,7 +41,7 @@ Ver 2.0.0 --
      havoc with a threaded application. The second call might come after the
      current pointer had changed by a different thread causing the wrong
      node to be deleted. I have added his function, DLL_DeleteRecord almost
-     porbatum.
+     verbatim.
 
 Ver 1.1.0 -- July 05, 1999
 
