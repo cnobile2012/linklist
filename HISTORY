@@ -6,7 +6,20 @@ $Date$
 $Revision$
 *** End CVS Information ***
 
-Ver 1.1.0 -- July 
+Ver 2.0.0 --
+
+(1)  Removed the dll_dbg.h and the dll_main.h headers. They are all in
+     the linklist.h header now.
+
+(2)  Made all the tabs in the source files into hard spaces. This was a
+     bad habbit of mine since I use to set my tabs equal to 3 spaces.
+
+(3)  Removed all but the UNIX header files since this version will use
+     pthreads.
+
+(4)  
+
+Ver 1.1.0 -- July 05, 1999
 
 (1)  Added four new functions DLL_GetCurrentIndex(), DLL_InsertRecord(),
      DLL_SwapRecord(), and DLL_FindNthRecord()--read the docs on how to
