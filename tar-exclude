@@ -1,0 +1,10 @@
+CVS
+.cvsignore
+tar-exclude
+test.dat
+*.aux
+*.dvi
+*.log
+*.toc
+docs/CVS
+docs/.cvsignore
