@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1999 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 05/16/99
+ * Updated: 05/18/99
  *
  * $Author$
  * $Date$
@@ -18,7 +18,6 @@
 /**************************
  * Initialization Functions
  */
-
 
 /*
  * DLL_CreateList() : Creates a structure of type List
@@ -97,7 +96,6 @@ DLL_Return DLL_InitializeList(List *list, size_t infosize)
 /******************
  * Status and State Functions
  */
-
 
 /*
  * DLL_Version() : Returns a pointer to version information
@@ -272,7 +270,6 @@ unsigned long DLL_GetCurrentIndex(List *list)
  * Pointer Manipulation Functions
  */
 
-
 /*
  * DLL_CurrentPointerToHead() : Moves the current pointer to
  *                              the head of the list.
@@ -407,6 +404,10 @@ DLL_Return DLL_RestoreCurrentPointer(List *list)
 	return(DLL_NORMAL);
 	}
 
+
+/***********************
+ * List Update Functions
+ */
 
 /*
  * DLL_AddRecord() : Creates a new node in list with or without sorting.
@@ -747,6 +748,104 @@ DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record)
 
 
 /*
+ * DLL_DeleteCurrentRecord() : Delete a record from the list.
+ *
+ * Status   : Public
+ *
+ * Arguments: list          -- Pointer to type List
+ *
+ * Returns  : DLL_NORMAL    -- Record deleted
+ *            DLL_NULL_LIST -- List is empty
+ */
+DLL_Return DLL_DeleteCurrentRecord(List *list)
+	{
+	Info *oldI;
+	Node *oldN;
+
+	if(list->current == NULL)
+		return(DLL_NULL_LIST);
+
+	oldI = list->current->info;
+	oldN = list->current;
+
+	if(list->current == list->head)		/* current is first record */
+		{
+		/* A single record in a list can't do this ...next->prior */
+		if(list->current->next != NULL)
+			list->current->next->prior = NULL;
+
+		list->head = list->current->next;
+		list->current = list->head;
+		}
+	else
+		if(list->current == list->tail)	/* current is last record */
+			{
+			list->current->prior->next = NULL;
+			list->tail = list->current->prior;
+			list->current = list->tail;
+			list->current_index--;
+			}
+		else										/* current is a middle record */
+			{
+			list->current->prior->next = list->current->next;
+			list->current->next->prior = list->current->prior;
+			list->current = list->current->next;
+			}
+			
+	free(oldI);
+	free(oldN);
+	list->listsize--;
+	list->modified = DLL_TRUE;
+	return(DLL_NORMAL);
+	}
+
+
+/*
+ * DLL_DeleteEntireList() : Delete the entire list.
+ *
+ * Status   : Public
+ *
+ * Arguments: list          -- Pointer to type List
+ *
+ * Returns  : DLL_NORMAL    -- List deleted
+ *            DLL_NULL_LIST -- List is empty
+ */
+DLL_Return DLL_DeleteEntireList(List *list)
+	{
+	Info *oldI;
+	Node *oldN;
+
+	if(list->head == NULL)
+		return(DLL_NULL_LIST);
+
+	do
+		{
+		oldI = list->head->info;
+		oldN = list->head;
+		list->head = list->head->next;
+		free(oldI);
+		free(oldN);
+		}
+	while(list->head != NULL);
+
+	list->head = NULL;
+	list->tail = NULL;
+	list->current = NULL;
+	list->saved = NULL;
+	list->listsize = 0L;
+	list->current_index = 0L;
+	list->modified = DLL_TRUE;
+	list->search_origin = DLL_HEAD;
+	list->search_dir = DLL_DOWN;
+	return(DLL_NORMAL);
+	}
+
+
+/******************
+ * Search Functions
+ */
+
+/*
  * DLL_FindRecord() : Find a record in list
  *
  * Status   : Public
@@ -970,99 +1069,9 @@ DLL_Return DLL_GetNextRecord(List *list, Info *record)
 	}
 
 
-/*
- * DLL_DeleteCurrentRecord() : Delete a record from the list.
- *
- * Status   : Public
- *
- * Arguments: list          -- Pointer to type List
- *
- * Returns  : DLL_NORMAL    -- Record deleted
- *            DLL_NULL_LIST -- List is empty
+/************************
+ * Input/Output Functions
  */
-DLL_Return DLL_DeleteCurrentRecord(List *list)
-	{
-	Info *oldI;
-	Node *oldN;
-
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
-
-	oldI = list->current->info;
-	oldN = list->current;
-
-	if(list->current == list->head)		/* current is first record */
-		{
-		/* A single record in a list can't do this ...next->prior */
-		if(list->current->next != NULL)
-			list->current->next->prior = NULL;
-
-		list->head = list->current->next;
-		list->current = list->head;
-		}
-	else
-		if(list->current == list->tail)	/* current is last record */
-			{
-			list->current->prior->next = NULL;
-			list->tail = list->current->prior;
-			list->current = list->tail;
-			list->current_index--;
-			}
-		else										/* current is a middle record */
-			{
-			list->current->prior->next = list->current->next;
-			list->current->next->prior = list->current->prior;
-			list->current = list->current->next;
-			}
-			
-	free(oldI);
-	free(oldN);
-	list->listsize--;
-	list->modified = DLL_TRUE;
-	return(DLL_NORMAL);
-	}
-
-
-/*
- * DLL_DeleteEntireList() : Delete the entire list.
- *
- * Status   : Public
- *
- * Arguments: list          -- Pointer to type List
- *
- * Returns  : DLL_NORMAL    -- List deleted
- *            DLL_NULL_LIST -- List is empty
- */
-DLL_Return DLL_DeleteEntireList(List *list)
-	{
-	Info *oldI;
-	Node *oldN;
-
-	if(list->head == NULL)
-		return(DLL_NULL_LIST);
-
-	do
-		{
-		oldI = list->head->info;
-		oldN = list->head;
-		list->head = list->head->next;
-		free(oldI);
-		free(oldN);
-		}
-	while(list->head != NULL);
-
-	list->head = NULL;
-	list->tail = NULL;
-	list->current = NULL;
-	list->saved = NULL;
-	list->listsize = 0L;
-	list->current_index = 0L;
-	list->modified = DLL_TRUE;
-	list->search_origin = DLL_HEAD;
-	list->search_dir = DLL_DOWN;
-	return(DLL_NORMAL);
-	}
-
 
 /*
  * DLL_SaveList() : Save list to disk

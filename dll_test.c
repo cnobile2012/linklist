@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 25, 1996
- * Updated: 05/16/99
+ * Updated: 05/18/99
  *
  * $Author$
  * $Date$
@@ -41,7 +41,7 @@ int  direction_menu(void);
 void display(NameAddr *set);
 void display_all(List *list);
 void enter(List *list);
-void input(char *, char *, size_t);
+void input(char *prompt, char *s, size_t count);
 int  field_menu(void);
 void find_by_match(List *list);
 int  find_by_match_menu(void);
