@@ -9,6 +9,7 @@
  * $Revision$
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -469,6 +470,7 @@ int update_select(void)
 void input(char *prompt, char *s, size_t count)
    {
    char str[256];
+   int i = 0;
 
    memset(str, '\0', sizeof(str));
 
@@ -476,6 +478,10 @@ void input(char *prompt, char *s, size_t count)
       {
       fputs(prompt, stdout);
       fgets(str, 256, stdin);
+
+      /* Strip off any whitespace at the end of the line. */
+      for(i = strlen(str) - 1; i >= 0 && isspace(str[i]); i--)
+         str[i] = '\0';
 
       if(strlen(str) < count)
          break;
