@@ -1,5 +1,5 @@
 %
-% Documentation for a doubly link list API.
+% Documentation for the Doubly Link List API.
 %
 % $Author$
 % $Date$
@@ -11,6 +11,7 @@
 %
 \documentclass[10pt,letterpaper]{report}
 
+\usepackage{alltt, graphicx}
 \pagestyle{plain}
 \pagenumbering{arabic}
 
@@ -164,18 +165,34 @@ Then the library itself is broken into six groups: initialization, status, data 
 \end{quote}
 
 \noindent
-At this writing there are 29 functions in the library, each one of which is thoroughly explained and examples are given when needed.
+At this writing there are 29 functions in the library, each one of which is thoroughly explained and examples given when needed.
 
 \chapter*{Overview}
+When writing tools such as this, one needs to be concerned with how it affects the entire programming environment.  One of the most important aspects of this environment is the problem concerning \emph{namespace} pollution.  To minimize this problem I have used DLL\_ as a prefix to all function names and enumerated \texttt{typedef}s.
+\vspace{8pt}
+
+\noindent
+It is often the case that search criteria will remain the same between quiries.  As such a state table is implimented that passes the current state to the search functions.  There are two functions one to set and the other to read the state table.
+
+
+
+
+
+
+
+\chapter*{Structures}
 Most implementations of link lists allocate a single node per record and these nodes are what are linked to each other.  This type of algorithm works well when the link list is embedded in the application code, but not when implementing a link list within an API, because it cannot be made reenterant.
 \vspace{8pt}
 
 \noindent
-A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment where the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy.  The first level we will refer to as the 'Top Level Struct'.  All the global data is held by one of these structures for each incident of the link list.  
+A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment where the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy.  The first level we will refer to as the 'Top Level Struct'.  All the global data is held by one of these structures and it is allocated once for each incident of the link list.  
 
-\begin{verbatim}
+%\includegraphics[width=5in]{linklistDiagram.gif}
+
+\small
+\begin{alltt}
 typedef struct list
-   {
+   \{
    Node           *head;         /* pointer to head record */
    Node           *tail;         /* pointer to tail record */
    Node           *current;      /* pointer to current record */
@@ -187,9 +204,150 @@ typedef struct list
    DLL_Boolean    modified;      /* modified flag (TRUE or FALSE) */
    DLL_SrchOrigin search_origin; /* location a search originates from */
    DLL_SrchDir    search_dir;    /* direction the search proceeds from */
-   } List;
-\end{verbatim}
+   \} List;
+\end{alltt}
+\normalsize
+\vspace{8pt}
+
+\noindent
+At the next level is the 'Node Struct'.  This structure holds the pointer to the actual record data plus the pointers to the next and prior nodes.  It is allocated once for each record structure.
+
+\small
+\begin{alltt}
+typedef struct node
+   \{
+   Info        *info;     /* pointer to record data */
+   struct node *next;     /* pointer to next node */
+   struct node *prior;    /* pointer to prior node */
+   \} Node;
+\end{alltt}
+\normalsize
+\vspace{8pt}
+
+\noindent
+The third and final level is the 'Info Struct', which holds the actual data inserted by the application.  The Info Struct is defined by the developer and is only restricted by the environment in which the application runs or is compiled in.
+
+\small
+\begin{alltt}
+typedef struct your_info
+   \{
+   type your_data;        /* Your data goes here */
+   \} YourInfo;
+\end{alltt}
+\normalsize
+\vspace{8pt}
+
+\noindent
+There is one more structure which is not part of this hirarchy.  It is only used to return the current state of the search criteria.
+
+\small
+\begin{alltt}
+typedef struct search_modes
+   \{
+   DLL_SrchOrigin search_origin; /* Search from head, tail, or current */
+   DLL_SrchDir    search_dir;    /* Search up or down */
+   \} DLL_SearchModes;
+\end{alltt}
+\normalsize
+
+\chapter*{Enumerations}
+I'm a firm believer that the return values of functions should be predefined \texttt{typedef} enumerations.  There are two reasons for this.  The first is that many compilers will complain when a switch statement is used to test the return values of functions with one or more of the enumerated values missing thus alerting the developer to using the \texttt{default} statement.   The second reason is that the \texttt{typedef} name can be used as the return type of the function disallowing anything other than the enumerated values to be returned.  These are good things and should be taken advantage of.
+\vspace{8pt}
+
+\noindent
+Since, that at the time of this writing Booleans are not part of the C specifications I've created my own.
+
+\small
+\begin{alltt}
+typedef enum
+   \{
+   DLL_FALSE,
+   DLL_TRUE
+   \} DLL_Boolean;
+\end{alltt}
+\normalsize
+\vspace{8pt}
+
+\noindent
+Many functions return the \texttt{typedef} enumerated type DLL\_Return as shown below.
+
+\small
+\begin{alltt}
+typedef enum
+   \{
+   DLL_NORMAL,            /* normal operation */
+   DLL_MEM_ERROR,         /* malloc error */
+   DLL_ZERO_INFO,         /* sizeof(Info) is zero */
+   DLL_NULL_LIST,         /* List is NULL */
+   DLL_NOT_FOUND,         /* Record not found */
+   DLL_OPEN_ERROR,        /* Cannot open file */
+   DLL_WRITE_ERROR,       /* File write error */
+   DLL_READ_ERROR,        /* File read error */
+   DLL_NOT_MODIFIED,      /* Unmodified list */
+   DLL_NULL_FUNCTION      /* NULL function pointer */
+   \} DLL_Return;
+\end{alltt}
+\normalsize
+\vspace{8pt}
+
+\noindent
+The next two enumerations are used to determine the state of search inquiries, one is used to determine the origin and the other for the direction.  These values are passed as arguments to the \texttt{DLL\_SetSearchModes()} function.
+
+\small
+\begin{alltt}
+typedef enum
+   \{
+   DLL_ORIGIN_DEFAULT,    /* Use current origin setting */
+   DLL_HEAD,              /* Set origin to head pointer */
+   DLL_CURRENT,           /* Set origin to current pointer */
+   DLL_TAIL               /* Set origin to tail pointer */
+   \} DLL_SrchOrigin;
+
+typedef enum
+   \{
+   DLL_DIRECTION_DEFAULT, /* Use current direction setting */
+   DLL_DOWN,              /* Set direction to down */
+   DLL_UP                 /* Set direction to up */
+   \} DLL_SrchDir;
+\end{alltt}
+\normalsize
+\vspace{8pt}
+
+\noindent
+The last enumerated type is used to determine the direction of inserting and swaping a record and is passed as an argument to two functions\linebreak \texttt{DLL\_InsertRecord()} and \texttt{DLL\_SwapRecord()}.
+
+\small
+\begin{alltt}
+typedef enum
+   \{
+   DLL_INSERT_DEFAULT,    /* Use current insert setting */
+   DLL_ABOVE,             /* Insert new record ABOVE current record */
+   DLL_BELOW              /* Insert new record BELOW current record */
+   \} DLL_InsertDir;
+\end{alltt}
+\normalsize
+
+\chapter*{Functions}
+The function calls below are grouped by their general function as described above.  They are written in manpage style so that I only have to document the API once.
+
+\section*{Initialization}
+\begin{description}
+\item[NAME]\hspace{1em}\\
+DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList, --- initializing group
+\item[SYNOPSIS]
+\begin{alltt}\hspace{1em}
+#include <linklist.h>
+
+DLL_CreateList(List **name);
+DLL_InitializeList(List *list, size_t infosize);
+DLL_DestroyList(List **name);
+\end{alltt}
+\item[DESCRIPTION]\hspace{1em}\\
 
 
 
+
+
+
+\end{description}
 \end{document}
