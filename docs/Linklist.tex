@@ -9,9 +9,12 @@
 %  latex Linklist.tex
 %  dvips -t letter Linklist.dvi -o Linklist.ps
 %
+% To make html:
+%  latex2html -split 0 -no_navigation Linklist.tex
+%
 \documentclass[10pt,letterpaper,titlepage]{article}
 
-\usepackage{alltt, graphicx, color}
+\usepackage{graphicx, color}
 
 \newenvironment{lquote}{\begin{list}{}{}\item[]}{\end{list}}
 
@@ -54,18 +57,18 @@ April 1999
 This Doubly Linked List can be downloaded from the following sites.  The first site below has a web page dedicated to the API.  All current releases will become available here first.
 \vspace{8pt}
 
-\begin{alltt}
+\begin{verbatim}
 http://eggwarmer.AppliedTheory.com/~cnobile
-\end{alltt}
+\end{verbatim}
 \vspace{8pt}
 
 \noindent
 You will also find the API at the following site and its mirrors.
 \vspace{8pt}
 
-\begin{alltt}
+\begin{verbatim}
 ftp://sunsite.unc.edu/pub/Linux/lib
-\end{alltt}
+\end{verbatim}
 \vspace{8pt}
 
 \noindent
@@ -221,10 +224,10 @@ A well written Application Programming Interface (API) requires that the functio
 The first level we will refer to as the 'Top Level Struct'.  All the global data is held by one of these structures and it is allocated once for each incident of the link list.  
 
 \small
-\begin{alltt}
+\begin{verbatim}
 
 typedef struct list
-   \{
+   {
    Node           *head;         /* pointer to head record */
    Node           *tail;         /* pointer to tail record */
    Node           *current;      /* pointer to current record */
@@ -236,8 +239,8 @@ typedef struct list
    DLL_Boolean    modified;      /* modified flag (TRUE or FALSE) */
    DLL_SrchOrigin search_origin; /* location a search originates from */
    DLL_SrchDir    search_dir;    /* direction the search proceeds from */
-   \} List;
-\end{alltt}
+   } List;
+\end{verbatim}
 \normalsize
 \vspace{8pt}
 
@@ -245,37 +248,41 @@ typedef struct list
 At the next level is the 'Node Struct'.  This structure holds the pointer to the actual record data plus the pointers to the next and prior nodes.  It is allocated once for each record structure.
 
 \small
-\begin{alltt}
+\begin{verbatim}
 typedef struct node
-   \{
-   Info        *info;     /* pointer to record data */
-   struct node *next;     /* pointer to next node */
-   struct node *prior;    /* pointer to prior node */
-   \} Node;
-\end{alltt}
+   {
+   Info        *info;            /* pointer to record data */
+   struct node *next;            /* pointer to next node */
+   struct node *prior;           /* pointer to prior node */
+   } Node;
+\end{verbatim}
 \normalsize
 \vspace{8pt}
 
 \pagebreak
-\noindent
+\begin{figure}
+\begin{center}
+\graphicspath{{.}}
+%\DeclareGraphicsRule{.eps.gz}{eps}{.eps.bb}{`gunzip -c #1}
+%\rotatebox{90}{\includegraphics{linklistDiagram.eps.gz}}
 \rotatebox{90}{\includegraphics{linklistDiagram.eps}}
 \vspace{8pt}
 
-\begin{center}
 Hierarchical Structure of the Doubly Linked List
 \end{center}
+\end{figure}
 
 \pagebreak
 \noindent
 The third and final level is the 'Info Struct', which holds the actual data inserted by the application.  The Info Struct is defined by the developer and is only restricted by the environment in which the application runs or is compiled in.
 
 \small
-\begin{alltt}
+\begin{verbatim}
 typedef struct your_info
-   \{
-   type your_data;        /* Your data goes here */
-   \} YourInfo;
-\end{alltt}
+   {
+   type your_data;               /* Your data goes here */
+   } YourInfo;
+\end{verbatim}
 \normalsize
 \vspace{8pt}
 
@@ -283,13 +290,13 @@ typedef struct your_info
 There is one more structure which is not part of this hierarchy.  It is only used to return the current state of the search criteria.
 
 \small
-\begin{alltt}
+\begin{verbatim}
 typedef struct search_modes
-   \{
+   {
    DLL_SrchOrigin search_origin; /* Search from head, tail, or current */
    DLL_SrchDir    search_dir;    /* Search up or down */
-   \} DLL_SearchModes;
-\end{alltt}
+   } DLL_SearchModes;
+\end{verbatim}
 \normalsize
 \pagebreak
 
@@ -298,26 +305,26 @@ I'm a firm believer that the return values of functions should be predefined \em
 \vspace{8pt}
 
 \noindent
-Since, that at the time of this writing Booleans are not part of the C specifications I've created my own.
+Since, at the time of this writing Booleans are not part of the C specifications I've created my own.
 
 \small
-\begin{alltt}
+\begin{verbatim}
 typedef enum
-   \{
+   {
    DLL_FALSE,
    DLL_TRUE
-   \} DLL_Boolean;
-\end{alltt}
+   } DLL_Boolean;
+\end{verbatim}
 \normalsize
 \vspace{8pt}
 
 \noindent
-Many functions return the \emph{typedef} enumerated type DLL\_Return as shown below.
+Many functions return the \emph{typedef} enumerated type \textbf{DLL\_Return} as shown below.
 
 \small
-\begin{alltt}
+\begin{verbatim}
 typedef enum
-   \{
+   {
    DLL_NORMAL,            /* normal operation */
    DLL_MEM_ERROR,         /* malloc error */
    DLL_ZERO_INFO,         /* sizeof(Info) is zero */
@@ -328,46 +335,46 @@ typedef enum
    DLL_READ_ERROR,        /* File read error */
    DLL_NOT_MODIFIED,      /* Unmodified list */
    DLL_NULL_FUNCTION      /* NULL function pointer */
-   \} DLL_Return;
-\end{alltt}
+   } DLL_Return;
+\end{verbatim}
 \normalsize
 \vspace{8pt}
 
 \noindent
-The next two enumerations are used to determine the state of search inquiries, one is used to determine the origin and the other for the direction.  These values are passed as arguments to the \emph{DLL\_SetSearchModes()} function.
+The next two enumerations are used to determine the state of search inquiries, one is used to determine the origin and the other for the direction.  These values are passed as arguments to the \emph{DLL\_SetSearchModes} function.
 
 \small
-\begin{alltt}
+\begin{verbatim}
 typedef enum
-   \{
+   {
    DLL_ORIGIN_DEFAULT,    /* Use current origin setting */
    DLL_HEAD,              /* Set origin to head pointer */
    DLL_CURRENT,           /* Set origin to current pointer */
    DLL_TAIL               /* Set origin to tail pointer */
-   \} DLL_SrchOrigin;
+   } DLL_SrchOrigin;
 
 typedef enum
-   \{
+   {
    DLL_DIRECTION_DEFAULT, /* Use current direction setting */
    DLL_DOWN,              /* Set direction to down */
    DLL_UP                 /* Set direction to up */
-   \} DLL_SrchDir;
-\end{alltt}
+   } DLL_SrchDir;
+\end{verbatim}
 \normalsize
 \vspace{8pt}
 
 \noindent
-The last enumerated type is used to determine the direction of insertion or the swapping of a record.  This structure is passed as an argument to two functions \emph{DLL\_InsertRecord()} and \emph{DLL\_SwapRecord()}.
+The last enumerated type is used to determine the direction of insertion or the swapping of a record.  This structure is passed as an argument to two functions \emph{DLL\_InsertRecord} and \emph{DLL\_SwapRecord}.
 
 \small
-\begin{alltt}
+\begin{verbatim}
 typedef enum
-   \{
+   {
    DLL_INSERT_DEFAULT,    /* Use current insert setting */
    DLL_ABOVE,             /* Insert new record ABOVE current record */
    DLL_BELOW              /* Insert new record BELOW current record */
-   \} DLL_InsertDir;
-\end{alltt}
+   } DLL_InsertDir;
+\end{verbatim}
 \normalsize
 \pagebreak
 
@@ -380,14 +387,14 @@ The following function calls are grouped by their general functionality, as desc
 DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList, --- Initialization Functions.
 
 \item[SYNOPSIS]
-\begin{alltt}
+\begin{verbatim}
 
 #include <linklist.h>
 
 List *DLL_CreateList(List **list);
 DLL_Return DLL_InitializeList(List *list, size_t infosize);
 void DLL_DestroyList(List **list);
-\end{alltt}
+\end{verbatim}
 
 \item[DESCRIPTION]\quad\\
 The initialization group of functions must be used in the allocation and freeing of memory used by the link list.
@@ -461,7 +468,8 @@ DLL\_GetSearchModes, DLL\_GetCurrentIndex\\
  --- Status and State Functions.
 
 \item[SYNOPSIS]
-\begin{alltt}
+\small
+\begin{verbatim}
 
 #include <linklist.h>
 
@@ -469,12 +477,13 @@ char *DLL_Version(void);
 DLL_Boolean DLL_IsListEmpty(List *list);
 DLL_Boolean DLL_IsListFull(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);
-DLL_Return DLL_SetSearchModes(List *list,
-            DLL_SrchOrigin origin, DLL_SrchDir dir);
+DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
+            DLL_SrchDir dir);
 DLL_SearchModes *DLL_GetSearchModes(List *list,
-                  DLL_SearchModes *ssp);
+                 DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
-\end{alltt}
+\end{verbatim}
+\normalsize
 
 \item[DESCRIPTION]\quad\\
 All the functions below except \emph{DLL\_Version} take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList}.  These functions either return or set the status or state of some aspect of the link list.
@@ -482,13 +491,13 @@ All the functions below except \emph{DLL\_Version} take as their first argument 
  \begin{description}
  \item[DLL\_Version]\quad\\
  This function has no arguments and returns a string in the following format:
- \begin{alltt}
+ \begin{verbatim}
 Ver: 1.1.0  May 17 1999
 -------------------------------
  Developed by: Carl J. Nobile
 Contributions: Charlie Buckheit
                Graham Inchley
- \end{alltt}
+ \end{verbatim}
  \vspace{-16pt}
  \item[DLL\_IsListEmpty]\quad\\
  This function determines if the link list has any nodes defined by testing if the head and tail pointers are NULL.  It returns \textbf{DLL\_TRUE} if the list is empty and \textbf{DLL\_FALSE} if the list has valid nodes.
@@ -522,15 +531,15 @@ Contributions: Charlie Buckheit
  \item[DLL\_GetSearchModes]\quad\\
  This function gets the state of the search criteria, which can either be the default values or those set by \emph{DLL\_SetSearchModes}.  It's second argument is \textbf{ssp} a pointer to the structure below.  It returns a pointer to this same instance of the structure.
 
- \begin{alltt}
+ \begin{verbatim}
    typedef struct search_modes
-      \{
+      {
       DLL_SrchOrigin search_origin;
       DLL_SrchDir    search_dir;
-      \} DLL_SearchModes;
- \end{alltt}
+      } DLL_SearchModes;
+ \end{verbatim}
 
-\emph{NOTE: This function has a different argument list starting with release linlkist-1.1.0.  The original function allocated the structure internally to the function which was not thread safe.}
+\emph{NOTE: This function has a different argument list starting with release linlkist-1.1.0.  The original function allocated the structure internally to the function which was not thread safe.  This WILL break old code using this function.}
 
  \item[DLL\_GetCurrentIndex]\quad\\
  This function returns the index of the current record by retrieving a counter value.  A return value of zero is an empty list.
@@ -551,7 +560,7 @@ DLL\_StoreCurrentPointer, DLL\_RestoreCurrentPointer\\
   --- Pointer Manipulation Functions.
 
 \item[SYNOPSIS]
-\begin{alltt}
+\begin{verbatim}
 
 #include <linklist.h>
 
@@ -561,7 +570,7 @@ DLL_Return DLL_IncrementCurrentPointer(List *list);
 DLL_Return DLL_DecrementCurrentPointer(List *list);
 DLL_Return DLL_StoreCurrentPointer(List *list);
 DLL_Return DLL_RestoreCurrentPointer(List *list);
-\end{alltt}
+\end{verbatim}
 
 \item[DESCRIPTION]\quad\\
 The \emph{current} pointer in the link list keeps track of the last used node.  In order for this to be of benefit there needs to be a way of controlling where this pointer is located within the list.  These functions allow the repositioning and storing of this pointer during program execution.
@@ -604,7 +613,7 @@ DLL\_UpdateCurrentRecord, DLL\_DeleteCurrentRecord,\\
 DLL\_DeleteEntireList --- List Update Functions.
 
 \item[SYNOPSIS]
-\begin{alltt}
+\begin{verbatim}
 
 #include <linklist.h>
 
@@ -617,7 +626,7 @@ DLL_Return DLL_UpdateCurrentRecord(List *list,
             Info *record);
 DLL_Return DLL_DeleteCurrentRecord(List *list);
 DLL_Return DLL_DeleteEntireList(List *list);
-\end{alltt}
+\end{verbatim}
 
 \item[DESCRIPTION]\quad\\
 These functions manipulate the data in the link list.  They all return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList}.
@@ -628,24 +637,24 @@ These functions manipulate the data in the link list.  They all return the enume
  \vspace{8pt}
 
  Where the return value is:
- \begin{alltt}
+\begin{verbatim}
    less than zero:     arg1 < arg2,
 
    zero:               arg1 == arg2, or
 
    greater than zero:  arg1 > arg2.
- \end{alltt}
+\end{verbatim}
 
  Below is an example of this function.
 
- \begin{alltt}
+\begin{verbatim}
    int sort_foo(Info *record, Info *compare)
-      \{
+      {
       return(strcmp(rcrd->info_element,
                     cmp->info_element));
-      \}
+      }
 
- \end{alltt}
+\end{verbatim}
  
  If a \emph{NULL} is passed instead of the function pointer no sorting will take place causing the next new node and record to be added to the tail of the list.  A return value of \textbf{DLL\_MEM\_ERROR} indicates that memory could not be allocated and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
@@ -653,14 +662,14 @@ These functions manipulate the data in the link list.  They all return the enume
  This function adds a new node and record to the link list above or below current record.  The new record will be current after completion.  The second argument is a pointer to the \emph{Info} structure where the new data is stored.  The third argument is passed an enumerated define of type \emph{DLL\_InsertDir}.  
 
  \small
- \begin{alltt}
+ \begin{verbatim}
 typedef enum
-   \{
+   {
    DLL_INSERT_DEFAULT, /* Use current insert setting */
    DLL_ABOVE,     /* Insert new record ABOVE current record */
    DLL_BELOW      /* Insert new record BELOW current record */ 
-   \} DLL_InsertDir;
- \end{alltt}
+   } DLL_InsertDir;
+\end{verbatim}
  \normalsize
 
  In the current version the value \textbf{DLL\_INSERT\_DEFAULT} is not used, it has been included for conformity to other like definitions and possible future expansion.
@@ -695,7 +704,7 @@ DLL\_FindRecord, DLL\_FindNthRecord, DLL\_GetCurrentRecord,\\
 DLL\_GetPriorRecord, DLL\_GetNextRecord -- Search Functions.
 
 \item[SYNOPSIS]
-\begin{alltt}
+\begin{verbatim}
 
 #include <linklist.h>
 
@@ -706,7 +715,7 @@ DLL_Return DLL_FindNthRecord(List *list, Info *record,
 DLL_Return DLL_GetCurrentRecord(List *list, Info *record);
 DLL_Return DLL_GetPriorRecord(List *list, Info *record);
 DLL_Return DLL_GetNextRecord(List *list, Info *record);
-\end{alltt}
+\end{verbatim}
 
 \item[DESCRIPTION]\quad\\
 These functions retreive data from the list.  They all return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList}.
@@ -717,24 +726,24 @@ These functions retreive data from the list.  They all return the enumerated typ
  \vspace{8pt}
 
  Where the return value is:
- \begin{alltt}
+ \begin{verbatim}
    less than zero:     arg1 < arg2,
 
    zero:               arg1 == arg2, or
 
    greater than zero:  arg1 > arg2.
- \end{alltt}
+ \end{verbatim}
 
  Below is an example of this function.
 
- \begin{alltt}
+ \begin{verbatim}
    int sort_foo(Info *record, Info *compare)
-      \{
+      {
       return(strcmp(rcrd->info_element,
                     cmp->info_element));
-      \}
+      }
 
- \end{alltt}
+\end{verbatim}
 
   The value \textbf{DLL\_NULL\_FUNCTION}, if returned, indicates that a \textbf{NULL} value was passed as the forth argument; \textbf{DLL\_NULL\_LIST} indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
@@ -763,14 +772,14 @@ Examples of most of these functions can be seen in the source file \emph{dll\_te
 DLL\_SaveList, DLL\_LoadList -- Input/Output Functions.
 
 \item[SYNOPSIS]
-\begin{alltt}
+\begin{verbatim}
 
 #include <linklist.h>
 
 DLL_Return DLL_SaveList(List *list, const char *path);
 DLL_Return DLL_LoadList(List *list, const char *path,
             int (*pFun)(Info *, Info *))
-\end{alltt}
+\end{verbatim}
 
 \item[DESCRIPTION]\quad\\
 These functions are designed to easily write and read the link list data to a disk.  They take advantage of their ability to access the \emph{Top Level Struct} for saving and loading data quickly, however, this will only be useful in limited cases as most implementations will need application specific file formats.  Both return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList} and as their second argument \textbf{path} a pointer to the file name.
@@ -788,30 +797,29 @@ These functions are designed to easily write and read the link list data to a di
  \vspace{8pt}
 
  Where the return value is:
- \begin{alltt}
+ \begin{verbatim}
    less than zero:     arg1 < arg2,
 
    zero:               arg1 == arg2, or
 
    greater than zero:  arg1 > arg2.
- \end{alltt}
+ \end{verbatim}
 
  Below is an example of this function.
 
- \begin{alltt}
+ \begin{verbatim}
    int sort_foo(Info *record, Info *compare)
-      \{
+      {
       return(strcmp(rcrd->info_element,
                     cmp->info_element));
-      \}
+      }
+ \end{verbatim}
 
- \end{alltt}
  
  \end{description}
 
-
-
-
+\item[EXAMPLE]\quad\\
+Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
 \end{description}
 
 \end{document}
