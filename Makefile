@@ -38,8 +38,8 @@ INCDIR	= /usr/local/include
 DOCLIB	= /usr/doc
 
 THISLIB	= -L. -ldll
-MAJORVERSION = 1
-MINORVERSION = 1
+MAJORVERSION = 2
+MINORVERSION = 0
 PATCHLEVEL = 0
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
@@ -86,8 +86,8 @@ libdll.a: $(OBJS1)
 $(TEST)	: $(OBJS2)
 	$(CC) $(OBJS2) -o $(TEST) $(THISLIB) 2>{linker}.err
 
-$(PROG).o: $(PROG).c $(PROG).h
-$(TEST).o: $(TEST).c linklist.h dll_dbg.h
+$(PROG).o: $(PROG).c linklist.h
+$(TEST).o: $(TEST).c linklist.h
 #--------------------------------------------------------------
 html	:
 	( cd docs; latex2html -local_icons -no_images Linklist.tex )
