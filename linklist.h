@@ -12,6 +12,11 @@
 #ifndef  _LINKLIST_H
 #define  _LINKLIST_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #if defined (_DLL_MAIN_C)
 #  if defined (_DLL_POSIX)
 #  include <pthread.h>
@@ -183,20 +188,12 @@ typedef struct list
 typedef struct list List;
 #endif   /* _DLL_MAIN_C || DEBUG */
 
-
 typedef struct search_modes
    {
    DLL_SrchOrigin search_origin;
    DLL_SrchDir    search_dir;
    } DLL_SearchModes;
 
-#if 0
-typedef struct current_storage
-   {
-   Node          *saved;
-   unsigned long save_index;
-   } DLL_CurrentPtStore;
-#endif
 
 /*
  * Prototypes
@@ -234,5 +231,9 @@ DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
 DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif   /* _LINKLIST_H */
