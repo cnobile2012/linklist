@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1999 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 03/26/99
+ * Updated: 05/11/99
  *
  * $Author$
  * $Date$
@@ -21,17 +21,17 @@
  *
  * Status   : Public
  *
- * Arguments: name -- Pointer to a pointer to a name of structure to create
+ * Arguments: list -- Pointer to a pointer to a name of a structure to create.
  *
  * Returns  : Pointer to created structure
  *            NULL if unsuccessfull
  */
-List *DLL_CreateList(List **name)
+List *DLL_CreateList(List **list)
 	{
-	if((*name = (List *) malloc(sizeof(List))) == NULL)
+	if((*list = (List *) malloc(sizeof(List))) == NULL)
 		return(NULL);
 
-	return(*name);
+	return(*list);
 	}
 
 
@@ -40,18 +40,18 @@ List *DLL_CreateList(List **name)
  *
  * Status   : Public
  *
- * Arguments: name -- Pointer to a pointer to a name of structure to destroy
+ * Arguments: list -- Pointer to a pointer to a name of a structure to destroy.
  *
  * Returns  : NONE
  */
-void DLL_DestroyList(List **name)
+void DLL_DestroyList(List **list)
 	{
-	if(*name == NULL)
+	if(*list == NULL)
 		return;
 
-	DLL_DeleteEntireList(*name);
-	free(*name);
-	*name = NULL;
+	DLL_DeleteEntireList(*list);
+	free(*list);
+	*list = NULL;
 	}
 
 

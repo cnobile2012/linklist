@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 26, 1996
- * Updated: 02/06/99
+ * Updated: 05/11/99
  *
  * $Author$
  * $Date$
@@ -84,8 +84,8 @@ typedef struct search_modes
 /*
  * Prototypes
  */
-List *DLL_CreateList(List **name);
-void DLL_DestroyList(List **name);
+List *DLL_CreateList(List **list);
+void DLL_DestroyList(List **list);
 char *DLL_Version(void);
 DLL_Boolean DLL_IsListEmpty(List *list);
 DLL_Boolean DLL_IsListFull(List *list);

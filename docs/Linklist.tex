@@ -168,7 +168,7 @@ Then the library itself is broken into six groups: initialization, status, data 
 At this writing there are 29 functions in the library, each one of which is thoroughly explained and examples given when needed.
 
 \chapter*{Overview}
-When writing tools such as this, one needs to be concerned with how it affects the entire programming environment.  One of the most important aspects of this environment is the problem concerning \emph{namespace} pollution.  To minimize this problem I have used DLL\_ as a prefix to all function names and enumerated \texttt{typedef}s.
+When writing tools such as this, one needs to be concerned with how it affects the entire programming environment.  One of the most important aspects of this environment is the problem concerning \emph{namespace} pollution.  To minimize this problem I have used DLL\_ as a prefix to all function names and enumerated \emph{typedef}s.
 \vspace{8pt}
 
 \noindent
@@ -251,7 +251,7 @@ typedef struct search_modes
 \normalsize
 
 \chapter*{Enumerations}
-I'm a firm believer that the return values of functions should be predefined \texttt{typedef} enumerations.  There are two reasons for this.  The first is that many compilers will complain when a switch statement is used to test the return values of functions with one or more of the enumerated values missing thus alerting the developer to using the \texttt{default} statement.   The second reason is that the \texttt{typedef} name can be used as the return type of the function disallowing anything other than the enumerated values to be returned.  These are good things and should be taken advantage of.
+I'm a firm believer that the return values of functions should be predefined \emph{typedef} enumerations.  There are two reasons for this.  The first is that many compilers will complain when a switch statement is used to test the return values of functions with one or more of the enumerated values missing thus alerting the developer to using the \emph{default} statement.   The second reason is that the \emph{typedef} name can be used as the return type of the function disallowing anything other than the enumerated values to be returned.  These are good things and should be taken advantage of.
 \vspace{8pt}
 
 \noindent
@@ -269,7 +269,7 @@ typedef enum
 \vspace{8pt}
 
 \noindent
-Many functions return the \texttt{typedef} enumerated type DLL\_Return as shown below.
+Many functions return the \emph{typedef} enumerated type DLL\_Return as shown below.
 
 \small
 \begin{alltt}
@@ -291,7 +291,7 @@ typedef enum
 \vspace{8pt}
 
 \noindent
-The next two enumerations are used to determine the state of search inquiries, one is used to determine the origin and the other for the direction.  These values are passed as arguments to the \texttt{DLL\_SetSearchModes()} function.
+The next two enumerations are used to determine the state of search inquiries, one is used to determine the origin and the other for the direction.  These values are passed as arguments to the \emph{DLL\_SetSearchModes()} function.
 
 \small
 \begin{alltt}
@@ -314,7 +314,7 @@ typedef enum
 \vspace{8pt}
 
 \noindent
-The last enumerated type is used to determine the direction of inserting and swaping a record and is passed as an argument to two functions\linebreak \texttt{DLL\_InsertRecord()} and \texttt{DLL\_SwapRecord()}.
+The last enumerated type is used to determine the direction of inserting and swaping a record and is passed as an argument to two functions\linebreak \emph{DLL\_InsertRecord()} and \emph{DLL\_SwapRecord()}.
 
 \small
 \begin{alltt}
@@ -333,21 +333,30 @@ The function calls below are grouped by their general function as described abov
 \section*{Initialization}
 \begin{description}
 \item[NAME]\hspace{1em}\\
-DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList, --- initializing group
+DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList, --- Initialization group
+
 \item[SYNOPSIS]
 \begin{alltt}\hspace{1em}
 #include <linklist.h>
 
-DLL_CreateList(List **name);
-DLL_InitializeList(List *list, size_t infosize);
-DLL_DestroyList(List **name);
+List *DLL_CreateList(List **list);
+DLL_Return DLL_InitializeList(List *list, size_t infosize);
+void DLL_DestroyList(List **list);
 \end{alltt}
+
 \item[DESCRIPTION]\hspace{1em}\\
+The initialization group of functions must be used in the allocation and freeing of the memory used by the link list.  The function \emph{DLL\_CreateList} is called first with a pointer to the \textbf{Top Level Struct} type defined as \textbf{List}.  After the \textbf{Info Struct} has been defined the \emph{DLL\_InitializeList} function is called.  This function is passes the pointer returned from the previous function call and the size in bytes of the \textbf{Info Struct}.  Upon exiting the application the function \emph{DLL\_DestroyList} should be called to free any memory allocated.
+
+\item[RETURN VALUES]\hspace{1em}
+ \begin{description}
+ \item[DLL\_CreateList]\hspace{1em}\\
+ Returns a pointer to the \emph{typedef} \textbf{List} (this value is also in the argument \textbf{list} after the call).
+ \item[DLL\_InitializeList]\hspace{1em}\\
+ Returns \textbf{DLL\_ZERO\_INFO} if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successfully.
+ \item[DLL\_DestroyList]\hspace{1em}\\
+ Returns nothing, however, the argument \textbf{list} is set to NULL.
 
 
-
-
-
-
+ \end{description}
 \end{description}
 \end{document}
