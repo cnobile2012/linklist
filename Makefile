@@ -32,12 +32,13 @@ ifeq ($(OS),LINUX)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -m486 -pipe
-  COMPILER_OPT  = -ansi -fPIC -Wall
+  COMPILER_OPT  = -ansi -fPIC -Wall -D_REENTRANT -D_GNU_SOURCE
   NON_DEBUG_OPT = -O2 -fomit-frame-pointer
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -shared -Wl,-soname,$(BASENAME).so.$(MAJOR_VER)
   DBGFLAGS      = -L$(src_prefix) -ldbg
-  EOBJS		= dll_pthread_ext.o
+  TEST_LIBS	= -L. -ldll -lpthread
+#  EOBJS		= dll_pthread_ext.o
 endif
 
 ifeq ($(OS),SOLARIS)
@@ -101,7 +102,6 @@ endif
 LIBDIR		= $(prefix)/lib
 INCDIR		= $(prefix)/include
 
-THISLIB		= -L. -ldll
 MAJOR_VER	= 2
 MINOR_VER	= 0
 PATCH_LVL	= 0
@@ -115,7 +115,7 @@ OBJS2		= $(TEST).o
 #--------------------------------------------------------------
 all	:
 	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) DEBUG=NO
-	make $(TEST) DEBUG=NO
+	make $(TEST)
 
 debug	:
 	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) DEBUG=YES
@@ -130,8 +130,8 @@ debug-static :
 	make $(TEST) DEBUG=YES
 
 # Make the test program from the installed shared libraries.
-test	:
-	make $(TEST) THISLIB=-ldll
+demo	:
+	make $(TEST) DEBUG=NO
 
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $<
@@ -147,7 +147,7 @@ libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
 
 $(TEST)	: $(OBJS2)
-	$(CC) $(OBJS2) -o $(TEST) $(THISLIB)
+	$(CC) $(OBJS2) -o $(TEST) $(TEST_LIBS)
 
 $(PROG).o: $(PROG).c linklist.h
 $(TEST).o: $(TEST).c linklist.h
