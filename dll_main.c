@@ -198,7 +198,7 @@ DLL_IsListFull(List *list)
 
    free(newN);
    free(newI);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+   THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
    return(DLL_FALSE);
    }
 

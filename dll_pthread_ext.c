@@ -9,6 +9,7 @@
  * $Revision$
  */
 
+#include <stdio.h>
 #include <errno.h>
 #include "dll_pthread_ext.h"
 

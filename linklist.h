@@ -12,26 +12,59 @@
 #ifndef  _LINKLIST_H
 #define  _LINKLIST_H
 
-#if  defined (DEBUG) || defined (_DLL_MAIN_C)
-#  if defined (LINUX) || defined (OSF1)
+#if defined (_DLL_MAIN_C)
+#  if defined (_DLL_POSIX)
 #  include <pthread.h>
 
-/* Definitions for cross platform compatibility. */
-#  define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
-#  define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init((a),(b))) \
-                                    return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy((a))) \
-                                    return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_RLOCK(a)    if(pthread_rwlock_rdlock((a))) \
-                                    return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_WLOCK(a)    if(pthread_rwlock_wrlock((a))) \
-                                    return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_UNLOCK(a)   if(pthread_rwlock_unlock((a))) \
-                                    return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_RLOCK_NR    pthread_rwlock_rdlock
-#  define THREAD_RWLOCK_WLOCK_NR    pthread_rwlock_wrlock
-#  define THREAD_RWLOCK_UNLOCK_NR   pthread_rwlock_unlock
-#  endif /* defined (LINUX) */
+#    if defined (LINUX) || defined (OSF1)
+
+     /* Definitions for cross platform compatibility. */
+#    define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
+#    define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init((a),(b))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy((a))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_RLOCK(a)    if(pthread_rwlock_rdlock((a))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_WLOCK(a)    if(pthread_rwlock_wrlock((a))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_UNLOCK(a)   if(pthread_rwlock_unlock((a))) \
+                                      return(DLL_THR_ERROR)
+     /* With no return value. */
+#    define THREAD_RWLOCK_RLOCK_NR    (void) pthread_rwlock_rdlock
+#    define THREAD_RWLOCK_WLOCK_NR    (void) pthread_rwlock_wrlock
+#    define THREAD_RWLOCK_UNLOCK_NR   (void) pthread_rwlock_unlock
+
+#    elif defined (SOLARIS)
+#    include "dll_pthread_ext.h"
+
+#    define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
+#    define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init_np((a),(b))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy_np((a))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_RLOCK(a)    if(pthread_rwlock_rdlock_np((a))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_WLOCK(a)    if(pthread_rwlock_wrlock_np((a))) \
+                                      return(DLL_THR_ERROR)
+#    define THREAD_RWLOCK_UNLOCK(a)   if(pthread_rwlock_unlock_np((a))) \
+                                      return(DLL_THR_ERROR)
+     /* With no return value. */
+#    define THREAD_RWLOCK_RLOCK_NR    (void) pthread_rwlock_rdlock_np
+#    define THREAD_RWLOCK_WLOCK_NR    (void) pthread_rwlock_wrlock_np
+#    define THREAD_RWLOCK_UNLOCK_NR   (void) pthread_rwlock_unlock_np
+#    endif /* platform dependencies */
+#  else /* defined (_DLL_POSIX) */
+#  define THREAD_RWLOCK_STRUCT
+#  define THREAD_RWLOCK_INIT(a,b)
+#  define THREAD_RWLOCK_DESTROY(a)
+#  define THREAD_RWLOCK_RLOCK(a)
+#  define THREAD_RWLOCK_WLOCK(a)
+#  define THREAD_RWLOCK_UNLOCK(a)
+#  define THREAD_RWLOCK_RLOCK_NR
+#  define THREAD_RWLOCK_WLOCK_NR
+#  define THREAD_RWLOCK_UNLOCK_NR
+#  endif /* defined (_DLL_POSIX) */
 #endif /* defined (_DLL_MAIN_C) */
 
 typedef enum
@@ -46,7 +79,9 @@ typedef enum
    DLL_READ_ERROR,         /* File read error */
    DLL_NOT_MODIFIED,       /* Unmodified list */
    DLL_NULL_FUNCTION,      /* NULL function pointer */
+#if defined (_DLL_POSIX)
    DLL_THR_ERROR           /* Thread error */
+#endif
    } DLL_Return;
 
 /*
@@ -133,7 +168,9 @@ typedef struct list
    DLL_Boolean          modified;
    DLL_SrchOrigin       search_origin;
    DLL_SrchDir          search_dir;
+#if defined (_DLL_POSIX)
    THREAD_RWLOCK_STRUCT rwl_t;
+#endif
    } List;
 #else
 typedef struct list List;

@@ -37,7 +37,7 @@ ifeq ($(OS),LINUX)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -m486 -pipe
-  COMPILER_OPT  = -ansi -fPIC -Wall -D_REENTRANT -D_GNU_SOURCE
+  COMPILER_OPT  = -ansi -fPIC -Wall -D_REENTRANT -D_GNU_SOURCE -D_DLL_POSIX
   NON_DEBUG_OPT = -O2 -fomit-frame-pointer
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -shared -Wl,-soname,$(BASENAME).so.$(MAJOR_VER)
@@ -52,11 +52,13 @@ ifeq ($(OS),SOLARIS)
   CC            = /usr/local/SUNWspro/bin/cc
   AR            = ar rcs
   MACHINE_OPT   =
-  COMPILER_OPT  = -v -KPIC -mt -xstrconst
+  COMPILER_OPT  = -v -KPIC -mt -xstrconst -D_POSIX_C_SOURCE=199506L \
+		  -D_DLL_POSIX
   NON_DEBUG_OPT = -xO5 -dalign -xlibmil
   DEBUG_OPT     = -DDEBUG=1 -g -xF
   LDFLAGS       += -Wl,-G,-h,$(BASENAME).so.$(MAJOR_VER)
   TEST_LIBS	= -L. -ldll -lpthread
+  EOBJS		= dll_pthread_ext.o
 endif
 
 ifeq ($(OS),OSF1)
@@ -66,11 +68,12 @@ ifeq ($(OS),OSF1)
   CC            = cc
   AR            = ar rcs
   MACHINE_OPT   = -tune ev56
-  COMPILER_OPT  = -std1 -warnprotos -D_REENTRANT -pthread -w0
+  COMPILER_OPT  = -std1 -warnprotos -D_REENTRANT -pthread -w0 -D_DLL_POSIX
   NON_DEBUG_OPT = -O2 -newc -portable
   DEBUG_OPT     = -DDEBUG=1 -g -trapuv
   LDFLAGS       += -shared -msym -soname $(BASENAME).so.$(MAJOR_VER)
-  TEST_LIBS	= -L. -ldll -lpthread
+  TEST_LIBS	= -L. -ldll -L/usr/shlib -lpthread
+#  EOBJS		= dll_pthread_ext.o
 endif
 
 ifeq ($(OS),AIX)
@@ -85,6 +88,7 @@ ifeq ($(OS),AIX)
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -Wl,-G,-bshared
   TEST_LIBS	= -L. -ldll -lpthread
+#  EOBJS		= dll_pthread_ext.o
 endif
 
 #----- Change Nothing Below This Line -------------------------
@@ -109,26 +113,28 @@ DISTNAME	= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)-beta
 EXCLUDEFILE	= $(DIR_NAME)/tar-exclude
 
 #--------------------------------------------------------------
+BASENAME	= libdll
 PROG		= dll_main
 TEST		= dll_test
+SLIB		= $(BASENAME).so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
 SRCS		= $(PROG).c $(TEST).c
 OBJS1		= $(PROG).o $(EOBJS)
 OBJS2		= $(TEST).o
 #--------------------------------------------------------------
 all	:
-	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) DEBUG=NO
+	make $(SLIB) DEBUG=NO
 	make $(TEST)
 
 debug	:
-	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) DEBUG=YES
+	make $(SLIB) DEBUG=YES
 	make $(TEST) DEBUG=YES
 
 static	:
-	make libdll.a DEBUG=NO
+	make $(BASENAME).a DEBUG=NO
 	make $(TEST) DEBUG=NO
 
 debug-static :
-	make libdll.a DEBUG=YES
+	make $(BASENAME).a DEBUG=YES
 	make $(TEST) DEBUG=YES
 
 # Make the test program from the installed shared libraries.
@@ -138,14 +144,12 @@ demo	:
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $<
 
-libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL): $(OBJS1)
-	$(CC) -shared -Wl,-soname,libdll.so.$(MAJOR_VER) \
-	 -o libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) $(OBJS1)
-	ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) \
-	 libdll.so.$(MAJOR_VER)
-	ln -s libdll.so.$(MAJOR_VER) libdll.so
+$(SLIB): $(OBJS1)
+	$(CC) $(LDFLAGS) $(OBJS1) -o $(SLIB)
+	ln -s $(SLIB) $(BASENAME).so.$(MAJOR_VER)
+	ln -s $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so
 
-libdll.a: $(OBJS1)
+$(BASENAME).a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
 
 $(TEST)	: $(OBJS2)
@@ -176,23 +180,22 @@ clean	:
 	-rm -f *.o *~ *.bak \#*\# core so_locations
 
 clobber	: clean
-	-rm $(TEST) libdll.*
+	-rm $(TEST) $(BASENAME).*
 
 distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
 
 install	: install-docs
-	cp ./libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) $(LIBDIR)
+	cp ./$(SLIB) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
 	( cd $(LIBDIR); \
-	 ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) \
-	 libdll.so.$(MAJOR_VER) )
-	( cd $(LIBDIR); ln -s libdll.so.$(MAJOR_VER) libdll.so )
+	 ln -s $(SLIB) $(BASENAME).so.$(MAJOR_VER) )
+	( cd $(LIBDIR); ln -s $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so )
 	/sbin/ldconfig
 
 install-static:
 	cp ./linklist.h $(INCDIR)/linklist.h
-	cp ./libdll.a $(LIBDIR)/libdll.a
+	cp ./$(BASENAME).a $(LIBDIR)/$(BASENAME).a
 
 install-docs:
 	install -d $(DOCLIB)/$(DISTNAME)
@@ -200,10 +203,10 @@ install-docs:
 	install -m 444 docs/Linklist/* $(DOCLIB)/$(DISTNAME)
 
 uninstall: uninstall-docs
-	-rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
+	-rm -f $(LIBDIR)/$(BASENAME).so* $(INCDIR)/linklist.h
 
 uninstall-static:
-	-rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
+	-rm -f $(LIBDIR)/$(BASENAME).a $(INCDIR)/linklist.h
 
 uninstall-docs:
 	-rm -rf $(DOCLIB)/$(DISTNAME)

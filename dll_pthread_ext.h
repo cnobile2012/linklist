@@ -43,8 +43,8 @@ typedef void *pthread_rwlockattr_t;
 int pthread_rwlock_init_np(pthread_rwlock_t *rwlp,
  pthread_rwlockattr_t *attrp);
 int pthread_rwlock_destroy_np(pthread_rwlock_t *rwlp);
-int pthread_rwlock_rlock_np(pthread_rwlock_t *rwlp);
-int pthread_rwlock_wlock_np(pthread_rwlock_t *rwlp);
+int pthread_rwlock_rdlock_np(pthread_rwlock_t *rwlp);
+int pthread_rwlock_wrlock_np(pthread_rwlock_t *rwlp);
 int pthread_rwlock_unlock_np(pthread_rwlock_t *rwlp);
 
 #endif   /* _DLL_PTHREAD_EXT_H */
