@@ -3,7 +3,7 @@
  *
  * Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 12/12/97
+ * Updated: 06/08/98
  */
 
 #include <stdio.h>
@@ -42,6 +42,9 @@ List *DLL_CreateList(List **name)
  */
 void DLL_DestroyList(List **name)
 	{
+	if(*name == NULL)
+		return;
+
 	DLL_DeleteEntireList(*name);
 	free(*name);
 	*name = NULL;

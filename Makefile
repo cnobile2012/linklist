@@ -3,7 +3,7 @@
 #
 # Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 12/22/97
+# Updated: 06/08/98
 #
 # To compile a shared version of libdll with test program execute:
 #     make
@@ -11,7 +11,7 @@
 #     make static
 # To compile a debug shared version of libdll with test program execute:
 #     make debug
-# To compile a the test program only using the installed shared library execute:
+# To compile the test program only using an installed shared library execute:
 #     make test
 #
 AR	= ar rcs
@@ -26,7 +26,7 @@ INCDIR	= /usr/local/include
 THISLIB	= -L.
 LIBS	= -ldll -lm
 MJV	= 1
-MNV	= 0
+MNV	= 0.1
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(DEBUG)
 #--------------------------------------------------------------
