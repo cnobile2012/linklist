@@ -4,5 +4,7 @@
 # $Date$
 # $Revision$
 #
-export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
-./dll_test
+CWD=`pwd`
+LD_LIBRARY_PATH=$CWD:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+$CWD/dll_test
