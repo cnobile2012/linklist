@@ -1,7 +1,7 @@
 Begin3
 Title:		linklist
 Version:	2.0.0
-Entered-date:	08JUL99
+Entered-date:	08JUL00
 Description:	An API for a doubly linklist. This API is re-enterent so
 		more than one list can be created per application. For a
 		more complete description see the May 1998 issue of the
