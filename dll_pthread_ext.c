@@ -10,7 +10,6 @@
  */
 
 #include <errno.h>
-#include <pthread.h>
 #include "dll_pthread_ext.h"
 
 /* Local prototypes */

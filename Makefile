@@ -22,8 +22,6 @@
 
 include osdetect.mk
 
-ERRFILE		= {$*}.err
-
 ##################################
 # CONFIGURE PLATFORM ENVIRONMENT #
 ##################################
@@ -136,7 +134,7 @@ test	:
 	make $(TEST) THISLIB=-ldll
 
 .c.o	: $(SRCS)
-	$(CC) $(CFLAGS) -c $< 2>$(ERRFILE)
+	$(CC) $(CFLAGS) -c $<
 
 libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL): $(OBJS1)
 	$(CC) -shared -Wl,-soname,libdll.so.$(MAJOR_VER) \
@@ -149,7 +147,7 @@ libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
 
 $(TEST)	: $(OBJS2)
-	$(CC) $(OBJS2) -o $(TEST) $(THISLIB) 2>{linker}.err
+	$(CC) $(OBJS2) -o $(TEST) $(THISLIB)
 
 $(PROG).o: $(PROG).c linklist.h
 $(TEST).o: $(TEST).c linklist.h
@@ -176,10 +174,10 @@ tarball	:
 
 #--------------------------------------------------------------
 clean	:
-	-rm -f *.o *~ *.bak \#*\# *.err core
+	-rm -f *.o *~ *.bak \#*\# core
 
 clobber	:
-	-rm -f *.o *~ *.bak \#*\# *.err $(TEST) core libdll.*
+	-rm -f *.o *~ *.bak \#*\# $(TEST) core libdll.*
 
 distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )

@@ -19,12 +19,12 @@ Ver 2.0.0 --
      pthreads. Sorry, but if some one wants to do the threads for Mac or
      Windows let me know.
 
-(4)  In order to thread this library I needed to make two hidden functions:
-     _addRecord and _deleteEntireList. These are called by other functions
-     in the library and as such can not have mutex locks in them since it
-     would create a deadlock situation. The locks are in the functions:
-     DLL_DeleteEntireList, DLL_AddRecord, and in other functions that call
-     the hidden functions.
+(4)  In order to make this library thread safe I needed to make two hidden
+     functions: _addRecord and _deleteEntireList. These are called by other
+     functions in the library and as such can not have mutex locks in them
+     since it would create a deadlock situation. The locks are in the
+     functions: DLL_DeleteEntireList, DLL_AddRecord, and in other functions
+     that call the hidden functions.
 
 (5)  
 
