@@ -12,8 +12,8 @@
 #include "dll_pthread_ext.h"
 
 /* Local prototypes */
-static void _pthread_rwl_read_clean(void *rwlp);
-static void _pthread_rwl_write_clean(void *rwlp);
+static void _pthread_rwlock_read_cleanup(void *rwlp);
+static void _pthread_rwlock_write_cleanup(void *rwlp);
 
 
 /*
@@ -22,14 +22,15 @@ static void _pthread_rwl_write_clean(void *rwlp);
  * Arguments: rwlp    -- Pointer to lock structure.
  *            attrp   -- Attribute value (non-functional at this time).
  *
- * Returns  : EINVAL  -- The mutex has not been properly initialized.
+ * Returns  : Zero    -- Success
+ *            EINVAL  -- The mutex has not been properly initialized.
  *            EDEADLK -- The mutex is already locked by the calling thread.
  *
  * Note: The final and the draft POSIX versions of pthreads have different
  *       return values, consult your documentation for the correct values.
  */
 int
-pthread_rwlock_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
+pthread_rwlock_init_np(pthread_rwlock_t *rwlp, pthread_rwlockattr_t *attrp)
    {
    int status = 0;
 
@@ -37,7 +38,7 @@ pthread_rwlock_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
    rwlp->w_active = 0;
    rwlp->r_pending = 0;
    rwlp->w_pending = 0;
-   rwlp->valid_init = INIT_FAILED;
+   rwlp->valid_init = PTHREAD_INIT_FAILED;
 
    if((status = pthread_mutex_init(&rwlp->mutex, NULL)) != 0)
       return(status);
@@ -55,7 +56,7 @@ pthread_rwlock_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
       return(status);
       }
 
-   rwlp->valid_init = INIT_SUCCEED;
+   rwlp->valid_init = PTHREAD_INIT_SUCCEED;
    return(0);
    }
 
@@ -73,14 +74,14 @@ pthread_rwlock_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
  *       return values, consult your documentation for the correct values.
  */
 int
-pthread_rwlock_destroy_np(pthread_rwl_t *rwlp)
+pthread_rwlock_destroy_np(pthread_rwlock_t *rwlp)
    {
    int status, status1, status2;
 
-   if(rwlp->valid_init != INIT_SUCCEED)
+   if(rwlp->valid_init != PTHREAD_INIT_SUCCEED)
       return(EINVAL);
 
-   if((status = pthread_mutex_init(&rwlp->mutex, NULL)) != 0)
+   if((status = pthread_mutex_lock(&rwlp->mutex)) != 0)
       return(status);
 
    /* Do any threads own the lock? */
@@ -97,7 +98,7 @@ pthread_rwlock_destroy_np(pthread_rwl_t *rwlp)
       return(EBUSY);
       }
 
-   rwlp->valid_init = INIT_FAILED;
+   rwlp->valid_init = PTHREAD_INIT_FAILED;
 
    if((status = pthread_mutex_unlock(&rwlp->mutex)) != 0)
       return(status);
@@ -119,11 +120,11 @@ pthread_rwlock_destroy_np(pthread_rwl_t *rwlp)
  *            EBUSY   -- The mutex is currently locked.
  */
 int
-pthread_rwlock_rdlock_np(pthread_rwl_t *rwlp)
+pthread_rwlock_rdlock_np(pthread_rwlock_t *rwlp)
    {
    int status;
 
-   if(rwlp->valid_init != INIT_SUCCEED)
+   if(rwlp->valid_init != PTHREAD_INIT_SUCCEED)
       return(EINVAL);
 
    if((status = pthread_mutex_lock(&rwlp->mutex)) != 0)
@@ -132,7 +133,7 @@ pthread_rwlock_rdlock_np(pthread_rwl_t *rwlp)
    if(rwlp->w_active)
       {
       rwlp->w_pending++;
-      pthread_cleanup_push(_pthread_rwl_read_clean, (void *) rwlp);
+      pthread_cleanup_push(_pthread_rwlock_read_cleanup, (void *) rwlp);
 
       while(rwlp->w_active)
          if((status = pthread_cond_wait(&rwlp->read, &rwlp->mutex)) != 0)
@@ -151,36 +152,6 @@ pthread_rwlock_rdlock_np(pthread_rwl_t *rwlp)
 
 
 /*
- * pthread_rwlock_runlock_np() : Unlock read.
- *
- * Arguments: rwlp    -- Pointer to lock structure.
- *
- * Returns  : EINVAL  -- The mutex has not been properly initialized.
- *            EDEADLK -- The mutex is already locked by the calling thread.
- *            EBUSY   -- The mutex is currently locked.
- */
-int
-pthread_rwlock_runlock_np(pthread_rwl_t *rwlp)
-   {
-   int status, status1;
-
-   if(rwlp->valid_init != INIT_SUCCEED)
-      return(EINVAL);
-
-   if((status = pthread_mutex_lock(&rwlp->mutex)) != 0)
-      return(status);
-
-   rwlp->r_active--;
-
-   if(rwlp->r_active == 0 && rwlp->w_pending > 0)
-      status = pthread_cond_signal(&rwlp->write);
-
-   status1 = pthread_mutex_unlock(&rwlp->mutex);
-   return(status1 == 0 ? status : status1);
-   }
-
-
-/*
  * pthread_rwlock_wrlock_np() : Aquire write lock
  *
  * Arguments: rwlp    -- Pointer to lock structure.
@@ -190,11 +161,11 @@ pthread_rwlock_runlock_np(pthread_rwl_t *rwlp)
  *            EBUSY   -- The mutex is currently locked.
  */
 int
-pthread_rwlock_wrlock_np(pthread_rwl_t *rwlp)
+pthread_rwlock_wrlock_np(pthread_rwlock_t *rwlp)
    {
    int status;
 
-   if(rwlp->valid_init != INIT_SUCCEED)
+   if(rwlp->valid_init != PTHREAD_INIT_SUCCEED)
       return(EINVAL);
 
    if((status = pthread_mutex_lock(&rwlp->mutex)) != 0)
@@ -203,7 +174,7 @@ pthread_rwlock_wrlock_np(pthread_rwl_t *rwlp)
    if(rwlp->w_active || rwlp->r_active > 0)
       {
       rwlp->write_pending++;
-      pthread_cleanup_push(_pthread_rwl_write_clean, (void *) rwlp);
+      pthread_cleanup_push(_pthread_rwlock_write_cleanup, (void *) rwlp);
 
       while(rwlp->w_active || rwlp->r_active > 0)
          if((status = pthread_cond_wait(rwlp->write, &rwlp->mutex)) != 0)
@@ -222,7 +193,7 @@ pthread_rwlock_wrlock_np(pthread_rwl_t *rwlp)
 
 
 /*
- * pthread_rwlock_wunlock_np() : Unlock write
+ * pthread_rwlock_unlock_np() : Unlock read or write mutex.
  *
  * Arguments: rwlp    -- Pointer to lock structure.
  *
@@ -231,33 +202,45 @@ pthread_rwlock_wrlock_np(pthread_rwl_t *rwlp)
  *            EBUSY   -- The mutex is currently locked.
  */
 int
-pthread_rwlock_wunlock_np(pthread_rwl_t *rwlp)
+pthread_rwlock_unlock_np(pthread_rwlock_t *rwlp)
    {
-   int status;
+   int status = 0, status1 = 0;
 
-   if(rwlp->valid_init != INIT_SUCCEED)
+   if(rwlp->valid_init != PTHREAD_INIT_SUCCEED)
       return(EINVAL);
 
    if((status = pthread_mutex_lock(&rwlp->mutex)) != 0)
       return(status);
 
-   rwlp->w_active = 0;
-
-   if(rwlp->r_pending > 0 &&
-    (status = pthread_cond_broadcast(&rwlp->read)) != 0)
+   if(rwlp->w_active)
       {
-      pthread_mutex_unlock(&rwlp->mutex);
-      return(status);
-      }
+      /* Try to unlock the write mutex. */
+       rwlp->w_active = 0;
 
-   if(rwlp->w_pending > 0 &&
-    (status = pthread_cond_signal(&rwlp->write)) != 0)
+       if(rwlp->r_pending > 0 &&
+        (status = pthread_cond_broadcast(&rwlp->read)) != 0)
+          {
+          pthread_mutex_unlock(&rwlp->mutex);
+          return(status);
+          }
+
+       if(rwlp->w_pending > 0 &&
+        (status = pthread_cond_signal(&rwlp->write)) != 0)
+          {
+          pthread_mutex_unlock(&rwlp->mutex);
+          return(status);
+          }
+      }
+   else
       {
-      pthread_mutex_unlock(&rwlp->mutex);
-      return(status);
-      }
+      /* Try to unlock a read mutex. */
+      rwlp->r_active--;
 
-   return(pthread_mutex_unlock(&rwlp->mutex));
+      if(rwlp->r_active == 0 && rwlp->w_pending > 0)
+         status = pthread_cond_signal(&rwlp->write);
+
+   status1 = pthread_mutex_unlock(&rwlp->mutex);
+   return(status1 == 0 ? status : status1);
    }
 
 
@@ -272,7 +255,7 @@ pthread_rwlock_wunlock_np(pthread_rwl_t *rwlp)
 static void
 _pthread_rwlock_read_cleanup(void *rwlp)
    {
-   pthread_rwl_t *rwl_tmp = (pthread_rwl_t *) rwlp;
+   pthread_rwlock_t *rwl_tmp = (pthread_rwlock_t *) rwlp;
 
    rwl_tmp->r_pending--;
    pthread_mutex_unlock(rwl_tmp->mutex);
@@ -288,9 +271,9 @@ _pthread_rwlock_read_cleanup(void *rwlp)
  * Returns  : None
  */
 static void
-_pthread_rwl_write_cleanup(void *rwlp)
+_pthread_rwlock_write_cleanup(void *rwlp)
    {
-   pthread_rwl_t *rwl_tmp = (pthread_rwl_t *) rwlp;
+   pthread_rwlock_t *rwl_tmp = (pthread_rwlock_t *) rwlp;
 
    rwl_tmp->w_pending--;
    pthread_mutex_unlock(rwl_tmp->mutex);

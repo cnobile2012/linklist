@@ -16,9 +16,9 @@
 
 typedef enum
    {
-   INIT_FAILED = 0,     /* initialization failed */
-   INIT_SUCCEED         /* initialization succeeded */
-   } InitStatus;
+   PTHREAD_INIT_FAILED = 0,         /* initialization failed */
+   PTHREAD_INIT_SUCCEED             /* initialization succeeded */
+   } PthreadInitStatus;
 
 
 /* rdwr lock variable structure */
@@ -27,24 +27,23 @@ typedef struct rdwr_var
    pthread_mutex_t   mutex;
    pthread_cond_t    read;          /* wait for read */
    pthread_cond_t    write;         /* wait for write */
-   InitStatus        valid_init;    /* initialization validity */
+   PthreadInitStatus valid_init;    /* initialization validity */
    int               r_active;      /* read active */
    int               w_active;      /* write active */
    int               r_pending;     /* read pending */
    int               w_pending;     /* write pending */
-   } pthread_rwl_t;
+   } pthread_rwlock_t;
 
 /* Attribute data type */
-typedef void *pthread_rwlattr_t;
+typedef void *pthread_rwlockattr_t;
 
-#define pthread_rwlattr_default NULL;
+#define pthread_rwllockattr_default NULL;
 
 /* prototypes */
-int pthread_rwl_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp);
-int pthread_rwl_rlock_np(pthread_rwl_t *rwlp);
-int pthread_rwl_wlock_np(pthread_rwl_t *rwlp);
-int pthread_rwl_runlock_np(pthread_rwl_t *rwlp);
-int pthread_rwl_wunlock_np(pthread_rwl_t *rwlp);
-
+int pthread_rwlock_init_np(pthread_rwlock_t *rwlp, pthread_rwlattr_t *attrp);
+int pthread_rwlock_destroy_np(pthread_rwlock_t *rwlp);
+int pthread_rwlock_rlock_np(pthread_rwlock_t *rwlp);
+int pthread_rwlock_wlock_np(pthread_rwlock_t *rwlp);
+int pthread_rwlock_unlock_np(pthread_rwlock_t *rwlp);
 
 #endif   /* _DLL_PTHREAD_EXT_H */
