@@ -1,5 +1,11 @@
 Doubly Link List History File (Carl J. Nobile)
 
+*** Begin CVS Information ***
+$Author$
+$Date$
+$Revision$
+*** End CVS Information ***
+
 Ver 1.1.0 -- April 
 
 (1)  Added four new functions DLL_GetCurrentIndex(), DLL_InsertRecord(),

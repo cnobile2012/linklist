@@ -7,6 +7,10 @@
  * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 22, 1996
  * Updated: 02/06/99
+ *
+ * $Author$
+ * $Date$
+ * $Revision$
  */
 
 /*

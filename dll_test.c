@@ -4,6 +4,10 @@
  * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 25, 1996
  * Updated: 02/07/99
+ *
+ * $Author$
+ * $Date$
+ * $Revision$
  */
 
 #include <stdio.h>

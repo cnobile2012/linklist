@@ -5,6 +5,10 @@
 # Created: May 26, 1997
 # Updated: 01/27/99
 #
+# $Author$
+# $Date$
+# $Revision$
+#
 # Mac contributions to this Makefile by Charlie Buckeit
 #
 # To compile a shared version of libdll with test program execute:

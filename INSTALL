@@ -1,5 +1,11 @@
 Installation of linklist-1.0.3.tar.gz for Linux                Nov 04 1998
 
+*** Begin CVS Information ***
+$Author$
+$Date$
+$Revision$
+*** End CVS Information ***
+
 To install use tar to extract the files into the directory where you
 want it to reside.
 

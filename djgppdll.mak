@@ -5,6 +5,10 @@
 # Created: January 27, 1996
 # Updated: 11/04/98
 #
+# $Author$
+# $Date$
+# $Revision$
+#
 # MS-DOS makefile
 #
 CC	= gcc

@@ -5,6 +5,10 @@
 # Created: January 10, 1997
 # Updated: 11/04/98
 #
+# $Author$
+# $Date$
+# $Revision$
+#
 CC	= cl
 LD	= link
 RM	= rm
