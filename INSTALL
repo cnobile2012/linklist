@@ -27,10 +27,14 @@ make install or make install-static.  Edit the Makefile if you want
 a different directory.
 
 Note: If you have an old version of the library installed the test
-      program will pull that library in when shared objects are used.
-      If you want to test the new library with the supplied test
-      program compile the static version.
+      program (dll_test) will pull that library in when shared objects
+      are used.  If you want to test the new library use the demo.sh
+      script instead of running the test program directly.  The script
+      will set the environment correctly.
 
 If you have any problems, drop me a line at:
 
+cnobile@AppliedTheory.com
+or
 cnobile@suffolk.lib.ny.us
+
