@@ -32,8 +32,9 @@
 \maketitle
 
 \pagenumbering{roman}
-\section{Preface}
-Writing an API for a link list came about after many years of struggling with data storage problems.  I would often write link\-list code embedded in my application, exposing all of its innards to the application.  This was a nightmare to weed through as the application grew in functionality and complexity.  Often much of the functionality that I would have liked in my application would be too difficult to implement or would be kludged in.  If more than one link list was needed my beard would thin.
+\section*{Preface}
+\addcontentsline{toc}{section}{Preface}
+Writing an API for a link list came about after many years of struggling with data storage problems.  I would often write link list code embedded in my application, exposing all of its innards to the application.  This was a nightmare to weed through as the application grew in functionality and complexity.  Often much of the functionality that I would have liked in my application would be too difficult to implement or would be kludged in.  If more than one link list was needed my beard would thin.
 \vspace{8pt}
 
 \noindent
@@ -47,10 +48,10 @@ I hope it is as useful for you as it has been for me.
 Carl J. Nobile\\
 April 1999
 \end{flushright}
-\pagebreak
+\newpage
 
 \tableofcontents
-\pagebreak
+\newpage
 
 \pagenumbering{arabic}
 \section{Distribution}
@@ -73,11 +74,11 @@ ftp://sunsite.unc.edu/pub/Linux/lib
 
 \noindent
 Bug reports should go to me at cnobile@AppliedTheory.com.
-\pagebreak
+\newpage
 
 \section{License}
 \begin{center}
-\Large			 The "Artistic License"\\
+\Large			 The``Artistic License''\\
 \vspace{8pt}
 \Large				Preamble\\
 \end{center}
@@ -87,17 +88,17 @@ The intent of this document is to state the conditions under which a Package may
 \noindent
 Definitions:
 \begin{lquote}
-"Package" refers to the collection of files distributed by the\linebreak Copyright Holder, and derivatives of that collection of files created through textual modification.
+``Package'' refers to the collection of files distributed by the\linebreak Copyright Holder, and derivatives of that collection of files created through textual modification.
 
-"Standard Version" refers to such a Package if it has not been modified, or has been modified in accordance with the wishes of the Copyright Holder as specified below.
+``Standard Version'' refers to such a Package if it has not been modified, or has been modified in accordance with the wishes of the Copyright Holder as specified below.
 
-"Copyright Holder" is whoever is named in the copyright or copyrights for the package.
+``Copyright Holder'' is whoever is named in the copyright or copyrights for the package.
 
-"You" is you, if you're thinking about copying or distributing this Package.
+``You'' is you, if you're thinking about copying or distributing this Package.
 
-"Reasonable copying fee" is whatever you can justify on the basis of media cost, duplication charges, time of people involved, and so on.  (You will not be required to justify it to the Copyright Holder, but only to the computing community at large as a market that must bear the fee.)
+``Reasonable copying fee'' is whatever you can justify on the basis of media cost, duplication charges, time of people involved, and so on.  (You will not be required to justify it to the Copyright Holder, but only to the computing community at large as a market that must bear the fee.)
 
-"Freely Available" means that no fee is charged for the item itself, though there may be fees involved in handling the item.  It also means that recipients of the item may redistribute it under the same conditions they received it.
+``Freely Available'' means that no fee is charged for the item itself, though there may be fees involved in handling the item.  It also means that recipients of the item may redistribute it under the same conditions they received it.
 \end{lquote}
 
 \noindent
@@ -139,7 +140,7 @@ Definitions:
 \vspace{8pt}
 
 \noindent
-6. The scripts and library files supplied as input to or produced as output from the programs of this Package do not automatically fall under the copyright of this Package, but belong to whomever generated them, and may be sold commercially, and may be aggregated with this Package.  If such scripts or library files are aggregated with this Package via the so-called "undump" or "unexec" methods of producing a binary executable image, then distribution of such an image shall neither be construed as a distribution of this Package nor shall it fall under the restrictions of Paragraphs 3 and 4, provided that you do not represent such an executable image as a Standard Version of this Package.
+6. The scripts and library files supplied as input to or produced as output from the programs of this Package do not automatically fall under the copyright of this Package, but belong to whomever generated them, and may be sold commercially, and may be aggregated with this Package.  If such scripts or library files are aggregated with this Package via the so-called ``undump'' or ``unexec'' methods of producing a binary executable image, then distribution of such an image shall neither be construed as a distribution of this Package nor shall it fall under the restrictions of Paragraphs 3 and 4, provided that you do not represent such an executable image as a Standard Version of this Package.
 \vspace{8pt}
 
 \noindent
@@ -155,27 +156,27 @@ Definitions:
 \vspace{2pt}
 
 \noindent
-10. THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+10. THIS PACKAGE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 \begin{center}
 The End
 \end{center}
-\pagebreak
+\newpage
 
 \section{Introduction}
 There are many goals to achieve when deciding to write an API.  The functions in the library should be reenterable, easy to include in an application, platform independent, and reasonably flexible with enough functionality to be usable.  These goals can often be contradictory; however, they are achievable with enough forethought and planning.
 \vspace{8pt}
 
 \noindent
-This package is sufficiently abstracted so that the programmer will neither need to know or care how it is implemented.  At least that is the goal I have striven to achieve while writing it.
+This package is sufficiently abstracted so that the programmer will neither need to know or care how it is implemented; at least that is the goal I have striven to achieve while writing it.
 \vspace{8pt}
 
 \noindent
-Within this package is found the: source files written in C; make files for various platforms and compilers; text script which sets the environment correctly when it runs the demo program created by the make utility; README, INSTALL, and HISTORY text files; Artistic license; and the documentation in \LaTeXe form.
+Within this package is found the: source files written in C; make files for various platforms and compilers; text script which sets the environment correctly when it runs the demo program created by the make utility; README, INSTALL, and HISTORY text files; Artistic License; and the documentation in \LaTeXe\/ form.
 \vspace{8pt}
 
 \noindent
-A short overview, will follow, discussing the philosophy of how the package works including a rational of the structure and type definition use in the package.
+A short overview will follow, discussing the philosophy of how the package works including a rationale of the structure and type definition used in the package.
 \vspace{8pt}
 
 \noindent
@@ -197,31 +198,31 @@ Then the library itself is broken into six groups: \textbf{initialization}, \tex
 
 \noindent
 At this writing there are 29 functions in the library, each one of which is thoroughly explained and examples given when needed.
-\pagebreak
+\newpage
 
 \section{Overview}
 When writing tools such as this, one needs to be concerned with how it affects the entire programming environment.  One of the most important aspects of this environment is the problem concerning \emph{namespace} pollution.  To minimize this problem I have used DLL\_ as a prefix to all function names and enumerated \emph{typedef}s.
 \vspace{8pt}
 
 \noindent
-It is often the case that search criteria will remain the same between queries.  As such a state table is implemented that passes the current state to the search functions.  There are two functions one to set and the other to read the state table.
+It is often the case that search criteria will remain the same between queries.  As such, a state table is implemented that passes the current state to the search functions.  There are two functions: one to set and the other to read the state table.
 
 
 
 
 
-\pagebreak
+\newpage
 
 \section{Structures}
 Most implementations of link lists allocate a single node per record and these nodes are what are linked to each other.  This type of algorithm works well when the link list is embedded in the application code, but not when implementing a link list within an API, because it cannot be made reenterant.
 \vspace{8pt}
 
 \noindent
-A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment where the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy as pictured on the following page.
+A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment in which the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy as pictured on the following page.
 \vspace{8pt}
 
 \noindent
-The first level we will refer to as the 'Top Level Struct'.  All the global data is held by one of these structures and it is allocated once for each incident of the link list.  
+The first level we will refer to as the ``Top Level Struct''.  All the global data is held by one of these structures and it is allocated once for each incident of the link list.  
 
 \small
 \begin{verbatim}
@@ -245,7 +246,7 @@ typedef struct list
 \vspace{8pt}
 
 \noindent
-At the next level is the 'Node Struct'.  This structure holds the pointer to the actual record data plus the pointers to the next and prior nodes.  It is allocated once for each record structure.
+At the next level is the ``Node Struct''.  This structure holds the pointer to the actual record data plus the pointers to the next and prior nodes.  It is allocated once for each record structure.
 
 \small
 \begin{verbatim}
@@ -259,7 +260,7 @@ typedef struct node
 \normalsize
 \vspace{8pt}
 
-%\pagebreak
+%\newpage
 \begin{figure}
 \begin{center}
 \graphicspath{{.}}
@@ -275,7 +276,7 @@ Hierarchical Structure of the Doubly Linked List
 
 \pagebreak
 \noindent
-The third and final level is the 'Info Struct', which holds the actual data inserted by the application.  The Info Struct is defined by the developer and is only restricted by the environment in which the application runs or is compiled in.
+The third and final level is the ``Info Struct'', which holds the actual data inserted by the application.  The Info Struct is defined by the developer and is only restricted by the environment in which the application runs or is compiled in.
 
 \small
 \begin{verbatim}
@@ -299,14 +300,14 @@ typedef struct search_modes
    } DLL_SearchModes;
 \end{verbatim}
 \normalsize
-\pagebreak
+\newpage
 
 \section{Enumerations}
-I'm a firm believer that the return values of functions should be predefined \emph{typedef} enumerations.  There are two reasons for this.  The first is that many compilers will complain when a switch statement is used to test the return values of functions with one or more of the enumerated values missing thus alerting the developer to using the \emph{default} statement.   The second reason is that the \emph{typedef} name can be used as the return type of the function disallowing anything other than the enumerated values to be returned.  These are good things and should be taken advantage of.
+I'm a firm believer that the return values of functions should be predefined \emph{typedef} enumerations.  There are two reasons for this.  The first is that many compilers will complain when a switch statement is used to test the return values of functions with one or more of the enumerated values missing, thus alerting the developer to use the \emph{default} statement.   The second reason is that the \emph{typedef} name can be used as the return type of the function, disallowing anything other than the enumerated values to be returned.  These are good things and should be taken advantage of.
 \vspace{8pt}
 
 \noindent
-Since, at the time of this writing Booleans are not part of the C specifications I've created my own.
+Since at the time of this writing Booleans are not part of the C specifications, I've created my own.
 
 \small
 \begin{verbatim}
@@ -342,7 +343,7 @@ typedef enum
 \vspace{8pt}
 
 \noindent
-The next two enumerations are used to determine the state of search inquiries, one is used to determine the origin and the other for the direction.  These values are passed as arguments to the \emph{DLL\_SetSearchModes} function.
+The next two enumerations are used to determine the state of search inquiries: one is used to determine the origin and the other for the direction.  These values are passed as arguments to the \emph{DLL\_SetSearchModes} function.
 
 \small
 \begin{verbatim}
@@ -365,7 +366,7 @@ typedef enum
 \vspace{8pt}
 
 \noindent
-The last enumerated type is used to determine the direction of insertion or the swapping of a record.  This structure is passed as an argument to two functions \emph{DLL\_InsertRecord} and \emph{DLL\_SwapRecord}.
+The last enumerated type is used to determine the direction of insertion or the swapping of a record.  This structure is passed as an argument to two functions, \emph{DLL\_InsertRecord} and \emph{DLL\_SwapRecord}.
 
 \small
 \begin{verbatim}
@@ -377,7 +378,7 @@ typedef enum
    } DLL_InsertDir;
 \end{verbatim}
 \normalsize
-\pagebreak
+\newpage
 
 \section{Functions}
 The following function calls are grouped by their general functionality, as described above.  They are written in manpage style so that I only have to document the API once.
@@ -402,13 +403,13 @@ The initialization group of functions must be used in the allocation and freeing
 
  \begin{description}
  \item[DLL\_CreateList]\quad\\
- This function is called first to create the environment of the link list package.  It is passed \textbf{list} a pointer to a pointer of the \emph{Top Level Struct} type \emph{List}.  This pointer is returned both as the return value of the function and in the argument \textbf{list}.
+ This function is called first to create the environment of the link list package.  It is passed \textbf{list}, a pointer to a pointer, of the \emph{Top Level Struct} type \emph{List}.  This pointer is returned both as the return value of the function and in the argument \textbf{list}.
 
  \item[DLL\_InitializeList]\quad\\
- After defining the \emph{Info} structure this function is called to initialize the environment.  Its first argument \textbf{list} is the value returned from \emph{DLL\_CreateList} and the second argument \textbf{infosize} is the size in bytes of the \emph{Info} structure.  The value \textbf{DLL\_ZERO\_INFO} is returned if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successful.
+ After defining the \emph{Info} structure this function is called to initialize the environment.  Its first argument, \textbf{list}, is the value returned from \emph{DLL\_CreateList} and the second argument, \textbf{infosize}, is the size in bytes of the \emph{Info} structure.  The value \textbf{DLL\_ZERO\_INFO} is returned if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successful.
 
  \item[DLL\_DestroyList]\quad\\
- Upon exiting the application this function when called will free all memory allocated during this instance of the list.  It is passed \textbf{list} the value returned from \emph{DLL\_CreateList} and has no return value of its own, however, the argument \textbf{list} is set to NULL.
+ Upon exiting the application this function when called will free all memory allocated during this instance of the list.  It is passed \textbf{list}, the value returned from \emph{DLL\_CreateList}, and has no return value of its own; however, the argument \textbf{list} is set to NULL.
  \end{description}
 
 \item[EXAMPLE]
@@ -418,6 +419,7 @@ The initialization group of functions must be used in the allocation and freeing
 #include <stdio.h>
 #include <stdlib.h>
 #include <linklist.h>
+
 
 typedef struct name_addr    /* Sample data structure */
    {
@@ -458,7 +460,7 @@ void main(void)
 \normalsize
 
 \end{description}
-\pagebreak
+\newpage
 
 \subsection{Status and State}
 \begin{description}
@@ -510,7 +512,7 @@ Contributions: Charlie Buckheit
  This function returns the number of records currently in the link list by retrieving a counter value.  It returns the number of nodes allocated where a return value of zero is an empty list.
 
  \item[DLL\_SetSearchModes]\quad\\
- This function sets the search mode state table which is used by various function in the API.  It's second and third arguments are \textbf{origin} and \textbf{dir}.  The \textbf{origin} argument can take one of four values:
+ This function sets the search mode state table which is used by various function in the API.  Its second and third arguments are \textbf{origin} and \textbf{dir}.  The \textbf{origin} argument can take one of four values:
 
   \begin{description}
   \item[DLL\_HEAD] The origin of the search starts from the node which is at the head of the list.  This is the default value if none have been set beforehand.
@@ -530,7 +532,7 @@ Contributions: Charlie Buckheit
  It returns \textbf{DLL\_NOT\_MODIFIED} if an invalid value was passed in either \textbf{origin} or \textbf{dir}.  \textbf{DLL\_NORMAL} is returned if the state table was set.
 
  \item[DLL\_GetSearchModes]\quad\\
- This function gets the state of the search criteria, which can either be the default values or those set by \emph{DLL\_SetSearchModes}.  It's second argument is \textbf{ssp} a pointer to the structure below.  It returns a pointer to this same instance of the structure.
+ This function gets the state of the search criteria, which can either be the default values or those set by \emph{DLL\_SetSearchModes}.  Its second argument is \textbf{ssp}, a pointer to the structure below.  It returns a pointer to this same instance of the structure.
 
  \begin{verbatim}
    typedef struct search_modes
@@ -540,7 +542,7 @@ Contributions: Charlie Buckheit
       } DLL_SearchModes;
  \end{verbatim}
 
-\emph{NOTE: This function has a different argument list starting with release linlkist-1.1.0.  The original function allocated the structure internally to the function which was not thread safe.  This WILL break old code using this function.}
+\emph{NOTE: This function has a different argument list starting with release linlkist-1.1.0.  The original function allocated the structure internally to the function, which was not thread safe.  This WILL break old code that used this function.}
 
  \item[DLL\_GetCurrentIndex]\quad\\
  This function returns the index of the current record by retrieving a counter value.  A return value of zero is an empty list.
@@ -550,7 +552,7 @@ Contributions: Charlie Buckheit
 Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
 
 \end{description}
-\pagebreak
+\newpage
 
 \subsection{Pointer Manipulation}
 \begin{description}
@@ -582,29 +584,29 @@ All of these functions return the enumerated type \emph{DLL\_Return} and take on
 
  \begin{description}
  \item[DLL\_CurrentPointerToHead]\quad\\
- This function sets the \emph{current} pointer to the head of the list and sets the \emph{index} counter to one.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no nodes allocated and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function sets the \emph{current} pointer to the head of the list and sets the \emph{index} counter to 1.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no nodes allocated and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_CurrentPointerToTail]\quad\\
  This function sets the \emph{current} pointer to the tail of the list and sets the index counter to the \textbf{listsize} counter.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_IncrementCurrentPointer]\quad\\
- This function increments the \emph{current} pointer and the \emph{index} counter each by one.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes, \textbf{DLL\_NOT\_FOUND} indicates that the end of the list has been reached, and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function increments the \emph{current} pointer and the \emph{index} counter each by 1.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes, \textbf{DLL\_NOT\_FOUND} indicates that the end of the list has been reached, and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_DecrementCurrentPointer]\quad\\
- This function decrements the \emph{current} pointer and the \emph{index} counter each by one.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes, \textbf{DLL\_NOT\_FOUND} indicates that the beginning of the list has been reached, and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function decrements the \emph{current} pointer and the \emph{index} counter each by 1.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes, \textbf{DLL\_NOT\_FOUND} indicates that the beginning of the list has been reached, and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_StoreCurrentPointer]\quad\\
  This function stores the \emph{current} pointer and the \emph{index} counter in the \emph{Top Level Struct} for later retrieval.  Only one value can be stored at a time so calling this function again will destroy the first stored pointer and index values.  A return value of \textbf{DLL\_NOT\_FOUND} indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_RestoreCurrentPointer]\quad\\
- This function restores the \emph{current} pointer and the \emph{index} counter from the \emph{Top Level Struct}.  Since only one value can be stored at a time calling this function again will return the last pointer and index values.  A return value of \textbf{DLL\_NOT\_FOUND} indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function restores the \emph{current} pointer and the \emph{index} counter from the \emph{Top Level Struct}.  Since only one value can be stored at a time, calling this function again will return the last pointer and index values.  A return value of \textbf{DLL\_NOT\_FOUND} indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
  \end{description}
 
 \item[EXAMPLE]\quad\\
 Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
 
 \end{description}
-\pagebreak
+\newpage
 
 \subsection{List Update}
 \begin{description}
@@ -630,14 +632,14 @@ DLL_Return DLL_DeleteEntireList(List *list);
 \end{verbatim}
 
 \item[DESCRIPTION]\quad\\
-These functions manipulate the data in the link list.  They all return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList}.
+These functions manipulate the data in the link list.  They all return the enumerated type \emph{DLL\_Return} and take as their first argument, \textbf{list}, the pointer returned by \emph{DLL\_CreateList}.
 
  \begin{description}
  \item[DLL\_AddRecord]\quad\\
  This function adds a new node and record to the link list.  The second argument is a pointer to the \emph{Info} structure where the new data is stored.  The third argument is a pointer to a function used to sort the insertion of the new data.  The return value of this function is identical to the return value of the \emph{strcmp} function of the standard C library.
  \vspace{8pt}
 
- Where the return value is:
+ Where the return value is
 \begin{verbatim}
    less than zero:     arg1 < arg2,
 
@@ -646,7 +648,7 @@ These functions manipulate the data in the link list.  They all return the enume
    greater than zero:  arg1 > arg2.
 \end{verbatim}
 
- Below is an example of this function.
+ Below is an example of this function:
 
 \begin{verbatim}
    int sort_foo(Info *record, Info *compare)
@@ -673,30 +675,30 @@ typedef enum
 \end{verbatim}
  \normalsize
 
- In the current version the value \textbf{DLL\_INSERT\_DEFAULT} is not used, it has been included for conformity to other like definitions and possible future expansion.
+ In the current version the value \textbf{DLL\_INSERT\_DEFAULT} is not used; it has been included for conformity to other like definitions and possible future expansion.
 \vspace{8pt}
 
 \noindent
- The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates a wrong value was passed in the argument \emph{dir}; \textbf{DLL\_MEM\_ERROR} indicates that memory could not be allocated; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates that a wrong value was passed in the argument \emph{dir}; \textbf{DLL\_MEM\_ERROR} indicates that memory could not be allocated; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_SwapRecord]\quad\\
  This function swaps the current record up or down one place in the list.  The swapped record will remain current after completion.  The second argument is passed the same enumerated define of type \emph{DLL\_InsertDir} as the function \textbf{DLL\_InsertRecord} above.  The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates a wrong value was passed in the argument \emph{dir}; \textbf{DLL\_NULL\_LIST} indicates that the list is empty and there is nothing to swap; \textbf{DLL\_NOT\_FOUND} indicates that the current node is either at the head and cannot be swapped above or is at the tail and cannot be swapped below; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_UpdateCurrentRecord]\quad\\
- This function replaces the current data in an \emph{Info} structure with updated data from the application.  The entire structure gets over written so all elements in the updating structure will need to be present whether or not they have been changed.  The second argument of this function is passed a pointer to an \emph{Info} structure which contains the updated information.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function replaces the current data in an \emph{Info} structure with updated data from the application.  The entire structure gets overwritten so all elements in the updating structure will need to be present whether or not they have been changed.  The second argument of this function is passed a pointer to an \emph{Info} structure which contains the updated information.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_DeleteCurrentRecord]\quad\\
  This function deletes the current \emph{Node} and its \emph{Info} structures from the list.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_DeleteEntireList]\quad\\
- This function deletes all the \emph{Node} and \emph{Info} structures from the list.  It does not delete the \emph{Top Level Struct} allowing the application to add new records without having to re-initialize the list again.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function deletes all the \emph{Node} and \emph{Info} structures from the list.  It does not delete the \emph{Top Level Struct} allowing the application to add new records without having to reinitialize the list again.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
  \end{description}
 
 \item[EXAMPLE]\quad\\
 Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
 
 \end{description}
-\pagebreak
+\newpage
 
 \subsection{Search}
 \begin{description}
@@ -726,7 +728,7 @@ These functions retreive data from the list.  They all return the enumerated typ
  This function returns in its second argument a record found using the criteria passed in its third argument based on the logic of a function passed as its forth argument.  See \textbf{DLL\_SetSearchModes} for setting the search direction and origin.  The form of the passed in function containing the search criteria is the same as that used by the \textbf{DLL\_AddRecord}, but in this case a \emph{NULL} function pointer cannot be passed.  It is shown below for convenience.
  \vspace{8pt}
 
- Where the return value is:
+ Where the return value is
  \begin{verbatim}
    less than zero:     arg1 < arg2,
 
@@ -735,7 +737,7 @@ These functions retreive data from the list.  They all return the enumerated typ
    greater than zero:  arg1 > arg2.
  \end{verbatim}
 
- Below is an example of this function.
+ Below is an example of this function:
 
  \begin{verbatim}
    int sort_foo(Info *record, Info *compare)
@@ -746,7 +748,7 @@ These functions retreive data from the list.  They all return the enumerated typ
 
 \end{verbatim}
 
-  The value \textbf{DLL\_NULL\_FUNCTION}, if returned, indicates that a \textbf{NULL} value was passed as the forth argument; \textbf{DLL\_NULL\_LIST} indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+  The value \textbf{DLL\_NULL\_FUNCTION}, if returned, indicates that a \textbf{NULL} value was passed as the fourth argument; \textbf{DLL\_NULL\_LIST} indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_FindNthRecord]\quad\\
  This function returns in its second argument the record found by adding the skip value passed in the third argument to the index value of the current record.  The skip value is an \emph{unsigned long} integer.  See \textbf{DLL\_SetSearchModes} for setting the search direction and origin.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found in the list or that the \emph{skip} value was out of range; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
@@ -765,7 +767,7 @@ These functions retreive data from the list.  They all return the enumerated typ
 Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
 
 \end{description}
-\pagebreak
+\newpage
 
 \subsection{Input/Output}
 \begin{description}
@@ -783,21 +785,21 @@ DLL_Return DLL_LoadList(List *list, const char *path,
 \end{verbatim}
 
 \item[DESCRIPTION]\quad\\
-These functions are designed to easily write and read the link list data to a disk.  They take advantage of their ability to access the \emph{Top Level Struct} for saving and loading data quickly, however, this will only be useful in limited cases as most implementations will need application specific file formats.  Both return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList} and as their second argument \textbf{path} a pointer to the file name.
+These functions are designed to easily write and read the link list data to a disk.  They take advantage of their ability to access the \emph{Top Level Struct} for saving and loading data quickly; however, this will only be useful in limited cases as most implementations will need application specific file formats.  Both return the enumerated type \emph{DLL\_Return} and take as their first argument, \textbf{list}, the pointer returned by \emph{DLL\_CreateList}, and as their second argument, \textbf{path}, a pointer to the file name.
 
  \begin{description}
  \item[DLL\_SaveList]\quad\\
- This function saves all the \emph{Info} structures including any \emph{NULL} characters in the elements.  The record size is equal to \textbf{infosize} the second argument of the \emph{DLL\_InitializeList} function.
+ This function saves all the \emph{Info} structures including any \emph{NULL} characters in the elements.  The record size is equal to, \textbf{infosize}, the second argument of the \emph{DLL\_InitializeList} function.
 \vspace{8pt}
 
 \noindent
   The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_OPEN\_ERROR} indicates that the file could not be opened for writing; \textbf{DLL\_WRITE\_ERROR} indicates that there was an error while writing to the file meaning that the data in the list should not be trusted; \textbf{DLL\_NOT\_MODIFIED} indicates that the list has not been modified since the last save and no updating to the file was done; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_LoadList]\quad\\
- This function retrives from a file data based on the same criteria that it was saved with.  See \emph{DLL\_SaveList} above.  The third argument \textbf{pFun} is a pointer to a sorting function the same as can be found in \textbf{DLL\_AddRecord}.  A \emph{NULL} function pointer can be passes if no sorting is needed.
+ This function retrieves from a file data based on the same criteria that it was saved with.  See \emph{DLL\_SaveList} above.  The third argument \textbf{pFun} is a pointer to a sorting function the same as can be found in \textbf{DLL\_AddRecord}.  A \emph{NULL} function pointer can be passes if no sorting is needed.
  \vspace{8pt}
 
- Where the return value is:
+ Where the return value is
  \begin{verbatim}
    less than zero:     arg1 < arg2,
 
@@ -806,7 +808,7 @@ These functions are designed to easily write and read the link list data to a di
    greater than zero:  arg1 > arg2.
  \end{verbatim}
 
- Below is an example of this function.
+ Below is an example of this function:
 
  \begin{verbatim}
    int sort_foo(Info *record, Info *compare)

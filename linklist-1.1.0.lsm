@@ -1,18 +1,18 @@
 Begin3
 Title:		linklist
 Version:	1.1.0
-Entered-date:	05APR99
+Entered-date:	05JLY99
 Description:	An API for a doubly linklist. This API is re-enterent so
 		more than one list can be created per application. For a
 		more complete description see the May 1998 issue of the
-		Linux Journal and the Postscript documentation in the
-		package.
+		Linux Journal and the Postscript and html documentation
+		in the package.
 Keywords:	linklist API libs
 Author:		cnobile@AppliedTheory.com (Carl J. Nobile)
 Maintained-by:	cnobile@AppliedTheory.co, (Carl J. Nobile)
 Primary-site:	sunsite.unc.edu /pub/Linux/libs
-		37kB linklist-1.1.0.tar.gz
-		632 linklist-1.1.0.lsm
+		149kB linklist-1.1.0.tar.gz
+		641 linklist-1.1.0.lsm
 Alternate-site:
 Original-site:
 Platforms:
