@@ -3,7 +3,7 @@
 #
 # Copyright (c) 1996-1998 Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 01/17/99
+# Updated: 01/27/99
 #
 # Mac contributions to this Makefile by Charlie Buckeit
 #
@@ -30,10 +30,9 @@ OPTIONS	= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions -Wall
 
 LIBDIR	= /usr/local/lib
 INCDIR	= /usr/local/include
-THISLIB	= -L.
-LIBS	= -ldll
+THISLIB	= -L./ -ldll
 MJV	= 1
-MNV	= 0.3
+MNV	= 1.0
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
@@ -45,7 +44,7 @@ OBJS2	= $(TEST).o
 #--------------------------------------------------------------
 all	:
 	make libdll.so.$(MJV).$(MNV) DEBUG=
-	make $(TEST) DEBUG= 
+	make $(TEST) DEBUG=
 
 debug	:
 	make libdll.so.$(MJV).$(MNV) OFP=
@@ -59,8 +58,9 @@ debug-static :
 	make libdll.a SHARED= OFP=
 	make $(TEST) SHARED= OFP=
 
+# Make the test program from the installed shared libraries.
 test	:
-	make $(TEST) DEBUG= THISLIB=
+	make $(TEST) DEBUG= THISLIB=-ldll
 
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $< 2>$(ERRFILE)
@@ -75,10 +75,10 @@ libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
 
 $(TEST)	: $(OBJS2)
-	$(CC) $(OBJS2) -o $(TEST) $(THISLIB) $(LIBS) 2>{linker}.err
+	$(CC) $(OBJS2) -o $(TEST) $(THISLIB) 2>{linker}.err
 
 $(PROG).o: $(PROG).c $(PROG).h
-$(TEST).o: $(TEST).c linklist.h
+$(TEST).o: $(TEST).c linklist.h dll_dbg.h
 #--------------------------------------------------------------
 clean	:
 	-rm *.o *~ *.bak \#*\# *.err core
@@ -94,6 +94,11 @@ install	:
 	( cd $(LIBDIR); ln -s libdll.so.$(MJV) libdll.so )
 
 install-static:
-	rm -f $(LIBDIR)/libdll.a
 	cp ./libdll.a $(LIBDIR)/libdll.a
 	cp ./linklist.h $(INCDIR)/linklist.h
+
+uninstall:
+	rm -f $(LIBDIR)/libdll.so*
+
+uninstall-static:
+	rm -f $(LIBDIR)/libdll.a

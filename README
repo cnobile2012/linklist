@@ -1,6 +1,6 @@
-Doubly Linked List API Ver. 1.0.3
+Doubly Linked List API Ver. 1.1.0
 
-Copyright (c) 1996-1998  Carl J. Nobile
+Copyright (c) 1996-1999  Carl J. Nobile
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -13,12 +13,40 @@ details.
 
 --------------------------------------------------------------------------
 
-Not much to say here, the package is fairly easy to compile and use. Read
-the dll_API.doc.ps file for how to use the API.  The INSTALL file explains
-how to compile and install the package.
+VERSION NUMBERS
 
-I'm hoping to write a perl extension for it sometime in the next six
-months (today is 11/04/98), but I'm still learning perl so drop me an
-e-mail if you would like to see a perl extension.
+I feel an explanation of how the version numbers for the package change is
+important so we all know what to expect in future releases.  The major
+number (1 at this time) changes when there is a paradigm shift in the way
+the package works (See below TO-DO).  There could be incompatibilities
+with code written using different major number versions.  The middle
+number changes when important new features are added and the minor version
+number changes generally for bug fixes.  There should be no
+incompatibilities between mid and minor version changes.
+
+COMPILATION
+
+Not much to say here, the package is fairly easy to compile and use. Read
+the docs for how to use the API.  The INSTALL file explains how to compile
+and install the package.
+
+LIBRARY USAGE
+
+When new code is compiled it will link to libdll.so, and when a program
+executes it will look for libdll.so.1.  This is why they are sym-linked
+to libdll.so.1.1.0 the current version.
+
+TO-DO
+
+I'm hoping to write perl and tcl extensions sometime in the not too
+distant future, but I'm still learning both perl and tcl.  If you would
+find these extensions useful send me a note, it might push the process
+along some.
+
+I am planning a change to the major version also.  At present the linklist
+defaults to doing memory allocations for each node created. This is
+wasteful of resources and time consuming.  It is my hope to create a
+mechanism to allow larger blocks of memory to be allocated which can be
+changed on the fly and drastically speed up operations.
 
 Carl J. Nobile (cnobile@suffolk.lib.ny.us)

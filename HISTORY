@@ -1,5 +1,27 @@
 Doubly Link List History File (Carl J. Nobile)
 
+Ver 1.1.0 -- April 
+
+(1)  Added four new functions DLL_GetCurrentIndex(), DLL_InsertRecord(),
+     DLL_SwapRecord(), and DLL_FindNthRecord()--read the docs on how to
+     use these functions.  The basic idea for these functions came from
+     Graham Inchley.
+
+(2)  Updated the dll_test program so it could test the new functions.
+
+(3)  Fixed a bug in DLL_AddRecord() where if the Node malloc failed it
+     wouldn't free the previous Info malloc-ed structure.
+
+(4)  Re-wrote DLL_AddRecord() so it would execute faster in some
+     situations. You probably will never notice anything but it was
+     easy to do and made the code simpler.
+
+(5)  Removed some redundant statements from DLL_FindRecord().
+
+(6)  Fixed the sym-links to the library and created a script (demo.sh)
+     to run dll_test using the libraries just built instead of defaulting
+     to a pre-installed version.
+
 Ver 1.0.3 -- November 04, 1998
 
 (1) The package is now covered by the Artistic License, see the

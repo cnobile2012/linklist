@@ -6,7 +6,7 @@
  *
  * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 11/04/98
+ * Updated: 02/06/99
  */
 
 /*
@@ -47,6 +47,13 @@ typedef enum
 	DLL_UP						/* Set direction to up */
 	} DLL_SrchDir;
 
+typedef enum
+	{
+	DLL_INSERT_DEFAULT,		/* Use current insert setting */
+	DLL_ABOVE,					/* Insert new record ABOVE current record */
+	DLL_BELOW					/* Insert new record BELOW current record */
+	} DLL_InsertDir;
+
 /*
  * Structures
  *
@@ -82,6 +89,8 @@ typedef struct list
 	Node           *saved;
 	size_t         infosize;
 	unsigned long  listsize;
+	unsigned long	current_index;
+	unsigned long	save_index;
 	DLL_Boolean    modified;
 	DLL_SrchOrigin search_origin;
 	DLL_SrchDir    search_dir;
@@ -108,6 +117,7 @@ DLL_Return DLL_CurrentPointerToTail(List *list);
 DLL_Return DLL_DecrementCurrentPointer(List *list);
 DLL_Return DLL_DeleteCurrentRecord(List *list);
 DLL_Return DLL_DeleteEntireList(List *list);
+DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long nRec);
 DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
  int (*pFun)(Info *, Info *));
 DLL_Return DLL_GetCurrentRecord(List *list, Info *record);
@@ -115,12 +125,16 @@ DLL_Return DLL_GetNextRecord(List *list, Info *record);
 DLL_Return DLL_GetPriorRecord(List *list, Info *record);
 DLL_Return DLL_InitializeList(List *list, size_t infosize);
 DLL_Return DLL_IncrementCurrentPointer(List *list);
+DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir);
 DLL_Return DLL_LoadList(List *list, const char *path,
  int (*pFun)(Info *, Info *));
 DLL_Return DLL_RestoreCurrentPointer(List *list);
 DLL_Return DLL_SaveList(List *list, const char *path);
-DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir);
+DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
+ DLL_SrchDir dir);
 DLL_Return DLL_StoreCurrentPointer(List *list);
+DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir);
 DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
 DLL_SearchModes *DLL_GetSearchModes(List *list);
+unsigned long DLL_GetCurrentIndex(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);
