@@ -12,19 +12,19 @@
 #ifndef  _LINKLIST_H
 #define  _LINKLIST_H
 
-#ifdef LINUX
-/*  #include "dll_pthread_ext.h" */
-#include <pthread.h>
+#if defined (_DLL_MAIN_C)
+#  if defined (LINUX)
+#  include <pthread.h>
 
 /* Definitions for cross platform compatibility. */
-#define THREAD_RWLOCK_STRUCT  pthread_rwlock_t
-#define THREAD_RWLOCK_INIT    pthread_rwlock_init
-#define THREAD_RWLOCK_DESTROY pthread_rwlock_destroy
-#define THREAD_RWLOCK_RLOCK   pthread_rwlock_rlock
-#define THREAD_RWLOCK_WLOCK   pthread_rwlock_wlock
-#define THREAD_RWLOCK_UNLOCK  pthread_rwlock_unlock
-
-#endif /* OS == LINUX */
+#  define THREAD_RWLOCK_STRUCT  pthread_rwlock_t
+#  define THREAD_RWLOCK_INIT    pthread_rwlock_init
+#  define THREAD_RWLOCK_DESTROY pthread_rwlock_destroy
+#  define THREAD_RWLOCK_RLOCK   pthread_rwlock_rdlock
+#  define THREAD_RWLOCK_WLOCK   pthread_rwlock_wrlock
+#  define THREAD_RWLOCK_UNLOCK  pthread_rwlock_unlock
+#  endif /* defined (LINUX) */
+#endif /* defined (_DLL_MAIN_C) */
 
 /*
  * type defines

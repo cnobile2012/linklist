@@ -58,12 +58,19 @@ DLL_CreateList(List **list)
 void
 DLL_DestroyList(List **list)
    {
+   THREAD_RWLOCK_WLOCK(&(*list)->rwl_t);
+
    if(*list == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&(*list)->rwl_t);
       return;
+      }
 
    if((*list)->head != NULL)
       _deleteEntireList(*list);
 
+   THREAD_RWLOCK_UNLOCK(&(*list)->rwl_t);
+   THREAD_RWLOCK_DESTROY(&(*list)->rwl_t);
    free(*list);
    *list = NULL;
    }
@@ -95,12 +102,12 @@ DLL_InitializeList(List *list, size_t infosize)
    list->current = NULL;
    list->saved = NULL;
    list->infosize = infosize;
-   list->listsize = 0L;
+   list->listsize = (unsigned long) 0;
    list->modified = DLL_FALSE;
    list->search_origin = DLL_HEAD;
    list->search_dir = DLL_DOWN;
-   list->save_index = 0L;
-   list->current_index = 0L;
+   list->save_index = (unsigned long) 0;
+   list->current_index = (unsigned long) 0;
    THREAD_RWLOCK_INIT(&list->rwl_t, NULL);
    return(DLL_NORMAL);
    }
@@ -146,9 +153,15 @@ DLL_Version(void)
 DLL_Boolean
 DLL_IsListEmpty(List *list)
    {
-   if(list->head == NULL || list->tail == NULL)
-      return(DLL_TRUE);
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
 
+   if(list->head == NULL || list->tail == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+      return(DLL_TRUE);
+      }
+
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_FALSE);
    }
 
@@ -169,17 +182,24 @@ DLL_IsListFull(List *list)
    Node *newN;
    Info *newI;
 
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+
    if((newN = (Node *) malloc(sizeof(Node))) == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_TRUE);
+      }
 
    if((newI = (Info *) malloc(list->infosize)) == NULL)
       {
       free(newN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_TRUE);
       }
 
    free(newN);
    free(newI);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_FALSE);
    }
 
@@ -196,7 +216,12 @@ DLL_IsListFull(List *list)
 unsigned long
 DLL_GetNumberOfRecords(List *list)
    {
-   return list->listsize;
+   unsigned long size = (unsigned long) 0;
+
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+   size = list->listsize;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+   return size;
    }
 
 
@@ -217,6 +242,8 @@ DLL_GetNumberOfRecords(List *list)
 DLL_Return
 DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    switch(origin)
       {
       case DLL_HEAD:
@@ -225,6 +252,7 @@ DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
       case DLL_ORIGIN_DEFAULT:
          break;
       default:
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
       }
 
@@ -235,6 +263,7 @@ DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
       case DLL_DIRECTION_DEFAULT:
          break;
       default:
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
       }
 
@@ -244,6 +273,7 @@ DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
    if(dir != DLL_DIRECTION_DEFAULT)
       list->search_dir = dir;
 
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -261,8 +291,10 @@ DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
 DLL_SearchModes *
 DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
    {
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
    ssp->search_origin = list->search_origin;
    ssp->search_dir = list->search_dir;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(ssp);
    }
 
@@ -281,7 +313,12 @@ DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
 unsigned long
 DLL_GetCurrentIndex(List *list)
    {
-   return list->current_index;
+   size_t index = (size_t) 0;
+
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+   index = list->current_index;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+   return index;
    }
 
 
@@ -302,11 +339,17 @@ DLL_GetCurrentIndex(List *list)
 DLL_Return
 DLL_CurrentPointerToHead(List *list)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->head == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    list->current = list->head;
-   list->current_index = 1L;
+   list->current_index = (unsigned long) 1;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -324,11 +367,17 @@ DLL_CurrentPointerToHead(List *list)
 DLL_Return
 DLL_CurrentPointerToTail(List *list)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->tail == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    list->current = list->tail;
    list->current_index = list->listsize;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -347,14 +396,23 @@ DLL_CurrentPointerToTail(List *list)
 DLL_Return
 DLL_IncrementCurrentPointer(List *list)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    if(list->current->next == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
+      }
 
    list->current = list->current->next;
    list->current_index++;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -373,14 +431,23 @@ DLL_IncrementCurrentPointer(List *list)
 DLL_Return
 DLL_DecrementCurrentPointer(List *list)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    if(list->current->prior == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
+      }
 
    list->current = list->current->prior;
    list->current_index--;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -398,11 +465,17 @@ DLL_DecrementCurrentPointer(List *list)
 DLL_Return
 DLL_StoreCurrentPointer(List *list)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
+      }
 
    list->saved = list->current;
    list->save_index = list->current_index;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -420,12 +493,18 @@ DLL_StoreCurrentPointer(List *list)
 DLL_Return
 DLL_RestoreCurrentPointer(List *list)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->saved == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
+      }
 
    list->current = list->saved;
    list->saved = NULL;
    list->current_index = list->save_index;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -449,7 +528,12 @@ DLL_RestoreCurrentPointer(List *list)
 DLL_Return
 DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
    {
-   return(_addRecord(list, info, pFun));
+   DLL_Return ret = DLL_NORMAL;
+
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+   ret = _addRecord(list, info, pFun);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+   return(ret);
    }
 
 
@@ -496,8 +580,8 @@ _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
       list->head = newN;
       list->tail = newN;
       list->current = newN;
-      list->listsize = 1L;
-      list->current_index = 1L;
+      list->listsize = (unsigned long) 1;
+      list->current_index = (unsigned long) 1;
       list->modified = DLL_TRUE;
       return(DLL_NORMAL);
       }
@@ -584,14 +668,20 @@ DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
    Node *newN;
    Info *newI;
 
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    /* Allocate space for new node */
    if((newN = (Node *) malloc(sizeof(Node))) == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_MEM_ERROR);
+      }
 
    /* Allocate space for new info */
    if((newI = (Info *) malloc(list->infosize)) == NULL)
       {
       free(newN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_MEM_ERROR);
       }
 
@@ -607,9 +697,10 @@ DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
       list->head = newN;
       list->tail = newN;
       list->current = newN;
-      list->listsize = 1L;
-      list->current_index = 1L;
+      list->listsize = (unsigned long) 1;
+      list->current_index = (unsigned long) 1;
       list->modified = DLL_TRUE;
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NORMAL);
       }
 
@@ -654,12 +745,13 @@ DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
       default:
          free(newI);
          free(newN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
-         break;
       }
 
    list->listsize++;
    list->modified = DLL_TRUE;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -685,9 +777,14 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
    {
    Node *swap, *newPrior, *newNext;
 
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    /* If current is NULL, can't swap it */
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    /* Decide what to do according to dir */
    switch(dir)
@@ -697,7 +794,10 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
 
          /* current is at head */
          if(swap->prior == NULL)
+            {
+            THREAD_RWLOCK_UNLOCK(&list->rwl_t);
             return(DLL_NOT_FOUND);
+            }
 
          /* Save current new prior and new next */
          newPrior = swap->prior->prior;
@@ -734,7 +834,10 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
 
          /* current is at tail */
          if(swap->next == NULL)
+            {
+            THREAD_RWLOCK_UNLOCK(&list->rwl_t);
             return(DLL_NOT_FOUND);
+            }
 
          /* Save current new prior and new next */
          newPrior = swap->next;
@@ -767,11 +870,12 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
          list->current_index++;
          break;
       default:
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
-         break;
       }
 
    list->modified = DLL_TRUE;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -790,10 +894,16 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
 DLL_Return
 DLL_UpdateCurrentRecord(List *list, Info *record)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    memcpy(list->current->info, record, list->infosize);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -814,8 +924,13 @@ DLL_DeleteCurrentRecord(List *list)
    Info *oldI;
    Node *oldN;
 
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    oldI = list->current->info;
    oldN = list->current;
@@ -848,6 +963,7 @@ DLL_DeleteCurrentRecord(List *list)
    free(oldN);
    list->listsize--;
    list->modified = DLL_TRUE;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -865,10 +981,16 @@ DLL_DeleteCurrentRecord(List *list)
 DLL_Return
 DLL_DeleteEntireList(List *list)
    {
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if(list->head == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    _deleteEntireList(list);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -904,8 +1026,8 @@ _deleteEntireList(List *list)
    list->tail = NULL;
    list->current = NULL;
    list->saved = NULL;
-   list->listsize = 0L;
-   list->current_index = 0L;
+   list->listsize = (unsigned long) 0;
+   list->current_index = (unsigned long) 0;
    list->modified = DLL_TRUE;
    list->search_origin = DLL_HEAD;
    list->search_dir = DLL_DOWN;
@@ -940,8 +1062,13 @@ DLL_FindRecord(List *list, Info *record, Info *match,
    Node *step;
    DLL_SrchDir dir;
 
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+
    if(pFun == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_FUNCTION);
+      }
 
    save = list->current_index;
 
@@ -961,11 +1088,14 @@ DLL_FindRecord(List *list, Info *record, Info *match,
          list->search_origin = DLL_HEAD;
          step = list->head;
          list->search_dir = dir = DLL_DOWN;
-         list->current_index = 1L;
+         list->current_index = (unsigned long) 1;
       }
 
    if(step == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    while(step != NULL)
       {
@@ -973,14 +1103,18 @@ DLL_FindRecord(List *list, Info *record, Info *match,
          {
          memcpy(record, step->info, list->infosize);
          list->current = step;
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NORMAL);
          }
 
       step = (dir == DLL_DOWN) ? (Node *) step->next : (Node *) step->prior;
-      list->current_index += (dir == DLL_DOWN) ? 1 : -1;
+      list->current_index += (dir == DLL_DOWN)
+         ? (unsigned long) 1
+         : (unsigned long) -1;
       }
 
    list->current_index = save;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NOT_FOUND);
    }
 
@@ -1012,6 +1146,7 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
    DLL_SrchDir dir;
    register int nCnt;
 
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
    save = list->current_index;
 
    switch(list->search_origin)
@@ -1030,17 +1165,21 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
          list->search_origin = DLL_HEAD;
          step = list->head;
          list->search_dir = dir = DLL_DOWN;
-         list->current_index = 1L;
+         list->current_index = (unsigned long) 1;
       }
 
    if(step == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    if(skip <= 0 || ((dir == DLL_DOWN)
     ? (list->listsize < (list->current_index + skip))
     : (list->current_index <= skip)))
       {
       list->current_index = save;
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
@@ -1057,12 +1196,16 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 
          break;
       default:
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_FOUND);
       }
 
    memcpy(record, step->info, list->infosize);
    list->current = step;
-   list->current_index += (dir == DLL_DOWN) ? (1 * skip) : (-1 * skip);
+   list->current_index += (dir == DLL_DOWN)
+      ? ((unsigned long) 1 * skip)
+      : ((unsigned long) -1 * skip);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -1081,10 +1224,16 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 DLL_Return
 DLL_GetCurrentRecord(List *list, Info *record)
    {
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    memcpy(record, list->current->info, list->infosize);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -1104,15 +1253,24 @@ DLL_GetCurrentRecord(List *list, Info *record)
 DLL_Return
 DLL_GetPriorRecord(List *list, Info *record)
    {
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    if(list->current->prior == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
+      }
 
    list->current = list->current->prior;
    memcpy(record, list->current->info, list->infosize);
    list->current_index--;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -1132,15 +1290,24 @@ DLL_GetPriorRecord(List *list, Info *record)
 DLL_Return
 DLL_GetNextRecord(List *list, Info *record)
    {
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+
    if(list->current == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    if(list->current->next == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
+      }
 
    list->current = list->current->next;
    memcpy(record, list->current->info, list->infosize);
    list->current_index++;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -1169,14 +1336,25 @@ DLL_SaveList(List *list, const char *path)
    Node *step;
    FILE *fp;
 
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
+
    if(list->head == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
+      }
 
    if(list->modified == DLL_FALSE)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_MODIFIED);
+      }
 
    if((fp = fopen(path, "wb")) == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_OPEN_ERROR);
+      }
 
    step = list->head;
 
@@ -1185,6 +1363,7 @@ DLL_SaveList(List *list, const char *path)
       if(fwrite(step->info, 1, list->infosize, fp) != list->infosize)
          {
          fclose(fp);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_WRITE_ERROR);
          }
 
@@ -1193,6 +1372,7 @@ DLL_SaveList(List *list, const char *path)
 
    fclose(fp);
    list->modified = DLL_FALSE;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -1218,8 +1398,13 @@ DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
    FILE *fp;
    DLL_Return ExitCode;
 
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
    if((fp = fopen(path, "rb")) == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_OPEN_ERROR);
+      }
 
    if(list->head != NULL)
       _deleteEntireList(list);
@@ -1227,7 +1412,10 @@ DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
    list->head = list->tail = NULL;
 
    if((set = (Info *) malloc(list->infosize)) == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_MEM_ERROR);
+      }
 
    for(;;)
       {
@@ -1250,5 +1438,6 @@ DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
 
    free(set);
    fclose(fp);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(ExitCode);
    }
