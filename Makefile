@@ -20,42 +20,43 @@
 # To compile the test program only using an installed shared library execute:
 #     make test
 #
-AR	= ar rcs
-CC	= gcc
+AR		= ar rcs
+CC		= gcc
 
-ERRFILE	= {$*}.err
-DEBUG	= -g -DDEBUG
-OFP	= -fomit-frame-pointer
-SHARED	= -fPIC
-OPTIONS	= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions -Wall
+ERRFILE		= {$*}.err
+DEBUG		= -g -DDEBUG
+OFP		= -fomit-frame-pointer
+SHARED		= -fPIC
+OPTIONS		= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions \
+		  -Wall
 
 # The options below should be used instead of the above on the Mac
 #OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
 
 # Change the directory paths below to reflect your system
-LIBDIR	= /usr/local/lib
-INCDIR	= /usr/local/include
-DOCLIB	= /usr/doc
+LIBDIR		= /usr/local/lib
+INCDIR		= /usr/local/include
+DOCLIB		= /usr/doc
 
-THISLIB	= -L. -ldll
-MAJORVERSION = 2
-MINORVERSION = 0
-PATCHLEVEL = 0
+THISLIB		= -L. -ldll
+MAJOR_VER	= 2
+MINOR_VER	= 0
+PATHC_LVL	= 0
 
-CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
+CFLAGS		= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
-PROG	= dll_main
-TEST	= dll_test
-SRCS	= $(PROG).c $(TEST).c
-OBJS1	= $(PROG).o
-OBJS2	= $(TEST).o
+PROG		= dll_main
+TEST		= dll_test
+SRCS		= $(PROG).c $(TEST).c
+OBJS1		= $(PROG).o
+OBJS2		= $(TEST).o
 #--------------------------------------------------------------
 all	:
-	make libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) DEBUG=
+	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) DEBUG=
 	make $(TEST) DEBUG=
 
 debug	:
-	make libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) OFP=
+	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) OFP=
 	make $(TEST) OFP=
 
 static	:
@@ -73,12 +74,12 @@ test	:
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $< 2>$(ERRFILE)
 
-libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL): $(OBJS1)
-	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
-	 -o libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(OBJS1)
-	ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
-	 libdll.so.$(MAJORVERSION)
-	ln -s libdll.so.$(MAJORVERSION) libdll.so
+libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL): $(OBJS1)
+	$(CC) -shared -Wl,-soname,libdll.so.$(MAJOR_VER) \
+	 -o libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) $(OBJS1)
+	ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) \
+	 libdll.so.$(MAJOR_VER)
+	ln -s libdll.so.$(MAJOR_VER) libdll.so
 
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -102,7 +103,7 @@ postscript:
 
 docs	: postscript html
 
-DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
+DISTNAME= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
@@ -111,22 +112,22 @@ tarball	:
 
 #--------------------------------------------------------------
 clean	:
-	-rm *.o *~ *.bak \#*\# *.err core
+	-rm -f *.o *~ *.bak \#*\# *.err core
 
 clobber	:
-	-rm *.o *~ *.bak \#*\# *.err $(TEST) core libdll.*
+	-rm -f *.o *~ *.bak \#*\# *.err $(TEST) core libdll.*
 
 distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
 
 install	: install-docs
-	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
+	cp ./libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
 	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	( cd $(LIBDIR); \
-	 ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
-	 libdll.so.$(MAJORVERSION) )
-	( cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so )
+	 ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) \
+	 libdll.so.$(MAJOR_VER) )
+	( cd $(LIBDIR); ln -s libdll.so.$(MAJOR_VER) libdll.so )
 	/sbin/ldconfig
 
 install-static:
@@ -140,10 +141,10 @@ install-docs:
 	install -m 444 docs/Linklist/* $(DOCLIB)/$(DISTNAME)
 
 uninstall: uninstall-docs
-	rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
+	-rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
 
 uninstall-static:
-	rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
+	-rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
 
 uninstall-docs:
-	rm -rf $(DOCLIB)/$(DISTNAME)
+	-rm -rf $(DOCLIB)/$(DISTNAME)

@@ -17,6 +17,10 @@
 #define  _DLL_MAIN_C
 #include "linklist.h"
 
+/* Local Prototypes */
+void _deleteEntireList(List *list);
+DLL_Return _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *));
+
 
 /**************************
  * Initialization Functions
@@ -32,7 +36,8 @@
  * Returns  : Pointer to created structure
  *            NULL if unsuccessfull
  */
-List *DLL_CreateList(List **list)
+List *
+DLL_CreateList(List **list)
    {
    if((*list = (List *) malloc(sizeof(List))) == NULL)
       return(NULL);
@@ -50,12 +55,15 @@ List *DLL_CreateList(List **list)
  *
  * Returns  : NONE
  */
-void DLL_DestroyList(List **list)
+void
+DLL_DestroyList(List **list)
    {
    if(*list == NULL)
       return;
 
-   DLL_DeleteEntireList(*list);
+   if((*list)->head != NULL)
+      _deleteEntireList(*list);
+
    free(*list);
    *list = NULL;
    }
@@ -73,7 +81,8 @@ void DLL_DestroyList(List **list)
  *            DLL_ZERO_INFO -- sizeof(Info) is zero
  *            DLL_NULL_LIST -- Info is NULL
  */
-DLL_Return DLL_InitializeList(List *list, size_t infosize)
+DLL_Return
+DLL_InitializeList(List *list, size_t infosize)
    {
    if(infosize == (size_t) 0)
       return(DLL_ZERO_INFO);
@@ -109,7 +118,8 @@ DLL_Return DLL_InitializeList(List *list, size_t infosize)
  *
  * Return   : char * -- Pointer to version info
  */
-char *DLL_Version(void)
+char *
+DLL_Version(void)
    {
    memset(version, '\0', sizeof(version));
    strcpy(version, VERSION);
@@ -132,7 +142,8 @@ char *DLL_Version(void)
  * Returns  : DLL_TRUE  -- List is empty
  *            DLL_FALSE -- List has items in it
  */
-DLL_Boolean DLL_IsListEmpty(List *list)
+DLL_Boolean
+DLL_IsListEmpty(List *list)
    {
    if(list->head == NULL || list->tail == NULL)
       return(DLL_TRUE);
@@ -151,7 +162,8 @@ DLL_Boolean DLL_IsListEmpty(List *list)
  * Returns  : DLL_TRUE  -- List is full (memory dependent)
  *            DLL_FALSE -- List is empty or partially full
  */
-DLL_Boolean DLL_IsListFull(List *list)
+DLL_Boolean
+DLL_IsListFull(List *list)
    {
    Node *newN;
    Info *newI;
@@ -180,7 +192,8 @@ DLL_Boolean DLL_IsListFull(List *list)
  *
  * Returns  : Number of records
  */
-unsigned long DLL_GetNumberOfRecords(List *list)
+unsigned long
+DLL_GetNumberOfRecords(List *list)
    {
    return list->listsize;
    }
@@ -200,8 +213,8 @@ unsigned long DLL_GetNumberOfRecords(List *list)
  *            DLL_NOT_MODIFIED -- Values were not assigned--invalid type
  *                                (defaults are still in place)
  */
-DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
- DLL_SrchDir dir)
+DLL_Return
+DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
    {
    switch(origin)
       {
@@ -244,7 +257,8 @@ DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
  *
  * Returns  : Pointer to type DLL_SearchModes
  */
-DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
+DLL_SearchModes *
+DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
    {
    ssp->search_origin = list->search_origin;
    ssp->search_dir = list->search_dir;
@@ -263,7 +277,8 @@ DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
  *
  * Returns  : Current record's index
  */
-unsigned long DLL_GetCurrentIndex(List *list)
+unsigned long
+DLL_GetCurrentIndex(List *list)
    {
    return list->current_index;
    }
@@ -283,7 +298,8 @@ unsigned long DLL_GetCurrentIndex(List *list)
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NULL_LIST -- Empty list
  */
-DLL_Return DLL_CurrentPointerToHead(List *list)
+DLL_Return
+DLL_CurrentPointerToHead(List *list)
    {
    if(list->head == NULL)
       return(DLL_NULL_LIST);
@@ -304,7 +320,8 @@ DLL_Return DLL_CurrentPointerToHead(List *list)
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NULL_LIST -- Empty list
  */
-DLL_Return DLL_CurrentPointerToTail(List *list)
+DLL_Return
+DLL_CurrentPointerToTail(List *list)
    {
    if(list->tail == NULL)
       return(DLL_NULL_LIST);
@@ -326,7 +343,8 @@ DLL_Return DLL_CurrentPointerToTail(List *list)
  *            DLL_NULL_LIST -- Empty list
  *            DLL_NOT_FOUND -- Record not found
  */
-DLL_Return DLL_IncrementCurrentPointer(List *list)
+DLL_Return
+DLL_IncrementCurrentPointer(List *list)
    {
    if(list->current == NULL)
       return(DLL_NULL_LIST);
@@ -351,7 +369,8 @@ DLL_Return DLL_IncrementCurrentPointer(List *list)
  *            DLL_NULL_LIST -- Empty list
  *            DLL_NOT_FOUND -- Record not found
  */
-DLL_Return DLL_DecrementCurrentPointer(List *list)
+DLL_Return
+DLL_DecrementCurrentPointer(List *list)
    {
    if(list->current == NULL)
       return(DLL_NULL_LIST);
@@ -375,7 +394,8 @@ DLL_Return DLL_DecrementCurrentPointer(List *list)
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NOT_FOUND -- Record not found
  */
-DLL_Return DLL_StoreCurrentPointer(List *list)
+DLL_Return
+DLL_StoreCurrentPointer(List *list)
    {
    if(list->current == NULL)
       return(DLL_NOT_FOUND);
@@ -396,7 +416,8 @@ DLL_Return DLL_StoreCurrentPointer(List *list)
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NOT_FOUND -- Record not found
  */
-DLL_Return DLL_RestoreCurrentPointer(List *list)
+DLL_Return
+DLL_RestoreCurrentPointer(List *list)
    {
    if(list->saved == NULL)
       return(DLL_NOT_FOUND);
@@ -424,7 +445,29 @@ DLL_Return DLL_RestoreCurrentPointer(List *list)
  * Returns  : DLL_NORMAL    -- Node was added successfully
  *            DLL_MEM_ERROR -- Memory allocation failed
  */
-DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
+DLL_Return
+DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
+   {
+   return(_addRecord(list, info, pFun));
+   }
+
+
+/*
+ * _addRecord() : Creates a new node in list with or without sorting.
+ *
+ * Status   : Hidden
+ *
+ * Arguments: list          -- Pointer to type List
+ *            info          -- Record to add
+ *            pFun          -- Pointer to search function
+ *
+ * Returns  : DLL_NORMAL    -- Node was added successfully
+ *            DLL_MEM_ERROR -- Memory allocation failed
+ *
+ * NOTE: This function is not thread safe.
+ */
+DLL_Return
+_addRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
    {
    Node *newN, *old, *step;
    Info *newI;
@@ -534,7 +577,8 @@ DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
  *            DLL_NOT_MODIFIED -- Insert direction is invalid (not DLL_ABOVE
  *                                or DLL_BELOW)
  */
-DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
+DLL_Return
+DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
    {
    Node *newN;
    Info *newI;
@@ -635,7 +679,8 @@ DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
  *            DLL_NOT_FOUND    -- Current record is already at end of
  *                                list indicated by dir.
  */
-DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir)
+DLL_Return
+DLL_SwapRecord(List *list, DLL_InsertDir dir)
    {
    Node *swap, *newPrior, *newNext;
 
@@ -741,7 +786,8 @@ DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir)
  * Returns  : DLL_NORMAL    -- Record updated
  *            DLL_NULL_LIST -- Empty list
  */
-DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record)
+DLL_Return
+DLL_UpdateCurrentRecord(List *list, Info *record)
    {
    if(list->current == NULL)
       return(DLL_NULL_LIST);
@@ -761,7 +807,8 @@ DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record)
  * Returns  : DLL_NORMAL    -- Record deleted
  *            DLL_NULL_LIST -- List is empty
  */
-DLL_Return DLL_DeleteCurrentRecord(List *list)
+DLL_Return
+DLL_DeleteCurrentRecord(List *list)
    {
    Info *oldI;
    Node *oldN;
@@ -814,13 +861,33 @@ DLL_Return DLL_DeleteCurrentRecord(List *list)
  * Returns  : DLL_NORMAL    -- List deleted
  *            DLL_NULL_LIST -- List is empty
  */
-DLL_Return DLL_DeleteEntireList(List *list)
+DLL_Return
+DLL_DeleteEntireList(List *list)
+   {
+   if(list->head == NULL)
+      return(DLL_NULL_LIST);
+
+   _deleteEntireList(list);
+   return(DLL_NORMAL);
+   }
+
+
+/*
+ * _deleteEntireList() : Delete the entire list.
+ *
+ * Status   : Hidden
+ *
+ * Arguments: list -- Pointer to type List
+ *
+ * Returns  : void
+ *
+ * NOTE: This function is not thread safe.
+ */
+void
+_deleteEntireList(List *list)
    {
    Info *oldI;
    Node *oldN;
-
-   if(list->head == NULL)
-      return(DLL_NULL_LIST);
 
    do
       {
@@ -841,7 +908,6 @@ DLL_Return DLL_DeleteEntireList(List *list)
    list->modified = DLL_TRUE;
    list->search_origin = DLL_HEAD;
    list->search_dir = DLL_DOWN;
-   return(DLL_NORMAL);
    }
 
 
@@ -865,7 +931,8 @@ DLL_Return DLL_DeleteEntireList(List *list)
  *            DLL_NOT_FOUND     -- Record not found
  *            DLL_NULL_FUNCTION -- pFun is NULL
  */
-DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
+DLL_Return
+DLL_FindRecord(List *list, Info *record, Info *match,
  int (*pFun)(Info *, Info *))
    {
    unsigned long save;
@@ -936,7 +1003,8 @@ DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
  *            DLL_NOT_FOUND -- Index value is too large or wrong dir value
  *                             (current record index remains unchanged).
  */
-DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
+DLL_Return
+DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
    {
    unsigned long save;
    Node *step;
@@ -1009,7 +1077,8 @@ DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
  * Returns  : DLL_NORMAL    -- Record returned
  *            DLL_NULL_LIST -- List is empty
  */
-DLL_Return DLL_GetCurrentRecord(List *list, Info *record)
+DLL_Return
+DLL_GetCurrentRecord(List *list, Info *record)
    {
    if(list->current == NULL)
       return(DLL_NULL_LIST);
@@ -1031,7 +1100,8 @@ DLL_Return DLL_GetCurrentRecord(List *list, Info *record)
  *            DLL_NULL_LIST -- List is empty
  *            DLL_NOT_FOUND -- Beginning of list
  */
-DLL_Return DLL_GetPriorRecord(List *list, Info *record)
+DLL_Return
+DLL_GetPriorRecord(List *list, Info *record)
    {
    if(list->current == NULL)
       return(DLL_NULL_LIST);
@@ -1058,7 +1128,8 @@ DLL_Return DLL_GetPriorRecord(List *list, Info *record)
  *            DLL_NULL_LIST -- List is empty
  *            DLL_NOT_FOUND -- End of list
  */
-DLL_Return DLL_GetNextRecord(List *list, Info *record)
+DLL_Return
+DLL_GetNextRecord(List *list, Info *record)
    {
    if(list->current == NULL)
       return(DLL_NULL_LIST);
@@ -1091,7 +1162,8 @@ DLL_Return DLL_GetNextRecord(List *list, Info *record)
  *            DLL_WRITE_ERROR  -- File write error
  *            DLL_NOT_MODIFIED -- Unmodified list no save was done
  */
-DLL_Return DLL_SaveList(List *list, const char *path)
+DLL_Return
+DLL_SaveList(List *list, const char *path)
    {
    Node *step;
    FILE *fp;
@@ -1138,8 +1210,8 @@ DLL_Return DLL_SaveList(List *list, const char *path)
  *            DLL_OPEN_ERROR -- File open error
  *            DLL_READ_ERROR -- File read error
  */
-DLL_Return DLL_LoadList(List *list, const char *path,
- int (*pFun)(Info *, Info *))
+DLL_Return
+DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
    {
    Info *set;
    FILE *fp;
@@ -1148,7 +1220,8 @@ DLL_Return DLL_LoadList(List *list, const char *path,
    if((fp = fopen(path, "rb")) == NULL)
       return(DLL_OPEN_ERROR);
 
-   DLL_DeleteEntireList(list);
+   if(list->head != NULL)
+      _deleteEntireList(list);
 
    list->head = list->tail = NULL;
 
@@ -1167,7 +1240,7 @@ DLL_Return DLL_LoadList(List *list, const char *path,
          break;
          }
 
-      if((ExitCode = DLL_AddRecord(list, set, pFun)) == DLL_MEM_ERROR)
+      if((ExitCode = _addRecord(list, set, pFun)) == DLL_MEM_ERROR)
          break;
       }
 
