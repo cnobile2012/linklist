@@ -4,9 +4,9 @@
  * NOTE: It is best to define the Info structure in its own header and
  *       include it just before this one.
  *
- * Carl J. Nobile
+ * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 01/08/98
+ * Updated: 11/04/98
  */
 
 /*

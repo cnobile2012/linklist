@@ -1,9 +1,9 @@
 /*
  * dll_main.c : An API for a double linked list.
  *
- * Carl J. Nobile
+ * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 06/08/98
+ * Updated: 11/04/98
  */
 
 #include <stdio.h>

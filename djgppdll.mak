@@ -1,9 +1,9 @@
 #
 # Makefile for libddl.a (DJGPP GNU GCC compiler)
 #
-# By Carl J. Nobile
+# Copyright (c) 1996-1998 By Carl J. Nobile
 # Created: January 27, 1996
-# Updated: 01/13/97
+# Updated: 11/04/98
 #
 # MS-DOS makefile
 #

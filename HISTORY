@@ -1,8 +1,19 @@
 Doubly Link List History File (Carl J. Nobile)
 
+Ver 1.0.3 -- November 04, 1998
+
+(1) The package is now covered by the Artistic License, see the
+    README and Artistic files.
+
+(2) Minor (non-programic) changes to dll_test.c
+
+(3) Added a README file with notice of the new License.
+
+(4) Re-wrote the MSC6.0 Makefile
+
 Ver 1.0.2 -- October 18, 1998
 
-NOTE: The following changes were only make to the Linux Makefile.
+NOTE: The following changes were only made to the Linux Makefile.
 
 (1) Changed Makefile to incorporate Mac compile options--changes
     contributed by Charlie Buckheit.

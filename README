@@ -1,0 +1,24 @@
+Doubly Linked List API Ver. 1.0.3
+
+Copyright (c) 1996-1998  Carl J. Nobile
+All rights reserved.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Artistic License.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the Artistic License for more
+details. 
+
+--------------------------------------------------------------------------
+
+Not much to say here, the package is fairly easy to compile and use. Read
+the dll_API.doc.ps file for how to use the API.  The INSTALL file explains
+how to compile and install the package.
+
+I'm hoping to write a perl extension for it sometime in the next six
+months (today is 11/04/98), but I'm still learning perl so drop me an
+e-mail if you would like to see a perl extension.
+
+Carl J. Nobile (cnobile@suffolk.lib.ny.us)

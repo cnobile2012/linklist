@@ -1,9 +1,9 @@
 /*
  * dll_test.c : Test program for double link library
  *
- * Carl J. Nobile
+ * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 25, 1996
- * Updated: 06/15/97
+ * Updated: 11/04/98
  */
 
 #include <stdio.h>
@@ -478,7 +478,7 @@ void search(List *list)
 						 sizeof(find_addr.name));
 						pField = find_addr.name;
 						pfun = find_name;
-							break;
+						break;
 					case 2:		/* Street */
 						input("Enter street fragment: ", find_addr.street,
 						 sizeof(find_addr.street));
@@ -510,9 +510,10 @@ void search(List *list)
 			case 4:		/* Do the search */
 				if(!field)
 					{
-					fputs("No field has been set, please set one.\n\n", stdout);
+					fputs("No field has been set, please set a field.\n\n", stdout);
 					continue;
 					}
+
 				if(verify_criteria(list, pField) == FALSE)
 					return;
 

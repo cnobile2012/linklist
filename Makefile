@@ -1,9 +1,9 @@
 #
 # Makefile for Doubly Linked List API (Linux version)
 #
-# Carl J. Nobile
+# Copyright (c) 1996-1998 Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 06/08/98
+# Updated: 01/17/99
 #
 # Mac contributions to this Makefile by Charlie Buckeit
 #
@@ -31,9 +31,9 @@ OPTIONS	= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions -Wall
 LIBDIR	= /usr/local/lib
 INCDIR	= /usr/local/include
 THISLIB	= -L.
-LIBS	= -ldll -lm
+LIBS	= -ldll
 MJV	= 1
-MNV	= 0.2
+MNV	= 0.3
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
@@ -45,15 +45,15 @@ OBJS2	= $(TEST).o
 #--------------------------------------------------------------
 all	:
 	make libdll.so.$(MJV).$(MNV) DEBUG=
-	make $(TEST) DEBUG=
-
-static	:
-	make libdll.a SHARED= DEBUG=
-	make $(TEST) SHARED= DEBUG=
+	make $(TEST) DEBUG= 
 
 debug	:
 	make libdll.so.$(MJV).$(MNV) OFP=
 	make $(TEST) OFP=
+
+static	:
+	make libdll.a SHARED= DEBUG=
+	make $(TEST) SHARED= DEBUG=
 
 debug-static :
 	make libdll.a SHARED= OFP=
@@ -70,7 +70,6 @@ libdll.so.$(MJV).$(MNV): $(OBJS1)
 	 $(OBJS1)
 	ln -s libdll.so.$(MJV).$(MNV) libdll.so.$(MJV)
 	ln -s libdll.so.$(MJV) libdll.so
-	( export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH )
 
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -95,5 +94,6 @@ install	:
 	( cd $(LIBDIR); ln -s libdll.so.$(MJV) libdll.so )
 
 install-static:
+	rm -f $(LIBDIR)/libdll.a
 	cp ./libdll.a $(LIBDIR)/libdll.a
 	cp ./linklist.h $(INCDIR)/linklist.h

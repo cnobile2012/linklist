@@ -1,9 +1,9 @@
 /*
  * linklist.h : Public header for applications
  *
- * Carl J. Nobile
+ * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 26, 1996
- * Updated: 01/08/98
+ * Updated: 11/04/98
  */
 
 /*

@@ -1,9 +1,9 @@
 /*
  * dll_main.h : Privite header for dll_main.c
  *
- * Carl J. Nobile
+ * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 06/08/98
+ * Updated: 11/04/98
  */
 
 #define VERSION   "Ver: 1.0.1"
