@@ -37,10 +37,11 @@ typedef struct rdwr_var
 /* Attribute data type */
 typedef void *pthread_rwlockattr_t;
 
-#define pthread_rwllockattr_default NULL;
+#define pthread_rwlockattr_default NULL;
 
 /* prototypes */
-int pthread_rwlock_init_np(pthread_rwlock_t *rwlp, pthread_rwlattr_t *attrp);
+int pthread_rwlock_init_np(pthread_rwlock_t *rwlp,
+ pthread_rwlockattr_t *attrp);
 int pthread_rwlock_destroy_np(pthread_rwlock_t *rwlp);
 int pthread_rwlock_rlock_np(pthread_rwlock_t *rwlp);
 int pthread_rwlock_wlock_np(pthread_rwlock_t *rwlp);

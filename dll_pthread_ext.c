@@ -9,6 +9,8 @@
  * $Revision$
  */
 
+#include <errno.h>
+#include <pthread.h>
 #include "dll_pthread_ext.h"
 
 /* Local prototypes */
@@ -173,15 +175,15 @@ pthread_rwlock_wrlock_np(pthread_rwlock_t *rwlp)
 
    if(rwlp->w_active || rwlp->r_active > 0)
       {
-      rwlp->write_pending++;
+      rwlp->w_pending++;
       pthread_cleanup_push(_pthread_rwlock_write_cleanup, (void *) rwlp);
 
       while(rwlp->w_active || rwlp->r_active > 0)
-         if((status = pthread_cond_wait(rwlp->write, &rwlp->mutex)) != 0)
+         if((status = pthread_cond_wait(&rwlp->write, &rwlp->mutex)) != 0)
             break;
 
       pthread_cleanup_pop(0);
-      rwlp->write_pending--;
+      rwlp->w_pending--;
       }
 
    if(status == 0)
@@ -238,6 +240,7 @@ pthread_rwlock_unlock_np(pthread_rwlock_t *rwlp)
 
       if(rwlp->r_active == 0 && rwlp->w_pending > 0)
          status = pthread_cond_signal(&rwlp->write);
+      }
 
    status1 = pthread_mutex_unlock(&rwlp->mutex);
    return(status1 == 0 ? status : status1);
@@ -258,7 +261,7 @@ _pthread_rwlock_read_cleanup(void *rwlp)
    pthread_rwlock_t *rwl_tmp = (pthread_rwlock_t *) rwlp;
 
    rwl_tmp->r_pending--;
-   pthread_mutex_unlock(rwl_tmp->mutex);
+   pthread_mutex_unlock(&rwl_tmp->mutex);
    }
 
 
@@ -276,5 +279,5 @@ _pthread_rwlock_write_cleanup(void *rwlp)
    pthread_rwlock_t *rwl_tmp = (pthread_rwlock_t *) rwlp;
 
    rwl_tmp->w_pending--;
-   pthread_mutex_unlock(rwl_tmp->mutex);
+   pthread_mutex_unlock(&rwl_tmp->mutex);
    }

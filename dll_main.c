@@ -102,6 +102,7 @@ DLL_InitializeList(List *list, size_t infosize)
    list->search_dir = DLL_DOWN;
    list->save_index = 0L;
    list->current_index = 0L;
+   THREAD_RWLOCK_INIT(&list->rwl_t, NULL);
    return(DLL_NORMAL);
    }
 

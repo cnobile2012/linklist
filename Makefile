@@ -1,9 +1,8 @@
 #
-# Makefile for Doubly Linked List API (Linux version)
+# Makefile for Doubly Linked List API
 #
-# Copyright (c) 1996-1998 Carl J. Nobile
+# Copyright (c) 1996-2000 Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 07/05/99
 #
 # $Author$
 # $Date$
@@ -20,64 +19,129 @@
 # To compile the test program only using an installed shared library execute:
 #     make test
 #
-AR		= ar rcs
-CC		= gcc
+
+include osdetect.mk
 
 ERRFILE		= {$*}.err
-DEBUG		= -g -DDEBUG
-OFP		= -fomit-frame-pointer
-SHARED		= -fPIC
-OPTIONS		= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions \
-		  -Wall
+
+##################################
+# CONFIGURE PLATFORM ENVIRONMENT #
+##################################
+ifeq ($(OS),LINUX)
+  prefix  	= /usr/local
+  doc_prefix	= /usr/doc
+  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  CC            = gcc
+  AR            = ar rcs
+  MACHINE_OPT   = -m486 -pipe
+  COMPILER_OPT  = -ansi -fPIC -Wall
+  NON_DEBUG_OPT = -O2 -fomit-frame-pointer
+  DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
+  LDFLAGS       += -shared -Wl,-soname,$(BASENAME).so.$(MAJOR_VER)
+  DBGFLAGS      = -L$(src_prefix) -ldbg
+  EOBJS		= dll_pthread_ext.o
+endif
+
+ifeq ($(OS),SOLARIS)
+  prefix  	= $(HOME)/lib
+  doc_prefix	= $(HOME)/doc
+  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  CC            = /usr/local/SUNWspro/bin/cc
+  AR            = ar rcs
+  MACHINE_OPT   =
+  COMPILER_OPT  = -v -KPIC -mt -xstrconst
+  NON_DEBUG_OPT = -xO5 -dalign -xlibmil
+  DEBUG_OPT     = -DDEBUG=1 -g -xF
+  LDFLAGS       += -Wl,-G,-h,$(BASENAME).so.$(MAJOR_VER)
+  DBGFLAGS      = -L$(src_prefix) -ldbg
+endif
+
+ifeq ($(OS),OSF1)
+  prefix  	= $(HOME)/lib
+  doc_prefix	= $(HOME)/doc
+  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  CC            = cc
+  AR            = ar rcs
+  MACHINE_OPT   = -tune ev56
+  COMPILER_OPT  = -std1 -warnprotos -pthread -w0
+  NON_DEBUG_OPT = -O2 -newc -portable
+  DEBUG_OPT     = -DDEBUG=1 -g -trapuv
+  LDFLAGS       += -shared -msym -soname $(BASENAME).so.$(MAJOR_VER)
+  DBGFLAGS      = -L$(src_prefix) -ldbg
+endif
+
+ifeq ($(OS),AIX)
+  prefix  	= $(HOME)/lib
+  doc_prefix	= $(HOME)/doc
+  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  CC            = gcc
+  AR            = ar rcs
+  MACHINE_OPT   = -pipe
+  COMPILER_OPT  = -ansi -Wall
+  NON_DEBUG_OPT = -O2 -fomit-frame-pointer
+  DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
+  LDFLAGS       += -Wl,-G,-bshared
+  DBGFLAGS      = -L$(src_prefix) -ldbg
+endif
+
+#----- Change Nothing Below This Line -------------------------
+
+###################
+# ASSEMBLE CFLAGS #
+###################
+CFLAGS          += -D$(OS) $(MACHINE_OPT) $(COMPILER_OPT)
+
+ifeq ($(DEBUG),YES)
+  CFLAGS        += $(DEBUG_OPT)
+else
+  CFLAGS        += $(NON_DEBUG_OPT)
+endif
 
 # The options below should be used instead of the above on the Mac
 #OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
 
-# Change the directory paths below to reflect your system
-LIBDIR		= /usr/local/lib
-INCDIR		= /usr/local/include
-DOCLIB		= /usr/doc
+LIBDIR		= $(prefix)/lib
+INCDIR		= $(prefix)/include
 
 THISLIB		= -L. -ldll
 MAJOR_VER	= 2
 MINOR_VER	= 0
-PATHC_LVL	= 0
+PATCH_LVL	= 0
 
-CFLAGS		= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
 PROG		= dll_main
 TEST		= dll_test
 SRCS		= $(PROG).c $(TEST).c
-OBJS1		= $(PROG).o
+OBJS1		= $(PROG).o $(EOBJS)
 OBJS2		= $(TEST).o
 #--------------------------------------------------------------
 all	:
-	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) DEBUG=
-	make $(TEST) DEBUG=
+	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) DEBUG=NO
+	make $(TEST) DEBUG=NO
 
 debug	:
-	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) OFP=
-	make $(TEST) OFP=
+	make libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) DEBUG=YES
+	make $(TEST) DEBUG=YES
 
 static	:
-	make libdll.a SHARED= DEBUG=
-	make $(TEST) SHARED= DEBUG=
+	make libdll.a DEBUG=NO
+	make $(TEST) DEBUG=NO
 
 debug-static :
-	make libdll.a SHARED= OFP=
-	make $(TEST) SHARED= OFP=
+	make libdll.a DEBUG=YES
+	make $(TEST) DEBUG=YES
 
 # Make the test program from the installed shared libraries.
 test	:
-	make $(TEST) DEBUG= THISLIB=-ldll
+	make $(TEST) THISLIB=-ldll
 
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $< 2>$(ERRFILE)
 
-libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL): $(OBJS1)
+libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL): $(OBJS1)
 	$(CC) -shared -Wl,-soname,libdll.so.$(MAJOR_VER) \
-	 -o libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) $(OBJS1)
-	ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) \
+	 -o libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) $(OBJS1)
+	ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) \
 	 libdll.so.$(MAJOR_VER)
 	ln -s libdll.so.$(MAJOR_VER) libdll.so
 
@@ -103,7 +167,7 @@ postscript:
 
 docs	: postscript html
 
-DISTNAME= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL)
+DISTNAME= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
@@ -121,11 +185,11 @@ distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
 
 install	: install-docs
-	cp ./libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) $(LIBDIR)
+	cp ./libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
 	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	( cd $(LIBDIR); \
-	 ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATHC_LVL) \
+	 ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) \
 	 libdll.so.$(MAJOR_VER) )
 	( cd $(LIBDIR); ln -s libdll.so.$(MAJOR_VER) libdll.so )
 	/sbin/ldconfig

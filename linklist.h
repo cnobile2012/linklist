@@ -12,6 +12,18 @@
 #ifndef  _LINKLIST_H
 #define  _LINKLIST_H
 
+#ifdef LINUX
+#include "dll_pthread_ext.h"
+
+/* Definitions for cross platform compatibility. */
+#define THREAD_RWLOCK_INIT    pthread_rwlock_init_np
+#define THREAD_RWLOCK_DESTROY pthread_rwlock_destroy_np
+#define THREAD_RWLOCK_RLOCK   pthread_rwlock_rlock_np
+#define THREAD_RWLOCK_WLOCK   pthread_rwlock_wlock_np
+#define THREAD_RWLOCK_UNLOCK  pthread_rwlock_unlock_np
+#define THREAD_RWLOCK_STRUCT  pthread_rwlock_t
+
+#endif /* OS == LINUX */
 
 /*
  * type defines
@@ -99,17 +111,18 @@ typedef struct node
 
 typedef struct list
    {
-   Node           *head;
-   Node           *tail;
-   Node           *current;
-   Node           *saved;
-   size_t         infosize;
-   unsigned long  listsize;
-   unsigned long  current_index;
-   unsigned long  save_index;
-   DLL_Boolean    modified;
-   DLL_SrchOrigin search_origin;
-   DLL_SrchDir    search_dir;
+   Node                 *head;
+   Node                 *tail;
+   Node                 *current;
+   Node                 *saved;
+   size_t               infosize;
+   unsigned long        listsize;
+   unsigned long        current_index;
+   unsigned long        save_index;
+   DLL_Boolean          modified;
+   DLL_SrchOrigin       search_origin;
+   DLL_SrchDir          search_dir;
+   THREAD_RWLOCK_STRUCT rwl_t;
    } List;
 #else
 typedef struct list List;
