@@ -122,6 +122,7 @@ distclean: clobber
 install	: install-docs
 	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
+	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	( cd $(LIBDIR); \
 	 ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
 	 libdll.so.$(MAJORVERSION) )
@@ -130,6 +131,7 @@ install	: install-docs
 
 install-static:
 	cp ./linklist.h $(INCDIR)/linklist.h
+	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	cp ./libdll.a $(LIBDIR)/libdll.a
 
 install-docs:
@@ -138,10 +140,10 @@ install-docs:
 	install -m 444 docs/Linklist/* $(DOCLIB)/$(DISTNAME)
 
 uninstall: uninstall-docs
-	rm -f $(LIBDIR)/libdll.so*
+	rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
 
 uninstall-static:
-	rm -f $(LIBDIR)/libdll.a
+	rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
 
 uninstall-docs:
 	rm -rf $(DOCLIB)/$(DISTNAME)
