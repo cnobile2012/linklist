@@ -13,12 +13,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #define  _DLL_MAIN_C
 #include "linklist.h"
 
 /* Local Prototypes */
-void _deleteEntireList(List *list);
+void       _deleteEntireList(List *list);
 DLL_Return _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *));
 
 

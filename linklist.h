@@ -78,10 +78,10 @@ typedef enum
 typedef void Info;
 
 #if defined (_DLL_MAIN_C)
-#define VERSION   "Ver: 1.1.0"
+#define VERSION   "Ver: 2.0.0"
 #define VERDATE   __DATE__
 #define CREDITS   "-------------------------------\n" \
-                  "Developed by: Carl J. Nobile\n" \
+                  "Developed by:  Carl J. Nobile\n" \
                   "Contributions: Charlie Buckheit\n" \
                   "               Graham Inchley\n"
 
