@@ -1,4 +1,16 @@
-Doubly Link List History File
+Doubly Link List History File (Carl J. Nobile)
+
+Ver 1.0.2 -- October 18, 1998
+
+NOTE: The following changes were only make to the Linux Makefile.
+
+(1) Changed Makefile to incorporate Mac compile options--changes
+    contributed by Charlie Buckheit.
+
+(2) Added -fomit-frame-pointer in non-debugging compilation modes.
+
+(3) I now delete the old shared library from the install path before
+    copying the new one.
 
 Ver 1.0.1 -- June 08, 1998 -- Minor bug fix
 
