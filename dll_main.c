@@ -3,7 +3,6 @@
  *
  * Copyright (c) 1996-1999 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 06/14/99
  *
  * $Author$
  * $Date$
@@ -454,9 +453,16 @@ DLL_DecrementCurrentPointer(List *list)
 /*
  * Status   : Public
  *
- * DLL_StoreCurrentPointer() : Saves the current pointer.
+ * DLL_StoreCurrentPointer() : Saves the current pointer to either the list
+ *                             struct (not thread safe).
+ *
+ * NOTE     : This function is not thread safe at all, because the
+ *            current_index in the list will be updated from other threads
+ *            causing possable problems.
  *
  * Arguments: list          -- Pointer to type List
+ *            storage       -- Pointer to a DLL_CurrentPtStore structure
+ *                             Must be NULL if no pointer is supplied
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NOT_FOUND -- Record not found
  *            DLL_THR_ERROR -- Thread lock/unlock error
@@ -482,9 +488,15 @@ DLL_StoreCurrentPointer(List *list)
 /*
  * Status   : Public
  *
- * DLL_RestoreCurrentPointer() : Loads the previously saved current pointer.
+ * DLL_RestoreCurrentPointer() : Loads the previously saved current pointer
+ *                               from the list struct (not thread safe).
+ *
+ * NOTE     : This function is not thread safe at all, because the
+ *            current_index in the list will be updated from other threads
+ *            causing possable problems.
  *
  * Arguments: list          -- Pointer to type List
+ *            storage       -- Pointer to a DLL_CurrentPtStore structure
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NOT_FOUND -- Record not found
  *            DLL_THR_ERROR -- Thread lock/unlock error
@@ -501,8 +513,8 @@ DLL_RestoreCurrentPointer(List *list)
       }
 
    list->current = list->saved;
-   list->saved = NULL;
    list->current_index = list->save_index;
+   list->saved = NULL;
    THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
@@ -570,7 +582,10 @@ _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
    /* Put new info into allocated space */
    memcpy(newI, info, list->infosize);
 
-   /* If list->head is NULL, assume empty list and this is the 1st record. */
+   /*
+    * If list->head is NULL, assume we had an empty list
+    * and that this is the 1st record.
+    */
    if(list->head == NULL)
       {
       newN->info = newI;

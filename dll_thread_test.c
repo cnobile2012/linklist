@@ -46,7 +46,7 @@ int main(void)
 
    dllErrorHandler(DLL_InitializeList(list, sizeof(MyStuff)));
 
-   /* Build list */
+   /* Build beginning of list */
    memset(info, '\0', sizeof(MyStuff));
 
    for(i = 0; i < NUM_TH; i++)

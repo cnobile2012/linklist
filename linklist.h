@@ -12,8 +12,8 @@
 #ifndef  _LINKLIST_H
 #define  _LINKLIST_H
 
-#if defined (_DLL_MAIN_C)
-#  if defined (LINUX)
+#if  defined (DEBUG) || defined (_DLL_MAIN_C)
+#  if defined (LINUX) || defined (OSF1)
 #  include <pthread.h>
 
 /* Definitions for cross platform compatibility. */
@@ -145,6 +145,13 @@ typedef struct search_modes
    DLL_SrchOrigin search_origin;
    DLL_SrchDir    search_dir;
    } DLL_SearchModes;
+
+/*  typedef struct current_storage */
+/*     { */
+/*     Node          *saved; */
+/*     unsigned long save_index; */
+/*     } DLL_CurrentPtStore; */
+
 
 /*
  * Prototypes

@@ -22,13 +22,18 @@
 
 include osdetect.mk
 
+MAJOR_VER	= 2
+MINOR_VER	= 0
+PATCH_LVL	= 0
+DIR_NAME	= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
+
 ##################################
 # CONFIGURE PLATFORM ENVIRONMENT #
 ##################################
 ifeq ($(OS),LINUX)
   prefix  	= /usr/local
   doc_prefix	= /usr/doc
-  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  src_prefix	= $(HOME)/dev/$(DIR_NAME)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -m486 -pipe
@@ -36,7 +41,6 @@ ifeq ($(OS),LINUX)
   NON_DEBUG_OPT = -O2 -fomit-frame-pointer
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -shared -Wl,-soname,$(BASENAME).so.$(MAJOR_VER)
-  DBGFLAGS      = -L$(src_prefix) -ldbg
   TEST_LIBS	= -L. -ldll -lpthread
 #  EOBJS		= dll_pthread_ext.o
 endif
@@ -44,7 +48,7 @@ endif
 ifeq ($(OS),SOLARIS)
   prefix  	= $(HOME)/lib
   doc_prefix	= $(HOME)/doc
-  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  src_prefix	= $(HOME)/dev/$(DIR_NAME)
   CC            = /usr/local/SUNWspro/bin/cc
   AR            = ar rcs
   MACHINE_OPT   =
@@ -52,27 +56,27 @@ ifeq ($(OS),SOLARIS)
   NON_DEBUG_OPT = -xO5 -dalign -xlibmil
   DEBUG_OPT     = -DDEBUG=1 -g -xF
   LDFLAGS       += -Wl,-G,-h,$(BASENAME).so.$(MAJOR_VER)
-  DBGFLAGS      = -L$(src_prefix) -ldbg
+  TEST_LIBS	= -L. -ldll -lpthread
 endif
 
 ifeq ($(OS),OSF1)
   prefix  	= $(HOME)/lib
   doc_prefix	= $(HOME)/doc
-  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  src_prefix	= $(HOME)/$(DIR_NAME)
   CC            = cc
   AR            = ar rcs
   MACHINE_OPT   = -tune ev56
-  COMPILER_OPT  = -std1 -warnprotos -pthread -w0
+  COMPILER_OPT  = -std1 -warnprotos -D_REENTRANT -pthread -w0
   NON_DEBUG_OPT = -O2 -newc -portable
   DEBUG_OPT     = -DDEBUG=1 -g -trapuv
   LDFLAGS       += -shared -msym -soname $(BASENAME).so.$(MAJOR_VER)
-  DBGFLAGS      = -L$(src_prefix) -ldbg
+  TEST_LIBS	= -L. -ldll -lpthread
 endif
 
 ifeq ($(OS),AIX)
   prefix  	= $(HOME)/lib
   doc_prefix	= $(HOME)/doc
-  src_prefix	= $(HOME)/dev/linklist-2.0.0
+  src_prefix	= $(HOME)/dev/$(DIR_NAME)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -pipe
@@ -80,7 +84,7 @@ ifeq ($(OS),AIX)
   NON_DEBUG_OPT = -O2 -fomit-frame-pointer
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -Wl,-G,-bshared
-  DBGFLAGS      = -L$(src_prefix) -ldbg
+  TEST_LIBS	= -L. -ldll -lpthread
 endif
 
 #----- Change Nothing Below This Line -------------------------
@@ -101,10 +105,8 @@ endif
 
 LIBDIR		= $(prefix)/lib
 INCDIR		= $(prefix)/include
-
-MAJOR_VER	= 2
-MINOR_VER	= 0
-PATCH_LVL	= 0
+DISTNAME	= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)-beta
+EXCLUDEFILE	= $(DIR_NAME)/tar-exclude
 
 #--------------------------------------------------------------
 PROG		= dll_main
@@ -153,7 +155,7 @@ $(PROG).o: $(PROG).c linklist.h
 $(TEST).o: $(TEST).c linklist.h
 #--------------------------------------------------------------
 html	:
-	( cd docs; latex2html -local_icons -no_images Linklist.tex )
+	( cd docs; latex2html -local_icons Linklist.tex )
 	( cd docs/Linklist; rm -rf TMP *.aux *.dvi *.log *.tex *.toc *.pl *.old )
 	( cd docs/Linklist; ln -sf ../image.gif img1.gif )
 
@@ -165,19 +167,16 @@ postscript:
 
 docs	: postscript html
 
-DISTNAME= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
-EXCLUDEFILE= $(DISTNAME)/tar-exclude
-
 # Unless you're me you won't need this.
 tarball	:
-	( cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME) )
+	( cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DIR_NAME) )
 
 #--------------------------------------------------------------
 clean	:
-	-rm -f *.o *~ *.bak \#*\# core
+	-rm -f *.o *~ *.bak \#*\# core so_locations
 
-clobber	:
-	-rm -f *.o *~ *.bak \#*\# $(TEST) core libdll.*
+clobber	: clean
+	-rm $(TEST) libdll.*
 
 distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
@@ -185,7 +184,6 @@ distclean: clobber
 install	: install-docs
 	cp ./libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	( cd $(LIBDIR); \
 	 ln -s libdll.so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL) \
 	 libdll.so.$(MAJOR_VER) )
@@ -194,7 +192,6 @@ install	: install-docs
 
 install-static:
 	cp ./linklist.h $(INCDIR)/linklist.h
-	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	cp ./libdll.a $(LIBDIR)/libdll.a
 
 install-docs:

@@ -91,9 +91,9 @@ int main(void)
     != DLL_NORMAL)
       {
       (void)(ExitCode == DLL_ZERO_INFO
-       && fputs("Size of address record is zero.\n\n", stderr));
+       && fputs("Error: Size of address record is zero.\n\n", stderr));
       (void)(ExitCode == DLL_NULL_LIST
-       && fputs("addr_list points to a NULL.\n\n", stderr));
+       && fputs("Error: addr_list points to a NULL.\n\n", stderr));
       exit(EXIT_FAILURE);
       }
 
@@ -244,7 +244,7 @@ void enter(List *list)
 
       if(DLL_AddRecord(list, &put_addr, pfun) == DLL_MEM_ERROR)
          {
-         fputs("Fatal memory error\n", stderr);
+         fputs("Error: Fatal memory error\n", stderr);
          exit(EXIT_FAILURE);
          }
 
@@ -335,13 +335,14 @@ void insert(List *list)
 #endif
             break;
          case DLL_NOT_MODIFIED:
-            fputs("Wrong Direction value (Press Enter to exit)\n", stdout);
+            fputs("Error: Wrong Direction value (Press Enter to exit)\n",
+             stdout);
             break;
          case DLL_MEM_ERROR:
-            fputs("Fatal memory error\n", stderr);
+            fputs("Error: Fatal memory error\n", stderr);
             exit(EXIT_FAILURE);
          default:
-            fputs("Unknown switch type\n", stderr);
+            fputs("Error: Unknown switch type\n", stderr);
             exit(EXIT_FAILURE);
          }
       }
@@ -382,7 +383,8 @@ void update(List *list)
 
    if((ExitCode = DLL_GetCurrentRecord(list, &get_addr)) != DLL_NORMAL)
       {
-      (void)(ExitCode == DLL_NULL_LIST && fputs("List is empty.\n", stderr));
+      (void)(ExitCode == DLL_NULL_LIST &&
+       fputs("Warning: List is empty.\n", stderr));
       return;
       }
 
@@ -426,7 +428,7 @@ void update(List *list)
       }
 
    if(DLL_UpdateCurrentRecord(list, &put_addr) != DLL_NORMAL)
-      fputs("List is empty.\n\n", stderr);
+      fputs("Warning: List is empty.\n\n", stderr);
 
    fputs("Record was updated.\n\n", stdout);
    get_current_record(list);
@@ -478,7 +480,7 @@ void input(char *prompt, char *s, size_t count)
       if(strlen(str) < count)
          break;
 
-      fputs("\nToo Long.\n\n", stderr);
+      fputs("\nWarning: Input string is too Long.\n\n", stderr);
       continue;
       }
 
@@ -626,7 +628,7 @@ void find_by_match(List *list)
                continue;
                }
 
-            if(verify_criteria(list, pField, 0L) == FALSE)
+            if(verify_criteria(list, pField, EOF) == FALSE)
                return;
 
             donef = TRUE;
@@ -728,7 +730,7 @@ void find_by_Nth(List *list)
          fputs("Warning: List is empty.\n\n", stderr);
          break;
       case DLL_NOT_FOUND:
-         fputs("Warning: Bad index value.\n\n", stderr);
+         fputs("Error: Bad index value.\n\n", stderr);
          break;
       default:
          fputs("Error: Unknown return type.\n\n", stderr);
@@ -964,7 +966,7 @@ Boolean verify_criteria(List *list, char *pField, unsigned long num)
    if(pField != NULL)
       fprintf(stdout, "%s%s\n\n", "Search with: ", pField);
 
-   if(num != 0L)
+   if(num != EOF)
       fprintf(stdout, "%s%ld\n\n", "       Skip: ", num);
 
    input("Continue with search? [y|n] ", yn, sizeof(yn));
@@ -1107,7 +1109,7 @@ void display_all(List *list)
 
    if(DLL_CurrentPointerToHead(list) != DLL_NORMAL)
       {
-      fputs("List is empty.\n\n", stderr);
+      fputs("Warning: List is empty.\n\n", stderr);
       return;
       }
 
@@ -1151,7 +1153,8 @@ Boolean get_current_record(List *list)
 
    if((ExitCode = DLL_GetCurrentRecord(list, &get_addr)) != DLL_NORMAL)
       {
-      (void)(ExitCode == DLL_NULL_LIST && fputs("List is empty.\n\n", stderr));
+      (void)(ExitCode == DLL_NULL_LIST &&
+       fputs("Warning: List is empty.\n\n", stderr));
       return(FALSE);
       }
 
@@ -1174,9 +1177,10 @@ void get_prior_record(List *list)
 
    if((ExitCode = DLL_GetPriorRecord(list, &get_addr)) != DLL_NORMAL)
       {
-      (void)(ExitCode == DLL_NULL_LIST && fputs("List is empty.\n\n", stderr));
-      (void)(ExitCode == DLL_NOT_FOUND && fputs("At beginning of list.\n\n",
-       stderr));
+      (void)(ExitCode == DLL_NULL_LIST &&
+       fputs("Warning: List is empty.\n\n", stderr));
+      (void)(ExitCode == DLL_NOT_FOUND &&
+       fputs("Warning: At beginning of list.\n\n", stderr));
       return;
       }
 
@@ -1199,9 +1203,9 @@ void get_next_record(List *list)
    if((ExitCode = DLL_GetNextRecord(list, &get_addr)) != DLL_NORMAL)
       {
       (void)(ExitCode == DLL_NULL_LIST
-       && fputs("List is empty.\n\n", stderr));
+       && fputs("Warning: List is empty.\n\n", stderr));
       (void)(ExitCode == DLL_NOT_FOUND
-       && fputs("At end of list.\n\n", stderr));
+       && fputs("Warning: At end of list.\n\n", stderr));
       return;
       }
 
@@ -1221,7 +1225,7 @@ void get_first_record(List *list)
    {
    if(DLL_CurrentPointerToHead(list) != DLL_NORMAL)
       {
-      fputs("List is empty.\n\n", stderr);
+      fputs("Warning: List is empty.\n\n", stderr);
       return;
       }
 
@@ -1236,7 +1240,7 @@ void get_last_record(List *list)
    {
    if(DLL_CurrentPointerToTail(list) != DLL_NORMAL)
       {
-      fputs("List is empty.\n\n", stderr);
+      fputs("Warning: List is empty.\n\n", stderr);
       return;
       }
 
@@ -1266,7 +1270,7 @@ void delete_current_record(List *list)
 
    if(DLL_DeleteCurrentRecord(list) != DLL_NORMAL)
       {
-      fputs("List is empty.\n\n", stderr);
+      fputs("Warning: List is empty.\n\n", stderr);
       return;
       }
 
@@ -1306,17 +1310,18 @@ void swap_record(List *list)
 #endif
          break;
       case DLL_NULL_LIST:
-         fputs("List is empty.\n", stderr);
+         fputs("Warning: List is empty.\n\n", stderr);
          break;
       case DLL_NOT_MODIFIED:
-         fputs("Wrong Direction value (Press Enter to exit)\n", stdout);
+         fputs("Warning: Wrong Direction value (Press Enter to exit)\n\n",
+          stdout);
          break;
       case DLL_NOT_FOUND:
-         fputs("Current pointer is either at the head or tail of list\n",
+         fputs("Warning: Current pointer is at the head or tail of list\n\n",
           stdout);
          break;
       default:
-         fputs("Unknown switch type\n", stderr);
+         fputs("Error: Unknown switch type\n\n", stderr);
          exit(EXIT_FAILURE);
       }
    }
@@ -1356,13 +1361,14 @@ void save(List *list)
 
    if((ExitCode = DLL_SaveList(list, pathname)) != DLL_NORMAL)
       {
-      (void)(ExitCode == DLL_NULL_LIST && fputs("List is empty.\n\n", stderr));
-      (void)(ExitCode == DLL_OPEN_ERROR && fputs("Cannot open file.\n\n",
-       stderr));
-      (void)(ExitCode == DLL_WRITE_ERROR && fputs("Cannot write to file.\n\n",
-       stderr));
+      (void)(ExitCode == DLL_NULL_LIST &&
+       fputs("Warning: List is empty.\n\n", stderr));
+      (void)(ExitCode == DLL_OPEN_ERROR &&
+       fputs("Error: Cannot open file.\n\n", stderr));
+      (void)(ExitCode == DLL_WRITE_ERROR &&
+       fputs("Error: Cannot write to file.\n\n", stderr));
       (void)(ExitCode == DLL_NOT_MODIFIED &&
-       fputs("List has not changed, no save was done.\n\n", stderr));
+       fputs("Warning: List has not changed, no save was done.\n\n", stderr));
       return;
       }
 
@@ -1397,12 +1403,13 @@ void load(List *list)
 
    if((ExitCode = DLL_LoadList(list, pathname, pfun)) != DLL_NORMAL)
       {
-      (void)(ExitCode == DLL_MEM_ERROR && fputs("Fatal memory error.\n\n",
-       stderr));
-      (void)(ExitCode == DLL_NULL_LIST && fputs("List is empty.\n\n", stderr));
-      (void)(ExitCode == DLL_OPEN_ERROR && fputs("Cannot open file.\n\n",
-       stderr));
-      (void)(ExitCode == DLL_READ_ERROR && fputs("Read file error.\n\n",
-       stderr));
+      (void)(ExitCode == DLL_MEM_ERROR &&
+       fputs("Error: Fatal memory error.\n\n", stderr));
+      (void)(ExitCode == DLL_NULL_LIST &&
+       fputs("Warning: List is empty.\n\n", stderr));
+      (void)(ExitCode == DLL_OPEN_ERROR &&
+       fputs("Error: Cannot open file.\n\n", stderr));
+      (void)(ExitCode == DLL_READ_ERROR &&
+       fputs("Error: Read file error.\n\n", stderr));
       }
    }
