@@ -27,12 +27,11 @@ DLL_Return _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *));
  */
 
 /*
- * DLL_CreateList() : Creates a structure of type List
- *
  * Status   : Public
  *
- * Arguments: list -- Pointer to a pointer to a name of a structure to create.
+ * DLL_CreateList() : Creates a structure of type List
  *
+ * Arguments: list -- Pointer to a pointer to a name of a structure to create.
  * Returns  : Pointer to created structure
  *            NULL if unsuccessfull
  */
@@ -47,13 +46,12 @@ DLL_CreateList(List **list)
 
 
 /*
- * DLL_DestroyList() : Destroys Info, Node, and List structures
- *
  * Status   : Public
+ *
+ * DLL_DestroyList() : Destroys Info, Node, and List structures
  *
  * Arguments: list          -- Pointer to a pointer to a name of a
  *                             structure to destroy.
- *
  * Returns  : DLL_NORMAL    -- Locks and list destroyed successfully.
  *            DLL_THR_ERROR -- Top level list was not destroyed or freed
  *                             because thread locks exited with an error.
@@ -61,19 +59,19 @@ DLL_CreateList(List **list)
 DLL_Return
 DLL_DestroyList(List **list)
    {
-   THREAD_RWLOCK_WLOCK(&(*list)->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&(*list)->rwl_t);
 
    if(*list == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&(*list)->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&(*list)->rwl_t);
       return(DLL_NORMAL);
       }
 
    if((*list)->head != NULL)
       _deleteEntireList(*list);
 
-   THREAD_RWLOCK_UNLOCK(&(*list)->rwl_t, WITH_RETURN);
-   THREAD_RWLOCK_DESTROY(&(*list)->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&(*list)->rwl_t);
+   THREAD_RWLOCK_DESTROY(&(*list)->rwl_t);
    free(*list);
    *list = NULL;
    return(DLL_NORMAL);
@@ -81,16 +79,16 @@ DLL_DestroyList(List **list)
 
 
 /*
- * DLL_InitializeList() : Initializes double link list
- *
  * Status   : Public
+ *
+ * DLL_InitializeList() : Initializes double link list
  *
  * Arguments: list          -- Pointer to type List
  *            infosize      -- Size of user Info
- *
  * Returns  : DLL_NORMAL    -- Initialization was done successfully
  *            DLL_ZERO_INFO -- sizeof(Info) is zero
  *            DLL_NULL_LIST -- Info is NULL
+ *            DLL_THR_ERROR -- Thread lock initilization error
  */
 DLL_Return
 DLL_InitializeList(List *list, size_t infosize)
@@ -122,12 +120,11 @@ DLL_InitializeList(List *list, size_t infosize)
  */
 
 /*
- * DLL_Version() : Returns a pointer to version information
- *
  * Status   : Public
  *
- * Arguments: NONE
+ * DLL_Version() : Returns a pointer to version information
  *
+ * Arguments: NONE
  * Return   : char * -- Pointer to version info
  */
 char *
@@ -145,38 +142,36 @@ DLL_Version(void)
 
 
 /*
- * DLL_IsListEmpty() : Checks for an empty list
- *
  * Status   : Public
  *
- * Arguments: list      -- Pointer to type List
+ * DLL_IsListEmpty() : Checks for an empty list
  *
+ * Arguments: list      -- Pointer to type List
  * Returns  : DLL_TRUE  -- List is empty
  *            DLL_FALSE -- List has items in it
  */
 DLL_Boolean
 DLL_IsListEmpty(List *list)
    {
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_RLOCK_NR(&list->rwl_t);
 
    if(list->head == NULL || list->tail == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+      THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
       return(DLL_TRUE);
       }
 
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
    return(DLL_FALSE);
    }
 
 
 /*
- * DLL_IsListFull() : Checks for an empty list
- *
  * Status   : Public
  *
- * Arguments: list      -- Pointer to type List
+ * DLL_IsListFull() : Checks for an empty list
  *
+ * Arguments: list      -- Pointer to type List
  * Returns  : DLL_TRUE  -- List is full (memory dependent)
  *            DLL_FALSE -- List is empty or partially full
  */
@@ -186,35 +181,34 @@ DLL_IsListFull(List *list)
    Node *newN;
    Info *newI;
 
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_RLOCK_NR(&list->rwl_t);
 
    if((newN = (Node *) malloc(sizeof(Node))) == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+      THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
       return(DLL_TRUE);
       }
 
    if((newI = (Info *) malloc(list->infosize)) == NULL)
       {
       free(newN);
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+      THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
       return(DLL_TRUE);
       }
 
    free(newN);
    free(newI);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_FALSE);
    }
 
 
 /*
- * DLL_GetNumberOfRecords() : Return number of records.
- *
  * Status   : Public
  *
- * Arguments: list -- Pointer to type List
+ * DLL_GetNumberOfRecords() : Return number of records.
  *
+ * Arguments: list -- Pointer to type List
  * Returns  : Number of records
  */
 unsigned long
@@ -222,31 +216,31 @@ DLL_GetNumberOfRecords(List *list)
    {
    unsigned long size = (unsigned long) 0;
 
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_RLOCK_NR(&list->rwl_t);
    size = list->listsize;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
    return size;
    }
 
 
 /*
+ * Status   : Public
+ *
  * DLL_SetSearchModes() : Sets the pointer used to start a search origin
  *                        and the direction indicator.
- *
- * Status   : Public
  *
  * Arguments: list             -- Pointer to type List
  *            origin           -- Indicates the start search pointer to use
  *            dir              -- Indicates the direction to search in
- *
  * Returns  : DLL_NORMAL       -- Values assigned were accepted
  *            DLL_NOT_MODIFIED -- Values were not assigned--invalid type
  *                                (defaults are still in place)
+ *            DLL_THR_ERROR    -- Thread lock/unlock error
  */
 DLL_Return
 DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    switch(origin)
       {
@@ -256,7 +250,7 @@ DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
       case DLL_ORIGIN_DEFAULT:
          break;
       default:
-         THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
       }
 
@@ -267,7 +261,7 @@ DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
       case DLL_DIRECTION_DEFAULT:
          break;
       default:
-         THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
       }
 
@@ -277,41 +271,39 @@ DLL_SetSearchModes(List *list, DLL_SrchOrigin origin, DLL_SrchDir dir)
    if(dir != DLL_DIRECTION_DEFAULT)
       list->search_dir = dir;
 
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_GetSearchModes() : Returns the search modes
- *
  * Status   : Public
+ *
+ * DLL_GetSearchModes() : Returns the search modes
  *
  * Arguments: list -- Pointer to type List
  *            ssp  -- Save structure pointer
- *
  * Returns  : Pointer to type DLL_SearchModes
  */
 DLL_SearchModes *
 DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
    {
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_RLOCK_NR(&list->rwl_t);
    ssp->search_origin = list->search_origin;
    ssp->search_dir = list->search_dir;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
    return(ssp);
    }
 
 
 /*
+ * Status   : Public
+ *
  * DLL_GetCurrentIndex() : Return the index of the current record
  *                         NOTE: The index is always referenced from
  *                         the head of the list.
  *
- * Status : Public
- *
  * Arguments: list -- Pointer to type List
- *
  * Returns  : Current record's index
  */
 unsigned long
@@ -319,9 +311,9 @@ DLL_GetCurrentIndex(List *list)
    {
    size_t index = (size_t) 0;
 
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_RLOCK_NR(&list->rwl_t);
    index = list->current_index;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITHOUT_RETURN);
+   THREAD_RWLOCK_UNLOCK_NR(&list->rwl_t);
    return index;
    }
 
@@ -331,184 +323,186 @@ DLL_GetCurrentIndex(List *list)
  */
 
 /*
- * DLL_CurrentPointerToHead() : Moves the current pointer to
- *                              the head of the list.
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_CurrentPointerToHead() : Moves the current pointer to
+ *                              the head of the list.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NULL_LIST -- Empty list
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_CurrentPointerToHead(List *list)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->head == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    list->current = list->head;
    list->current_index = (unsigned long) 1;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_CurrentPointerToTail() : Moves the current pointer to
- *                              the tail of the list.
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_CurrentPointerToTail() : Moves the current pointer to
+ *                              the tail of the list.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NULL_LIST -- Empty list
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_CurrentPointerToTail(List *list)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->tail == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    list->current = list->tail;
    list->current_index = list->listsize;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_IncrementCurrentPointer() : Moves the current pointer to next position.
- *
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_IncrementCurrentPointer() : Moves the current pointer to next position.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NULL_LIST -- Empty list
  *            DLL_NOT_FOUND -- Record not found
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_IncrementCurrentPointer(List *list)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    if(list->current->next == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
    list->current = list->current->next;
    list->current_index++;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_DecrementCurrentPointer() : Moves the current pointer to last position.
- *
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_DecrementCurrentPointer() : Moves the current pointer to last position.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NULL_LIST -- Empty list
  *            DLL_NOT_FOUND -- Record not found
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_DecrementCurrentPointer(List *list)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    if(list->current->prior == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
    list->current = list->current->prior;
    list->current_index--;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_StoreCurrentPointer() : Saves the current pointer.
- *
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_StoreCurrentPointer() : Saves the current pointer.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NOT_FOUND -- Record not found
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_StoreCurrentPointer(List *list)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
    list->saved = list->current;
    list->save_index = list->current_index;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_RestoreCurrentPointer() : Loads the previously saved current pointer.
- *
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_RestoreCurrentPointer() : Loads the previously saved current pointer.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- Record found
  *            DLL_NOT_FOUND -- Record not found
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_RestoreCurrentPointer(List *list)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->saved == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
    list->current = list->saved;
    list->saved = NULL;
    list->current_index = list->save_index;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -518,40 +512,40 @@ DLL_RestoreCurrentPointer(List *list)
  */
 
 /*
- * DLL_AddRecord() : Creates a new node in list with or without sorting.
- *
  * Status   : Public
+ *
+ * DLL_AddRecord() : Creates a new node in list with or without sorting.
  *
  * Arguments: list          -- Pointer to type List
  *            info          -- Record to add
  *            pFun          -- Pointer to search function
- *
  * Returns  : DLL_NORMAL    -- Node was added successfully
  *            DLL_MEM_ERROR -- Memory allocation failed
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
    {
    DLL_Return ret = DLL_NORMAL;
 
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
    ret = _addRecord(list, info, pFun);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(ret);
    }
 
 
 /*
- * _addRecord() : Creates a new node in list with or without sorting.
+ * Status   : Private
  *
- * Status   : Hidden
+ * _addRecord() : Creates a new node in list with or without sorting.
  *
  * Arguments: list          -- Pointer to type List
  *            info          -- Record to add
  *            pFun          -- Pointer to search function
- *
  * Returns  : DLL_NORMAL    -- Node was added successfully
  *            DLL_MEM_ERROR -- Memory allocation failed
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  *
  * NOTE: This function is not thread safe.
  */
@@ -652,19 +646,20 @@ _addRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
 
 
 /*
- * DLL_InsertRecord() : Creates a new node in list above or below current
- *                      record. The new record will be current after completion.
- *
  * Status   : Public
+ *
+ * DLL_InsertRecord() : Creates a new node in list above or below current
+ *                      record. The new record will be current after
+ *                      completion.
  *
  * Arguments: list             -- Pointer to type List
  *            info             -- Record to add
  *            dir              -- Direction to insert (DLL_ABOVE or DLL_BELOW)
- *
  * Returns  : DLL_NORMAL       -- Node was added successfully
  *            DLL_MEM_ERROR    -- Memory allocation failed
  *            DLL_NOT_MODIFIED -- Insert direction is invalid (not DLL_ABOVE
  *                                or DLL_BELOW)
+ *            DLL_THR_ERROR    -- Thread lock/unlock error
  */
 DLL_Return
 DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
@@ -672,12 +667,12 @@ DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
    Node *newN;
    Info *newI;
 
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    /* Allocate space for new node */
    if((newN = (Node *) malloc(sizeof(Node))) == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_MEM_ERROR);
       }
 
@@ -685,7 +680,7 @@ DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
    if((newI = (Info *) malloc(list->infosize)) == NULL)
       {
       free(newN);
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_MEM_ERROR);
       }
 
@@ -704,7 +699,7 @@ DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
       list->listsize = (unsigned long) 1;
       list->current_index = (unsigned long) 1;
       list->modified = DLL_TRUE;
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NORMAL);
       }
 
@@ -749,44 +744,44 @@ DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
       default:
          free(newI);
          free(newN);
-         THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
       }
 
    list->listsize++;
    list->modified = DLL_TRUE;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
+ * Status   : Public
+ *
  * DLL_SwapRecord() : Swaps current record up or down one place in the
  *                    list. The swaped record will still be current
  *                    after completion.
  *
- * Status   : Public
- *
  * Arguments: list             -- Pointer to type List
  *            dir              -- Direction to swap (DLL_ABOVE or DLL_BELOW)
- *
  * Returns  : DLL_NORMAL       -- Node was swaped successfully
  *            DLL_NULL_LIST    -- list->current is NULL
  *            DLL_NOT_MODIFIED -- Swap direction not DLL_ABOVE or DLL_BELOW
  *            DLL_NOT_FOUND    -- Current record is already at end of
  *                                list indicated by dir.
+ *            DLL_THR_ERROR    -- Thread lock/unlock error
  */
 DLL_Return
 DLL_SwapRecord(List *list, DLL_InsertDir dir)
    {
    Node *swap, *newPrior, *newNext;
 
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    /* If current is NULL, can't swap it */
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
@@ -799,7 +794,7 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
          /* current is at head */
          if(swap->prior == NULL)
             {
-            THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+            THREAD_RWLOCK_UNLOCK(&list->rwl_t);
             return(DLL_NOT_FOUND);
             }
 
@@ -839,7 +834,7 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
          /* current is at tail */
          if(swap->next == NULL)
             {
-            THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+            THREAD_RWLOCK_UNLOCK(&list->rwl_t);
             return(DLL_NOT_FOUND);
             }
 
@@ -874,53 +869,53 @@ DLL_SwapRecord(List *list, DLL_InsertDir dir)
          list->current_index++;
          break;
       default:
-         THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_MODIFIED);
       }
 
    list->modified = DLL_TRUE;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_UpdateCurrentRecord() : Updates current record
- *
  * Status   : Public
+ *
+ * DLL_UpdateCurrentRecord() : Updates current record
  *
  * Arguments: list          -- Pointer to type List
  *            record        -- Pointer to an Info structure in list
- *
  * Returns  : DLL_NORMAL    -- Record updated
  *            DLL_NULL_LIST -- Empty list
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_UpdateCurrentRecord(List *list, Info *record)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    memcpy(list->current->info, record, list->infosize);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_DeleteCurrentRecord() : Delete a record from the list.
- *
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_DeleteCurrentRecord() : Delete a record from the list.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- Record deleted
  *            DLL_NULL_LIST -- List is empty
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_DeleteCurrentRecord(List *list)
@@ -928,11 +923,11 @@ DLL_DeleteCurrentRecord(List *list)
    Info *oldI;
    Node *oldN;
 
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
@@ -967,21 +962,20 @@ DLL_DeleteCurrentRecord(List *list)
    free(oldN);
    list->listsize--;
    list->modified = DLL_TRUE;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_DeleteRecord() : Delete a record from the list.
- *
  * Status   : Public
+ *
+ * DLL_DeleteRecord() : Delete a record from the list.
  *
  * Arguments: list              -- Pointer to type List
  *            match             -- Pointer to an Info structure to match
  *                                 to list
  *            pFun              -- Pointer to search function
- *
  * Returns  : DLL_NORMAL        -- Record found
  *            DLL_NULL_LIST     -- Empty list
  *            DLL_NOT_FOUND     -- Record not found
@@ -991,46 +985,135 @@ DLL_DeleteCurrentRecord(List *list)
 
 DLL_Return
 DLL_DeleteRecord(List *list, Info *match, int (*pFun)(Info *, Info *))
-	{
+   {
+   unsigned long save;
+   Node *step;
+   Node *oldN;
+   Info *oldI;
+   DLL_SrchDir dir;
+
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
+
+   if(pFun == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+      return(DLL_NULL_FUNCTION);
+      }
+
+   save = list->current_index;
+
+   switch(list->search_origin)
+      {
+      case DLL_CURRENT:
+         step = list->current;
+         dir = list->search_dir;
+         break;
+      case DLL_TAIL:
+         step = list->tail;
+         list->search_dir = dir = DLL_UP;
+         list->current_index = list->listsize;
+         break;
+      case DLL_HEAD:
+      default:
+         list->search_origin = DLL_HEAD;
+         step = list->head;
+         list->search_dir = dir = DLL_DOWN;
+         list->current_index = (unsigned long) 1 ;
+      }
+
+   if(step == NULL)
+      {
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+      return(DLL_NULL_LIST);
+      }
+
+   while(step != NULL)
+      {
+      if(((*pFun)(step->info, match)) == 0)
+         {
+         /* We have found the offending record, proceeding to delete it */
+         oldI = step->info;
+         oldN = step;
+
+         if(step == list->head)     /* current is first record */
+            {
+            /* A single record in a list can't do this ...next->prior */
+            if(step->next != NULL)
+               step->next->prior = NULL;
+
+            list->head = step->next;
+            step = list->head;
+            }
+         else
+            if(step == list->tail)  /* current is last record */
+               {
+               step->prior->next = NULL;
+               list->tail = step->prior;
+               step = list->tail;
+               list->current_index--;
+               }
+            else                    /* current is a middle record */
+               {
+               step->prior->next = step->next;
+               step->next->prior = step->prior;
+               step = step->next;
+               }
+
+         free(oldI);
+         free(oldN);
+         list->listsize--;
+         list->modified = DLL_TRUE;
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+         return(DLL_NORMAL);
+         }
+
+      step = (dir == DLL_DOWN) ? (Node *) step->next : (Node *) step->prior;
+      list->current_index += (dir == DLL_DOWN)
+         ? (unsigned long) 1
+         : (unsigned long) -1;
+      }
+
+   list->current_index = save;
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
+   return(DLL_NOT_FOUND);
    }
 
 
 /*
- * DLL_DeleteEntireList() : Delete the entire list.
- *
  * Status   : Public
  *
- * Arguments: list          -- Pointer to type List
+ * DLL_DeleteEntireList() : Delete the entire list.
  *
+ * Arguments: list          -- Pointer to type List
  * Returns  : DLL_NORMAL    -- List deleted
  *            DLL_NULL_LIST -- List is empty
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_DeleteEntireList(List *list)
    {
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if(list->head == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    _deleteEntireList(list);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * _deleteEntireList() : Delete the entire list.
+ * Status   : Private
  *
- * Status   : Hidden
+ * _deleteEntireList() : Delete the entire list.
  *
  * Arguments: list -- Pointer to type List
  *
  * Returns  : void
- *
  * NOTE: This function is not thread safe.
  */
 void
@@ -1066,20 +1149,20 @@ _deleteEntireList(List *list)
  */
 
 /*
- * DLL_FindRecord() : Find a record in list with search criteria
- *
  * Status   : Public
+ *
+ * DLL_FindRecord() : Find a record in list with search criteria
  *
  * Arguments: list              -- Pointer to type List
  *            record            -- Pointer to an Info structure in list
  *            match             -- Pointer to an Info structure to match
  *                                 to list
  *            pFun              -- Pointer to search function
- *
  * Returns  : DLL_NORMAL        -- Record found
  *            DLL_NULL_LIST     -- Empty list
  *            DLL_NOT_FOUND     -- Record not found
  *            DLL_NULL_FUNCTION -- pFun is NULL
+ *            DLL_THR_ERROR     -- Thread lock/unlock error
  */
 DLL_Return
 DLL_FindRecord(List *list, Info *record, Info *match,
@@ -1089,11 +1172,11 @@ DLL_FindRecord(List *list, Info *record, Info *match,
    Node *step;
    DLL_SrchDir dir;
 
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
 
    if(pFun == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_FUNCTION);
       }
 
@@ -1120,7 +1203,7 @@ DLL_FindRecord(List *list, Info *record, Info *match,
 
    if(step == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
@@ -1130,7 +1213,7 @@ DLL_FindRecord(List *list, Info *record, Info *match,
          {
          memcpy(record, step->info, list->infosize);
          list->current = step;
-         THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NORMAL);
          }
 
@@ -1141,12 +1224,14 @@ DLL_FindRecord(List *list, Info *record, Info *match,
       }
 
    list->current_index = save;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NOT_FOUND);
    }
 
 
 /*
+ * Status   : Public
+ *
  * DLL_FindNthRecord() : Returns the Nth record in the list based on the
  *                       setting of list->search_origin and list->search_dir.
  *
@@ -1154,16 +1239,14 @@ DLL_FindRecord(List *list, Info *record, Info *match,
  *       other words the current record is 0 (zero) so a skip value of 5 would
  *       return the 6th not the 5th record.  Just think of C array indexing.
  *
- * Status   : Public
- *
  * Arguments: list          -- Pointer to type List
  *            record        -- Record to hold return data
  *            skip          -- Number of records to skip
- *
  * Returns  : DLL_NORMAL    -- Node was found successfully
  *            DLL_NULL_LIST -- list->current is NULL
  *            DLL_NOT_FOUND -- Index value is too large or wrong dir value
  *                             (current record index remains unchanged).
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
@@ -1173,7 +1256,7 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
    DLL_SrchDir dir;
    register int nCnt;
 
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
    save = list->current_index;
 
    switch(list->search_origin)
@@ -1197,7 +1280,7 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 
    if(step == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
@@ -1206,7 +1289,7 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
     : (list->current_index <= skip)))
       {
       list->current_index = save;
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
@@ -1223,7 +1306,7 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 
          break;
       default:
-         THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_NOT_FOUND);
       }
 
@@ -1232,109 +1315,109 @@ DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
    list->current_index += (dir == DLL_DOWN)
       ? ((unsigned long) 1 * skip)
       : ((unsigned long) -1 * skip);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_GetCurrentRecord() : Gets the record pointed to by current
- *
  * Status   : Public
+ *
+ * DLL_GetCurrentRecord() : Gets the record pointed to by current
  *
  * Arguments: list          -- Pointer to type List
  *            record        -- Pointer to a pointer to an Info structure
- *
  * Returns  : DLL_NORMAL    -- Record returned
  *            DLL_NULL_LIST -- List is empty
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_GetCurrentRecord(List *list, Info *record)
    {
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    memcpy(record, list->current->info, list->infosize);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_GetPriorRecord() : Gets the record pointed to by current->prior
- *
  * Status   : Public
+ *
+ * DLL_GetPriorRecord() : Gets the record pointed to by current->prior
  *
  * Arguments: list          -- Pointer to type List
  *            record        -- Pointer to a pointer to an Info structure
- *
  * Returns  : DLL_NORMAL    -- Record returned
  *            DLL_NULL_LIST -- List is empty
  *            DLL_NOT_FOUND -- Beginning of list
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_GetPriorRecord(List *list, Info *record)
    {
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    if(list->current->prior == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
    list->current = list->current->prior;
    memcpy(record, list->current->info, list->infosize);
    list->current_index--;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_GetNextRecord() : Gets the record pointed to by current->next
- *
  * Status   : Public
+ *
+ * DLL_GetNextRecord() : Gets the record pointed to by current->next
  *
  * Arguments: list          -- Pointer to type List
  *            record        -- Pointer to a pointer to an Info structure
- *
  * Returns  : DLL_NORMAL    -- Record returned
  *            DLL_NULL_LIST -- List is empty
  *            DLL_NOT_FOUND -- End of list
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_GetNextRecord(List *list, Info *record)
    {
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
 
    if(list->current == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    if(list->current->next == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_FOUND);
       }
 
    list->current = list->current->next;
    memcpy(record, list->current->info, list->infosize);
    list->current_index++;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
@@ -1344,18 +1427,18 @@ DLL_GetNextRecord(List *list, Info *record)
  */
 
 /*
- * DLL_SaveList() : Save list to disk
- *
  * Status   : Public
+ *
+ * DLL_SaveList() : Save list to disk
  *
  * Arguments: list             -- Pointer to type List
  *            path             -- Pointer to path and filename
- *
  * Return   : DLL_NORMAL       -- File written successfully
  *            DLL_NULL_LIST    -- List is empty
  *            DLL_OPEN_ERROR   -- File open error
  *            DLL_WRITE_ERROR  -- File write error
  *            DLL_NOT_MODIFIED -- Unmodified list no save was done
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_SaveList(List *list, const char *path)
@@ -1363,23 +1446,23 @@ DLL_SaveList(List *list, const char *path)
    Node *step;
    FILE *fp;
 
-   THREAD_RWLOCK_RLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_RLOCK(&list->rwl_t);
 
    if(list->head == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NULL_LIST);
       }
 
    if(list->modified == DLL_FALSE)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_NOT_MODIFIED);
       }
 
    if((fp = fopen(path, "wb")) == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_OPEN_ERROR);
       }
 
@@ -1390,7 +1473,7 @@ DLL_SaveList(List *list, const char *path)
       if(fwrite(step->info, 1, list->infosize, fp) != list->infosize)
          {
          fclose(fp);
-         THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+         THREAD_RWLOCK_UNLOCK(&list->rwl_t);
          return(DLL_WRITE_ERROR);
          }
 
@@ -1399,24 +1482,24 @@ DLL_SaveList(List *list, const char *path)
 
    fclose(fp);
    list->modified = DLL_FALSE;
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(DLL_NORMAL);
    }
 
 
 /*
- * DLL_LoadList() : Load list to disk
- *
  * Status   : Public
+ *
+ * DLL_LoadList() : Load list to disk
  *
  * Arguments: list           -- Pointer to type List
  *            path           -- Pointer to path and filename
  *            pFun           -- Pointer to search function
- *
  * Return   : DLL_NORMAL     -- File written successfully
  *            DLL_MEM_ERROR  -- Memory allocation failed
  *            DLL_OPEN_ERROR -- File open error
  *            DLL_READ_ERROR -- File read error
+ *            DLL_THR_ERROR -- Thread lock/unlock error
  */
 DLL_Return
 DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
@@ -1425,11 +1508,11 @@ DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
    FILE *fp;
    DLL_Return ExitCode;
 
-   THREAD_RWLOCK_WLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_WLOCK(&list->rwl_t);
 
    if((fp = fopen(path, "rb")) == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_OPEN_ERROR);
       }
 
@@ -1440,7 +1523,7 @@ DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
 
    if((set = (Info *) malloc(list->infosize)) == NULL)
       {
-      THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+      THREAD_RWLOCK_UNLOCK(&list->rwl_t);
       return(DLL_MEM_ERROR);
       }
 
@@ -1465,6 +1548,6 @@ DLL_LoadList(List *list, const char *path, int (*pFun)(Info *, Info *))
 
    free(set);
    fclose(fp);
-   THREAD_RWLOCK_UNLOCK(&list->rwl_t, WITH_RETURN);
+   THREAD_RWLOCK_UNLOCK(&list->rwl_t);
    return(ExitCode);
    }

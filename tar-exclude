@@ -1,4 +1,6 @@
 CVS
+OLD
+test
 .cvsignore
 tar-exclude
 test.dat
@@ -12,3 +14,5 @@ dll_test
 *.toc
 docs/CVS
 docs/.cvsignore
+config*
+*install*

@@ -17,19 +17,20 @@
 #  include <pthread.h>
 
 /* Definitions for cross platform compatibility. */
-#  define WITH_RETURN               1
-#  define WITHOUT_RETURN            0
 #  define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
 #  define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init((a),(b))) \
                                     return(DLL_THR_ERROR)
 #  define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy((a))) \
                                     return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_RLOCK(a,b)  if(pthread_rwlock_rdlock((a)) && (b)) \
+#  define THREAD_RWLOCK_RLOCK(a)    if(pthread_rwlock_rdlock((a))) \
                                     return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_WLOCK(a,b)  if(pthread_rwlock_wrlock((a)) && (b)) \
+#  define THREAD_RWLOCK_WLOCK(a)    if(pthread_rwlock_wrlock((a))) \
                                     return(DLL_THR_ERROR)
-#  define THREAD_RWLOCK_UNLOCK(a,b) if(pthread_rwlock_unlock((a)) && (b)) \
+#  define THREAD_RWLOCK_UNLOCK(a)   if(pthread_rwlock_unlock((a))) \
                                     return(DLL_THR_ERROR)
+#  define THREAD_RWLOCK_RLOCK_NR    pthread_rwlock_rdlock
+#  define THREAD_RWLOCK_WLOCK_NR    pthread_rwlock_wrlock
+#  define THREAD_RWLOCK_UNLOCK_NR   pthread_rwlock_unlock
 #  endif /* defined (LINUX) */
 #endif /* defined (_DLL_MAIN_C) */
 
@@ -104,7 +105,8 @@ typedef void Info;
 #define CREDITS   "-------------------------------\n" \
                   "Developed by:  Carl J. Nobile\n" \
                   "Contributions: Charlie Buckheit\n" \
-                  "               Graham Inchley\n"
+                  "               Graham Inchley\n" \
+                  "               Wai-Sun Chia\n"
 
 static char version[sizeof(VERSION) + sizeof(VERDATE) + sizeof(CREDITS) + 1];
 #endif   /* _DLL_MAIN_C */

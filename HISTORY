@@ -16,20 +16,32 @@ Ver 2.0.0 --
      of 3 spaces.
 
 (3)  Removed all but the UNIX Makefile since this version will use
-     pthreads. Sorry, but if some one wants to do the threads for Mac or
-     Windows let me know.
+     pthreads. Sorry, but if someone wants to contribute a thread safe
+     version for Mac or Windows let me know. This should be fairly easy
+     since I call macros in the source code.
 
-(4)  In order to make this library thread safe I needed to make two hidden
+(4)  In order to make this library thread safe I needed to make two private
      functions: _addRecord and _deleteEntireList. These are called by other
-     functions in the library and as such can not have mutex locks in them
-     since it would create a deadlock situation. The locks are in the
-     functions: DLL_DeleteEntireList, DLL_AddRecord, and in other functions
-     that call the hidden functions.
+     functions in the library and as such need to be atomic. If I didn't do
+     this a deadlock situation would occur. The locks are in the functions:
+     DLL_DeleteEntireList, DLL_AddRecord, and in other functions that call
+     the private functions.
 
-(5)  There is now a return value for DLL_DestroyList to permit an error in
-     a destroy read/write lock to be interrogated.
+(5)  A new enumerated return value (DLL_THR_ERROR) has been added to
+     DLL_Return to indicate when an error has occurred in a thread create,
+     destroy, or read/write lock.
 
-(6)  
+(6)  The return value for DLL_DestroyList has changed from void to
+     DLL_Return to permit an error when a destroy read/write lock fails.
+
+(7)  A new function was added, thanks to Wai-Sun Chia. When making this
+     API thread safe Wai-Sun found that deleting a node was a two step
+     process. One had to make a call to DLL_FindRecord and then to
+     DLL_DeleteCurrentRecord this two step operation; whoever, would play
+     havoc with a threaded application. The second call might come after the
+     current pointer had changed by a different thread causing the wrong
+     node to be deleted. I have added his function, DLL_DeleteRecord almost
+     porbatum.
 
 Ver 1.1.0 -- July 05, 1999
 
