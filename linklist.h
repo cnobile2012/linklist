@@ -15,11 +15,11 @@
 #if defined (_DLL_MAIN_C)
 #  if defined (_DLL_POSIX)
 #  include <pthread.h>
+#  define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
 
 #    if defined (LINUX) || defined (OSF1)
 
      /* Definitions for cross platform compatibility. */
-#    define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
 #    define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init((a),(b))) \
                                       return(DLL_THR_ERROR)
 #    define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy((a))) \
@@ -38,7 +38,6 @@
 #    elif defined (SOLARIS)
 #    include "dll_pthread_ext.h"
 
-#    define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
 #    define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init_np((a),(b))) \
                                       return(DLL_THR_ERROR)
 #    define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy_np((a))) \
@@ -66,6 +65,13 @@
 #  define THREAD_RWLOCK_WLOCK_NR
 #  define THREAD_RWLOCK_UNLOCK_NR
 #  endif /* defined (_DLL_POSIX) */
+#else /* defined (_DLL_MAIN_C) */
+#define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
+#  if defined (LINUX) || defined (OSF1)
+#  include <pthread.h>
+#  elif defined (SOLARIS)
+#  include "dll_pthread_ext.h"
+#  endif /* platform dependencies */
 #endif /* defined (_DLL_MAIN_C) */
 
 typedef enum
