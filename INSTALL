@@ -1,4 +1,4 @@
-Installation of linklist-1.0.3.tar.gz for Linux                Nov 04 1998
+Installation of linklist-1.1.0.tar.gz for Linux                July 04 1999
 
 *** Begin CVS Information ***
 $Author$
@@ -7,11 +7,18 @@ $Revision$
 *** End CVS Information ***
 
 To install use tar to extract the files into the directory where you
-want it to reside.
+want it to reside.  Usually in /usr/local/src.
 
 tar -xvzf linklist-1.0.3.tar.gz -C /your/path
 
-Next cd to the linklist directory and type one of the following,
+The above tar command only works with GNU tar.  If you don't have this
+tar try:
+
+cp linklist-1.0.3.tar.gz /your/path
+cd /your/path
+gzcat linklist-1.0.3.tar.gz | tar xvf -
+
+Next cd to the linklist.x.x.x directory and type one of the following,
 assuming you're using the GNU compiler:
 
 make            creates a shared library
@@ -23,8 +30,9 @@ make static     creates a static library.
 Read the Makefile for further compilation options.
 
 To install the library in the /usr/local/lib directory enter either
-make install or make install-static.  Edit the Makefile if you want
-a different directory.
+make install or make install-static.  To install the docs enter
+make install-docs.  The default directory is /usr/docs/linklist.x.x.x.
+Edit the Makefile if you want a different directories.
 
 Note: If you have an old version of the library installed the test
       program (dll_test) will pull that library in when shared objects
@@ -32,7 +40,17 @@ Note: If you have an old version of the library installed the test
       script instead of running the test program directly.  The script
       will set the environment correctly.
 
+Note: The makefiles for the djgpp and MS6.0 compilers have not been
+      tested for years.  I doubt if they work any more and none of the
+      new stuff has been added to them.  I've left them in the
+      distribution for those daring soles who might want to use them.
+
 If you have any problems, drop me a line at:
+
+The documentation is now much more complete.  This distribution now
+provides a postscript file and html pages.
+
+Contact me at:
 
 cnobile@AppliedTheory.com
 or

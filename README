@@ -34,7 +34,7 @@ COMPILATION
 
 Not much to say here, the package is fairly easy to compile and use. Read
 the docs for how to use the API.  The INSTALL file explains how to compile
-and install the package.
+and install/uninstall the package.
 
 LIBRARY USAGE
 
@@ -44,15 +44,24 @@ to libdll.so.1.1.0 the current version.
 
 TO-DO
 
-I'm hoping to write perl and tcl extensions sometime in the not too
-distant future, but I'm still learning both perl and tcl.  If you would
-find these extensions useful send me a note, it might push the process
-along some.
+I'm am thinking about writing perl, python, and/or tcl extensions.  If you
+would find any or all of these extensions useful send me a note, it might
+push the process along some.
 
-I am planning a change to the major version also.  At present the linklist
+I am planning a change the major version also.  At present the linklist
 defaults to doing memory allocations for each node created. This is
 wasteful of resources and time consuming.  It is my hope to create a
 mechanism to allow larger blocks of memory to be allocated which can be
-changed on the fly and drastically speed up operations.
+changed on the fly.  This should drastically speed up operations.
 
-Carl J. Nobile (cnobile@suffolk.lib.ny.us)
+WEB SITE
+
+Yes I finally have a web site for this at:
+http://eggwarmer.AppliedTheory.com/~cnobile
+
+This is my personal page where links to the Doubly Link List can be found.
+
+EMAIL
+
+Carl J. Nobile <cnobile@AppliedTheory.com>
+Carl J. Nobile <cnobile@suffolk.lib.ny.us>

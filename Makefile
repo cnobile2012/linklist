@@ -3,7 +3,7 @@
 #
 # Copyright (c) 1996-1998 Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 01/27/99
+# Updated: 07/04/99
 #
 # $Author$
 # $Date$
@@ -32,9 +32,12 @@ OPTIONS	= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions -Wall
 # The options below should be used instead of the above on the Mac
 #OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
 
+# Change the directory paths below to reflect your system
 LIBDIR	= /usr/local/lib
 INCDIR	= /usr/local/include
-THISLIB	= -L./ -ldll
+DOCLIB	= /usr/doc
+
+THISLIB	= -L. -ldll
 MAJORVERSION = 1
 MINORVERSION = 1
 PATCHLEVEL = 0
@@ -86,26 +89,57 @@ $(TEST)	: $(OBJS2)
 $(PROG).o: $(PROG).c $(PROG).h
 $(TEST).o: $(TEST).c linklist.h dll_dbg.h
 #--------------------------------------------------------------
+html	:
+	( cd docs; latex2html -local_icons -no_images Linklist.tex )
+	( cd docs/Linklist; rm -rf TMP *.aux *.dvi *.log *.tex *.toc *.pl *.old )
+	( cd docs/Linklist; ln -sf ../image.gif img1.gif )
+
+postscript:
+	( cd docs; latex Linklist.tex; \
+	 dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps )
+
+docs	: postscript html
+
+DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
+EXCLUDEFILE= $(DISTNAME)/tar-exclude
+
+# Unless you're me you won't need this.
+tarball	:
+	( cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME) )
+
+#--------------------------------------------------------------
 clean	:
 	-rm *.o *~ *.bak \#*\# *.err core
 
 clobber	:
 	-rm *.o *~ *.bak \#*\# *.err $(TEST) core libdll.*
 
-install	:
-	rm -f $(LIBDIR)/libdll.so*
-	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
-	 $(LIBDIR)/libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
+distclean: clobber
+	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
+
+install	: install-docs
+	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	/sbin/ldconfig
+	( cd $(LIBDIR); \
+	 ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
+	 libdll.so.$(MAJORVERSION) )
 	( cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so )
+	/sbin/ldconfig
 
 install-static:
-	cp ./libdll.a $(LIBDIR)/libdll.a
 	cp ./linklist.h $(INCDIR)/linklist.h
+	cp ./libdll.a $(LIBDIR)/libdll.a
 
-uninstall:
+install-docs:
+	install -d $(DOCLIB)/$(DISTNAME)
+	install -m 444 docs/*.ps.gz $(DOCLIB)/$(DISTNAME)
+	install -m 444 docs/Linklist/* $(DOCLIB)/$(DISTNAME)
+
+uninstall: uninstall-docs
 	rm -f $(LIBDIR)/libdll.so*
 
 uninstall-static:
 	rm -f $(LIBDIR)/libdll.a
+
+uninstall-docs:
+	rm -rf $(DOCLIB)/$(DISTNAME)

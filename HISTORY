@@ -6,7 +6,7 @@ $Date$
 $Revision$
 *** End CVS Information ***
 
-Ver 1.1.0 -- May 
+Ver 1.1.0 -- July 
 
 (1)  Added four new functions DLL_GetCurrentIndex(), DLL_InsertRecord(),
      DLL_SwapRecord(), and DLL_FindNthRecord()--read the docs on how to
@@ -29,7 +29,13 @@ Ver 1.1.0 -- May
      to a pre-installed version.
 
 (7)  Re-wrote DLL_GetSearchModes() so it is now thread safe.  This will
-     break some code, see docs.
+     break some code, see the docs.
+
+(8)  The documentation source is now in LaTeX2e.  It is converted into a
+     postscript file and html pages.
+
+(8)  The Makefile has been completely worked over (still not using GNU
+     config) with installs and uninstalls for everything.
 
 Ver 1.0.3 -- November 04, 1998
 
@@ -63,4 +69,5 @@ Ver 1.0.1 -- June 08, 1998 -- Minor bug fix
 
 (3) Added this history file.
 
-Ver 1.0 -- January 08, 1998 -- Initial release
+Ver 1.0 -- January 08, 1998 -- Initial release of version in the Linux
+                               Journal.
