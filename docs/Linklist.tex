@@ -10,7 +10,7 @@
 %  dvips -t letter Linklist.dvi -o Linklist.ps
 %
 % To make html:
-%  latex2html -split 0 -no_navigation Linklist.tex
+%  latex2html -local_icons -no_images Linklist.tex
 %
 \documentclass[10pt,letterpaper,titlepage]{article}
 
@@ -259,13 +259,14 @@ typedef struct node
 \normalsize
 \vspace{8pt}
 
-\pagebreak
+%\pagebreak
 \begin{figure}
 \begin{center}
 \graphicspath{{.}}
-%\DeclareGraphicsRule{.eps.gz}{eps}{.eps.bb}{`gunzip -c #1}
-%\rotatebox{90}{\includegraphics{linklistDiagram.eps.gz}}
-\rotatebox{90}{\includegraphics{linklistDiagram.eps}}
+\DeclareGraphicsRule{.eps.gz}{eps}{.eps.bb}{`gunzip -c #1}
+\rotatebox{90}{\includegraphics{linklistDiagram.eps.gz}}
+%\rotatebox{90}{\includegraphics{linklistDiagram.eps}}
+%\resizebox{4.75in}{4.2in}{\includegraphics{linklistDiagram.eps}}
 \vspace{8pt}
 
 Hierarchical Structure of the Doubly Linked List
