@@ -342,7 +342,7 @@ typedef enum
 \vspace{8pt}
 
 \noindent
-The last enumerated type is used to determine the direction of inserting and swapping a record and is passed as an argument to two functions\linebreak \emph{DLL\_InsertRecord()} and \emph{DLL\_SwapRecord()}.
+The last enumerated type is used to determine the direction of insertion or the swapping of a record.  This structure is passed as an argument to two functions \emph{DLL\_InsertRecord()} and \emph{DLL\_SwapRecord()}.
 
 \small
 \begin{alltt}
@@ -385,7 +385,7 @@ The initialization group of functions must be used in the allocation and freeing
  After the \emph{Info Struct} has been defined this function is called to initialize the environment.  It is passed \textbf{list} the value returned from the previous function call and \textbf{infosize} the size in bytes of the \emph{Info Struct}.  It returns \textbf{DLL\_ZERO\_INFO} if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successful.
 
  \item[DLL\_DestroyList]\quad\\
- Upon exiting the application this function is called to free any memory allocated.  It is passed \textbf{list} the value returned from \emph{DLL\_CreateList} and has no return value of its own, however, the argument \textbf{list} is set to NULL.
+ Upon exiting the application this function when called will free all memory allocated during this instance of the list.  It is passed \textbf{list} the value returned from \emph{DLL\_CreateList} and has no return value of its own, however, the argument \textbf{list} is set to NULL.
  \end{description}
 
 \item[EXAMPLE]
@@ -434,12 +434,9 @@ void main(void)
 \end{verbatim}
 \normalsize
 
-\item[SEE ALSO]\quad\\
-
-
 \end{description}
-
 \pagebreak
+
 \subsection{Status and State}
 \begin{description}
 \item[NAME]\quad\\
@@ -527,12 +524,9 @@ typedef struct search_modes
 \item[EXAMPLE]\quad\\
 Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
 
-\item[SEE ALSO]\quad\\
-
-
 \end{description}
-
 \pagebreak
+
 \subsection{Pointer Manipulation}
 \begin{description}
 \item[NAME]\quad\\
@@ -555,20 +549,68 @@ DLL_Return DLL_RestoreCurrentPointer(List *list);
 \end{alltt}
 
 \item[DESCRIPTION]\quad\\
-The current pointer in the link list keeps track of the last used node.  In order for this to be of benefit there needs to be a way of controlling where this pointer is located within the list.  These functions allow the repositioning and storing of this pointer during program execution.
+The \emph{current} pointer in the link list keeps track of the last used node.  In order for this to be of benefit there needs to be a way of controlling where this pointer is located within the list.  These functions allow the repositioning and storing of this pointer during program execution.
+\vspace{8pt}
 
+\noindent
+All of these functions return the enumerated type \emph{DLL\_Return} and take only one argument \textbf{list} the pointer returned by \emph{DLL\_CreateList}.
 
+ \begin{description}
+ \item[DLL\_CurrentPointerToHead]\quad\\
+ This function sets the \emph{current} pointer to the head of the list and sets the \emph{index} counter to one.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no nodes allocated and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
+ \item[DLL\_CurrentPointerToTail]\quad\\
+ This function sets the \emph{current} pointer to the tail of the list and sets the index counter to the \textbf{listsize} counter.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_IncrementCurrentPointer]\quad\\
+ This function increments the \emph{current} pointer and the \emph{index} counter each by one.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes, \textbf{DLL\_NOT\_FOUND} indicates that the end of the list has been reached, and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_DecrementCurrentPointer]\quad\\
+ This function decrements the \emph{current} pointer and the \emph{index} counter each by one.  A return value of \textbf{DLL\_NULL\_LIST} indicates that the list has no allocated nodes, \textbf{DLL\_NOT\_FOUND} indicates that the beginning of the list has been reached, and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_StoreCurrentPointer]\quad\\
+ This function stores the \emph{current} pointer and the \emph{index} counter in the \emph{Top Level Struct} for later retrieval.  Only one value can be stored at a time so calling this function again will destroy the first stored pointer and index values.  A return value of \textbf{DLL\_NOT\_FOUND} indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_RestoreCurrentPointer]\quad\\
+ This function restores the \emph{current} pointer and the \emph{index} counter from the \emph{Top Level Struct}.  Since only one value can be stored at a time calling this function again will return the last pointer and index values.  A return value of \textbf{DLL\_NOT\_FOUND} indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ \end{description}
+
+\item[EXAMPLE]\quad\\
+Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
+
+\end{description}
+\pagebreak
+
+\subsection{List Update}
+\begin{description}
+\item[NAME]\quad\\
+DLL\_AddRecord(), DLL\_InsertRecord(), DLL\_SwapRecord(),\\
+DLL\_UpdateCurrentRecord(), DLL\_DeleteCurrentRecord(),\\
+DLL\_DeleteEntireList() --- List Update Functions.
+
+\item[SYNOPSIS]
+\begin{alltt}
+
+#include <linklist.h>
+
+DLL_Return DLL_AddRecord(List *list, Info *info,
+   int (*pFun)(Info *, Info *));
+DLL_Return DLL_InsertRecord(List *list, Info *info,
+   DLL_InsertDir dir);
+DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir);
+DLL_Return DLL_UpdateCurrentRecord(List *list,
+   Info *record);
+DLL_Return DLL_DeleteCurrentRecord(List *list);
+DLL_Return DLL_DeleteEntireList(List *list);
+\end{alltt}
+
+\item[DESCRIPTION]\quad\\
 
 
 
 
 \end{description}
-
-
-
-
-
+\pagebreak
 
 
 \end{document}
