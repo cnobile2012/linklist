@@ -2,6 +2,10 @@ CVS
 .cvsignore
 tar-exclude
 test.dat
+libdll.*
+dll_test
+*.o
+*.err
 *.aux
 *.dvi
 *.log
