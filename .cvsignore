@@ -1,3 +1,1 @@
-CVS
-tar-exclude
-.cvsignore
+CVS tar-exclude .cvsignore
