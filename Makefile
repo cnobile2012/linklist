@@ -94,10 +94,10 @@ html	:
 	( cd docs/Linklist; rm -rf TMP *.aux *.dvi *.log *.tex *.toc *.pl *.old )
 	( cd docs/Linklist; ln -sf ../image.gif img1.gif )
 
-# Be sure to run this command twice or there won't
-# be a Table of Contents in the postscript file.
+# Be sure to run latex twice or there won't be
+# a Table of Contents in the postscript file.
 postscript:
-	( cd docs; latex Linklist.tex; \
+	( cd docs; latex Linklist.tex; latex Linklist.tex; \
 	 dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps )
 
 docs	: postscript html
