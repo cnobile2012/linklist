@@ -194,7 +194,7 @@ int main_menu(void)
    do
       {
       fputs("\nEnter your choice: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 16);
@@ -279,7 +279,7 @@ int sort_menu(void)
    do
       {
       fputs("\nEnter your choice: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
@@ -363,7 +363,7 @@ int insert_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -452,7 +452,7 @@ int update_select(void)
    do
       {
       fputs("\nEnter field to update choice: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 6);
@@ -474,7 +474,7 @@ void input(char *prompt, char *s, size_t count)
    for(;;)
       {
       fputs(prompt, stdout);
-      fgets(str, 2, stdin);
+      gets(str);
 
       if(strlen(str) < count)
          break;
@@ -587,7 +587,7 @@ int method_menu(void)
    do
       {
       fputs("\nChoose a find method: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -832,7 +832,7 @@ int find_by_match_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
@@ -858,7 +858,7 @@ int find_by_Nth_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
@@ -883,7 +883,7 @@ int origin_menu(void)
    do
       {
       fputs("\nChoose origin of search: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 3);
@@ -907,7 +907,7 @@ int direction_menu(void)
    do
       {
       fputs("\nChoose direction of search: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -994,7 +994,7 @@ int field_menu(void)
    do
       {
       fputs("\nChoose field to search on: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 5);
@@ -1337,7 +1337,7 @@ int swap_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, 2, stdin);
+      gets(s);
       c = atoi(s);
       }
    while(c < 0 || c > 2);

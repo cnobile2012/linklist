@@ -26,7 +26,10 @@ Ver 2.0.0 --
      functions: DLL_DeleteEntireList, DLL_AddRecord, and in other functions
      that call the hidden functions.
 
-(5)  
+(5)  There is now a return value for DLL_DestroyList to permit an error in
+     a destroy read/write lock to be interrogated.
+
+(6)  
 
 Ver 1.1.0 -- July 05, 1999
 

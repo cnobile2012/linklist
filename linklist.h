@@ -17,23 +17,21 @@
 #  include <pthread.h>
 
 /* Definitions for cross platform compatibility. */
-#  define THREAD_RWLOCK_STRUCT  pthread_rwlock_t
-#  define THREAD_RWLOCK_INIT    pthread_rwlock_init
-#  define THREAD_RWLOCK_DESTROY pthread_rwlock_destroy
-#  define THREAD_RWLOCK_RLOCK   pthread_rwlock_rdlock
-#  define THREAD_RWLOCK_WLOCK   pthread_rwlock_wrlock
-#  define THREAD_RWLOCK_UNLOCK  pthread_rwlock_unlock
+#  define WITH_RETURN               1
+#  define WITHOUT_RETURN            0
+#  define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
+#  define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init((a),(b))) \
+                                    return(DLL_THR_ERROR)
+#  define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy((a))) \
+                                    return(DLL_THR_ERROR)
+#  define THREAD_RWLOCK_RLOCK(a,b)  if(pthread_rwlock_rdlock((a)) && (b)) \
+                                    return(DLL_THR_ERROR)
+#  define THREAD_RWLOCK_WLOCK(a,b)  if(pthread_rwlock_wrlock((a)) && (b)) \
+                                    return(DLL_THR_ERROR)
+#  define THREAD_RWLOCK_UNLOCK(a,b) if(pthread_rwlock_unlock((a)) && (b)) \
+                                    return(DLL_THR_ERROR)
 #  endif /* defined (LINUX) */
 #endif /* defined (_DLL_MAIN_C) */
-
-/*
- * type defines
- */
-typedef enum
-   {
-   DLL_FALSE,
-   DLL_TRUE
-   } DLL_Boolean;
 
 typedef enum
    {
@@ -46,8 +44,18 @@ typedef enum
    DLL_WRITE_ERROR,        /* File write error */
    DLL_READ_ERROR,         /* File read error */
    DLL_NOT_MODIFIED,       /* Unmodified list */
-   DLL_NULL_FUNCTION       /* NULL function pointer */
+   DLL_NULL_FUNCTION,      /* NULL function pointer */
+   DLL_THR_ERROR           /* Thread error */
    } DLL_Return;
+
+/*
+ * type defines
+ */
+typedef enum
+   {
+   DLL_FALSE,
+   DLL_TRUE
+   } DLL_Boolean;
 
 typedef enum
    {
@@ -140,7 +148,6 @@ typedef struct search_modes
  * Prototypes
  */
 List *DLL_CreateList(List **list);
-void DLL_DestroyList(List **list);
 char *DLL_Version(void);
 DLL_Boolean DLL_IsListEmpty(List *list);
 DLL_Boolean DLL_IsListFull(List *list);
@@ -151,6 +158,7 @@ DLL_Return DLL_CurrentPointerToTail(List *list);
 DLL_Return DLL_DecrementCurrentPointer(List *list);
 DLL_Return DLL_DeleteCurrentRecord(List *list);
 DLL_Return DLL_DeleteEntireList(List *list);
+DLL_Return DLL_DestroyList(List **list);
 DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long nRec);
 DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
  int (*pFun)(Info *, Info *));
