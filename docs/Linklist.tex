@@ -11,7 +11,7 @@
 %
 \documentclass[10pt,letterpaper,titlepage]{article}
 
-\usepackage{alltt, graphicx}
+\usepackage{alltt, graphicx, color}
 
 \newenvironment{lquote}{\begin{list}{}{}\item[]}{\end{list}}
 
@@ -54,16 +54,18 @@ April 1999
 This Doubly Linked List can be downloaded from the following sites.  The first site below has a web page dedicated to the API.  All current releases will become available here first.
 \vspace{8pt}
 
-\noindent
+\begin{alltt}
 http://eggwarmer.AppliedTheory.com/~cnobile
+\end{alltt}
 \vspace{8pt}
 
 \noindent
 You will also find the API at the following site and its mirrors.
 \vspace{8pt}
 
-\noindent
+\begin{alltt}
 ftp://sunsite.unc.edu/pub/Linux/lib
+\end{alltt}
 \vspace{8pt}
 
 \noindent
@@ -212,12 +214,15 @@ Most implementations of link lists allocate a single node per record and these n
 \vspace{8pt}
 
 \noindent
-A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment where the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy.  The first level we will refer to as the 'Top Level Struct'.  All the global data is held by one of these structures and it is allocated once for each incident of the link list.  
+A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment where the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy as pictured on the following page.
+\vspace{8pt}
 
-%\includegraphics[width=5in]{linklistDiagram.gif}
+\noindent
+The first level we will refer to as the 'Top Level Struct'.  All the global data is held by one of these structures and it is allocated once for each incident of the link list.  
 
 \small
 \begin{alltt}
+
 typedef struct list
    \{
    Node           *head;         /* pointer to head record */
@@ -251,6 +256,16 @@ typedef struct node
 \normalsize
 \vspace{8pt}
 
+\pagebreak
+\noindent
+\rotatebox{90}{\includegraphics{linklistDiagram.eps}}
+\vspace{8pt}
+
+\begin{center}
+Hierarchical Structure of the Doubly Linked List
+\end{center}
+
+\pagebreak
 \noindent
 The third and final level is the 'Info Struct', which holds the actual data inserted by the application.  The Info Struct is defined by the developer and is only restricted by the environment in which the application runs or is compiled in.
 
@@ -382,7 +397,7 @@ The initialization group of functions must be used in the allocation and freeing
  This function is called first to create the environment of the link list package.  It is passed \textbf{list} a pointer to a pointer of the \emph{Top Level Struct} type \emph{List}.  This pointer is returned both as the return value of the function and in the argument \textbf{list}.
 
  \item[DLL\_InitializeList]\quad\\
- After the \emph{Info Struct} has been defined this function is called to initialize the environment.  It is passed \textbf{list} the value returned from the previous function call and \textbf{infosize} the size in bytes of the \emph{Info Struct}.  It returns \textbf{DLL\_ZERO\_INFO} if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successful.
+ After defining the \emph{Info} structure this function is called to initialize the environment.  Its first argument \textbf{list} is the value returned from \emph{DLL\_CreateList} and the second argument \textbf{infosize} is the size in bytes of the \emph{Info} structure.  The value \textbf{DLL\_ZERO\_INFO} is returned if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successful.
 
  \item[DLL\_DestroyList]\quad\\
  Upon exiting the application this function when called will free all memory allocated during this instance of the list.  It is passed \textbf{list} the value returned from \emph{DLL\_CreateList} and has no return value of its own, however, the argument \textbf{list} is set to NULL.
@@ -440,9 +455,9 @@ void main(void)
 \subsection{Status and State}
 \begin{description}
 \item[NAME]\quad\\
-DLL\_Version(), DLL\_IsListEmpty(), DLL\_IsListFull(),\\
-DLL\_GetNumberOfRecords(), DLL\_SetSearchModes(),\\
-DLL\_GetSearchModes(), DLL\_GetCurrentIndex()\\
+DLL\_Version, DLL\_IsListEmpty, DLL\_IsListFull,\\
+DLL\_GetNumberOfRecords, DLL\_SetSearchModes,\\
+DLL\_GetSearchModes, DLL\_GetCurrentIndex\\
  --- Status and State Functions.
 
 \item[SYNOPSIS]
@@ -455,9 +470,9 @@ DLL_Boolean DLL_IsListEmpty(List *list);
 DLL_Boolean DLL_IsListFull(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);
 DLL_Return DLL_SetSearchModes(List *list,
-   DLL_SrchOrigin origin, DLL_SrchDir dir);
+            DLL_SrchOrigin origin, DLL_SrchDir dir);
 DLL_SearchModes *DLL_GetSearchModes(List *list,
-   DLL_SearchModes *ssp);
+                  DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
 \end{alltt}
 
@@ -479,7 +494,7 @@ Contributions: Charlie Buckheit
  This function determines if the link list has any nodes defined by testing if the head and tail pointers are NULL.  It returns \textbf{DLL\_TRUE} if the list is empty and \textbf{DLL\_FALSE} if the list has valid nodes.
 
  \item[DLL\_IsListFull]\quad\\
- This function determines if there is enough memory to create a new \emph{Node Struct} and \emph{Info Struct} by creating and then deleting them.  It returns \textbf{DLL\_TRUE} if either of the two structures could not be allocated and \textbf{DLL\_FALSE} if the memory allocations were successful.
+ This function determines if there is enough memory to create new \emph{Node} and \emph{Info} structures by creating and then deleting them.  It returns \textbf{DLL\_TRUE} if either of the two structures could not be allocated and \textbf{DLL\_FALSE} if the memory allocations were successful.
 
  \item[DLL\_GetNumberOfRecords]\quad\\
  This function returns the number of records currently in the link list by retrieving a counter value.  It returns the number of nodes allocated where a return value of zero is an empty list.
@@ -508,11 +523,11 @@ Contributions: Charlie Buckheit
  This function gets the state of the search criteria, which can either be the default values or those set by \emph{DLL\_SetSearchModes}.  It's second argument is \textbf{ssp} a pointer to the structure below.  It returns a pointer to this same instance of the structure.
 
  \begin{alltt}
-typedef struct search_modes
-   \{
-   DLL_SrchOrigin search_origin;
-   DLL_SrchDir    search_dir;
-   \} DLL_SearchModes;
+   typedef struct search_modes
+      \{
+      DLL_SrchOrigin search_origin;
+      DLL_SrchDir    search_dir;
+      \} DLL_SearchModes;
  \end{alltt}
 
 \emph{NOTE: This function has a different argument list starting with release linlkist-1.1.0.  The original function allocated the structure internally to the function which was not thread safe.}
@@ -530,9 +545,9 @@ Examples of most of these functions can be seen in the source file \emph{dll\_te
 \subsection{Pointer Manipulation}
 \begin{description}
 \item[NAME]\quad\\
-DLL\_CurrentPointerToHead(), DLL\_CurrentPointerToTail(),\\
-DLL\_IncrementCurrentPointer(), DLL\_DecrementCurrentPointer(),\\
-DLL\_StoreCurrentPointer(), DLL\_RestoreCurrentPointer()\\
+DLL\_CurrentPointerToHead, DLL\_CurrentPointerToTail,\\
+DLL\_IncrementCurrentPointer, DLL\_DecrementCurrentPointer,\\
+DLL\_StoreCurrentPointer, DLL\_RestoreCurrentPointer\\
   --- Pointer Manipulation Functions.
 
 \item[SYNOPSIS]
@@ -584,9 +599,9 @@ Examples of most of these functions can be seen in the source file \emph{dll\_te
 \subsection{List Update}
 \begin{description}
 \item[NAME]\quad\\
-DLL\_AddRecord(), DLL\_InsertRecord(), DLL\_SwapRecord(),\\
-DLL\_UpdateCurrentRecord(), DLL\_DeleteCurrentRecord(),\\
-DLL\_DeleteEntireList() --- List Update Functions.
+DLL\_AddRecord, DLL\_InsertRecord, DLL\_SwapRecord,\\
+DLL\_UpdateCurrentRecord, DLL\_DeleteCurrentRecord,\\
+DLL\_DeleteEntireList --- List Update Functions.
 
 \item[SYNOPSIS]
 \begin{alltt}
@@ -594,23 +609,209 @@ DLL\_DeleteEntireList() --- List Update Functions.
 #include <linklist.h>
 
 DLL_Return DLL_AddRecord(List *list, Info *info,
-   int (*pFun)(Info *, Info *));
+            int (*pFun)(Info *, Info *));
 DLL_Return DLL_InsertRecord(List *list, Info *info,
-   DLL_InsertDir dir);
+            DLL_InsertDir dir);
 DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir);
 DLL_Return DLL_UpdateCurrentRecord(List *list,
-   Info *record);
+            Info *record);
 DLL_Return DLL_DeleteCurrentRecord(List *list);
 DLL_Return DLL_DeleteEntireList(List *list);
 \end{alltt}
 
 \item[DESCRIPTION]\quad\\
+These functions manipulate the data in the link list.  They all return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList}.
+
+ \begin{description}
+ \item[DLL\_AddRecord]\quad\\
+ This function adds a new node and record to the link list.  The second argument is a pointer to the \emph{Info} structure where the new data is stored.  The third argument is a pointer to a function used to sort the insertion of the new data.  The return value of this function is identical to the return value of the \emph{strcmp} function of the standard C library.
+ \vspace{8pt}
+
+ Where the return value is:
+ \begin{alltt}
+   less than zero:     arg1 < arg2,
+
+   zero:               arg1 == arg2, or
+
+   greater than zero:  arg1 > arg2.
+ \end{alltt}
+
+ Below is an example of this function.
+
+ \begin{alltt}
+   int sort_foo(Info *record, Info *compare)
+      \{
+      return(strcmp(rcrd->info_element,
+                    cmp->info_element));
+      \}
+
+ \end{alltt}
+ 
+ If a \emph{NULL} is passed instead of the function pointer no sorting will take place causing the next new node and record to be added to the tail of the list.  A return value of \textbf{DLL\_MEM\_ERROR} indicates that memory could not be allocated and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_InsertRecord]\quad\\
+ This function adds a new node and record to the link list above or below current record.  The new record will be current after completion.  The second argument is a pointer to the \emph{Info} structure where the new data is stored.  The third argument is passed an enumerated define of type \emph{DLL\_InsertDir}.  
+
+ \small
+ \begin{alltt}
+typedef enum
+   \{
+   DLL_INSERT_DEFAULT, /* Use current insert setting */
+   DLL_ABOVE,     /* Insert new record ABOVE current record */
+   DLL_BELOW      /* Insert new record BELOW current record */ 
+   \} DLL_InsertDir;
+ \end{alltt}
+ \normalsize
+
+ In the current version the value \textbf{DLL\_INSERT\_DEFAULT} is not used, it has been included for conformity to other like definitions and possible future expansion.
+\vspace{8pt}
+
+\noindent
+ The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates a wrong value was passed in the argument \emph{dir}; \textbf{DLL\_MEM\_ERROR} indicates that memory could not be allocated; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_SwapRecord]\quad\\
+ This function swaps the current record up or down one place in the list.  The swapped record will remain current after completion.  The second argument is passed the same enumerated define of type \emph{DLL\_InsertDir} as the function \textbf{DLL\_InsertRecord} above.  The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates a wrong value was passed in the argument \emph{dir}; \textbf{DLL\_NULL\_LIST} indicates that the list is empty and there is nothing to swap; \textbf{DLL\_NOT\_FOUND} indicates that the current node is either at the head and cannot be swapped above or is at the tail and cannot be swapped below; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_UpdateCurrentRecord]\quad\\
+ This function replaces the current data in an \emph{Info} structure with updated data from the application.  The entire structure gets over written so all elements in the updating structure will need to be present whether or not they have been changed.  The second argument of this function is passed a pointer to an \emph{Info} structure which contains the updated information.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_DeleteCurrentRecord]\quad\\
+ This function deletes the current \emph{Node} and its \emph{Info} structures from the list.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_DeleteEntireList]\quad\\
+ This function deletes all the \emph{Node} and \emph{Info} structures from the list.  It does not delete the \emph{Top Level Struct} allowing the application to add new records without having to re-initialize the list again.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ \end{description}
+
+\item[EXAMPLE]\quad\\
+Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
+
+\end{description}
+\pagebreak
+
+\subsection{Search}
+\begin{description}
+\item[NAME]\quad\\
+DLL\_FindRecord, DLL\_FindNthRecord, DLL\_GetCurrentRecord,\\
+DLL\_GetPriorRecord, DLL\_GetNextRecord -- Search Functions.
+
+\item[SYNOPSIS]
+\begin{alltt}
+
+#include <linklist.h>
+
+DLL_Return DLL_FindRecord(List *list, Info *record,
+            Info *match, int (*pFun)(Info *, Info *));
+DLL_Return DLL_FindNthRecord(List *list, Info *record,
+            unsigned long skip);
+DLL_Return DLL_GetCurrentRecord(List *list, Info *record);
+DLL_Return DLL_GetPriorRecord(List *list, Info *record);
+DLL_Return DLL_GetNextRecord(List *list, Info *record);
+\end{alltt}
+
+\item[DESCRIPTION]\quad\\
+These functions retreive data from the list.  They all return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList}.
+
+ \begin{description}
+ \item[DLL\_FindRecord]\quad\\
+ This function returns in its second argument a record found using the criteria passed in its third argument based on the logic of a function passed as its forth argument.  See \textbf{DLL\_SetSearchModes} for setting the search direction and origin.  The form of the passed in function containing the search criteria is the same as that used by the \textbf{DLL\_AddRecord}, but in this case a \emph{NULL} function pointer cannot be passed.  It is shown below for convenience.
+ \vspace{8pt}
+
+ Where the return value is:
+ \begin{alltt}
+   less than zero:     arg1 < arg2,
+
+   zero:               arg1 == arg2, or
+
+   greater than zero:  arg1 > arg2.
+ \end{alltt}
+
+ Below is an example of this function.
+
+ \begin{alltt}
+   int sort_foo(Info *record, Info *compare)
+      \{
+      return(strcmp(rcrd->info_element,
+                    cmp->info_element));
+      \}
+
+ \end{alltt}
+
+  The value \textbf{DLL\_NULL\_FUNCTION}, if returned, indicates that a \textbf{NULL} value was passed as the forth argument; \textbf{DLL\_NULL\_LIST} indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_FindNthRecord]\quad\\
+ This function returns in its second argument the record found by adding the skip value passed in the third argument to the index value of the current record.  The skip value is an \emph{unsigned long} integer.  See \textbf{DLL\_SetSearchModes} for setting the search direction and origin.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found in the list or that the \emph{skip} value was out of range; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_GetCurrentRecord]\quad\\
+ This function returns in its second argument the current record.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_GetPriorRecord]\quad\\
+ This function returns in its second argument the record just prior to the current record.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that the current record is at the head of the list and there is no prior record; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_GetNextRecord]\quad\\
+ This function returns in its second argument the record just after the current record.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that the current record is at the tail of the list and there is no next record; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ \end{description}
+
+\item[EXAMPLE]\quad\\
+Examples of most of these functions can be seen in the source file \emph{dll\_test.c} used in the testing of the link list API.
+
+\end{description}
+\pagebreak
+
+\subsection{Input/Output}
+\begin{description}
+\item[NAME]\quad\\
+DLL\_SaveList, DLL\_LoadList -- Input/Output Functions.
+
+\item[SYNOPSIS]
+\begin{alltt}
+
+#include <linklist.h>
+
+DLL_Return DLL_SaveList(List *list, const char *path);
+DLL_Return DLL_LoadList(List *list, const char *path,
+            int (*pFun)(Info *, Info *))
+\end{alltt}
+
+\item[DESCRIPTION]\quad\\
+These functions are designed to easily write and read the link list data to a disk.  They take advantage of their ability to access the \emph{Top Level Struct} for saving and loading data quickly, however, this will only be useful in limited cases as most implementations will need application specific file formats.  Both return the enumerated type \emph{DLL\_Return} and take as their first argument \textbf{list} the pointer returned by \emph{DLL\_CreateList} and as their second argument \textbf{path} a pointer to the file name.
+
+ \begin{description}
+ \item[DLL\_SaveList]\quad\\
+ This function saves all the \emph{Info} structures including any \emph{NULL} characters in the elements.  The record size is equal to \textbf{infosize} the second argument of the \emph{DLL\_InitializeList} function.
+\vspace{8pt}
+
+\noindent
+  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_OPEN\_ERROR} indicates that the file could not be opened for writing; \textbf{DLL\_WRITE\_ERROR} indicates that there was an error while writing to the file meaning that the data in the list should not be trusted; \textbf{DLL\_NOT\_MODIFIED} indicates that the list has not been modified since the last save and no updating to the file was done; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+
+ \item[DLL\_LoadList]\quad\\
+ This function retrives from a file data based on the same criteria that it was saved with.  See \emph{DLL\_SaveList} above.  The third argument \textbf{pFun} is a pointer to a sorting function the same as can be found in \textbf{DLL\_AddRecord}.  A \emph{NULL} function pointer can be passes if no sorting is needed.
+ \vspace{8pt}
+
+ Where the return value is:
+ \begin{alltt}
+   less than zero:     arg1 < arg2,
+
+   zero:               arg1 == arg2, or
+
+   greater than zero:  arg1 > arg2.
+ \end{alltt}
+
+ Below is an example of this function.
+
+ \begin{alltt}
+   int sort_foo(Info *record, Info *compare)
+      \{
+      return(strcmp(rcrd->info_element,
+                    cmp->info_element));
+      \}
+
+ \end{alltt}
+ 
+ \end{description}
 
 
 
 
 \end{description}
-\pagebreak
-
 
 \end{document}

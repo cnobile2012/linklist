@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1999 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 05/18/99
+ * Updated: 06/14/99
  *
  * $Author$
  * $Date$
@@ -528,7 +528,8 @@ DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
  *
  * Returns  : DLL_NORMAL       -- Node was added successfully
  *            DLL_MEM_ERROR    -- Memory allocation failed
- *            DLL_NOT_MODIFIED -- Insert direction not DLL_ABOVE or DLL_BELOW
+ *            DLL_NOT_MODIFIED -- Insert direction is invalid (not DLL_ABOVE
+ *                                or DLL_BELOW)
  */
 DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
 	{
@@ -846,7 +847,7 @@ DLL_Return DLL_DeleteEntireList(List *list)
  */
 
 /*
- * DLL_FindRecord() : Find a record in list
+ * DLL_FindRecord() : Find a record in list with search criteria
  *
  * Status   : Public
  *

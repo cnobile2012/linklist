@@ -35,8 +35,9 @@ OPTIONS	= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions -Wall
 LIBDIR	= /usr/local/lib
 INCDIR	= /usr/local/include
 THISLIB	= -L./ -ldll
-MJV	= 1
-MNV	= 1.0
+MAJORVERSION = 1
+MINORVERSION = 1
+PATCHLEVEL = 0
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
@@ -47,11 +48,11 @@ OBJS1	= $(PROG).o
 OBJS2	= $(TEST).o
 #--------------------------------------------------------------
 all	:
-	make libdll.so.$(MJV).$(MNV) DEBUG=
+	make libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) DEBUG=
 	make $(TEST) DEBUG=
 
 debug	:
-	make libdll.so.$(MJV).$(MNV) OFP=
+	make libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) OFP=
 	make $(TEST) OFP=
 
 static	:
@@ -69,11 +70,12 @@ test	:
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $< 2>$(ERRFILE)
 
-libdll.so.$(MJV).$(MNV): $(OBJS1)
-	$(CC) -shared -Wl,-soname,libdll.so.$(MJV) -o libdll.so.$(MJV).$(MNV) \
-	 $(OBJS1)
-	ln -s libdll.so.$(MJV).$(MNV) libdll.so.$(MJV)
-	ln -s libdll.so.$(MJV) libdll.so
+libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL): $(OBJS1)
+	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
+	 -o libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(OBJS1)
+	ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
+	 libdll.so.$(MAJORVERSION)
+	ln -s libdll.so.$(MAJORVERSION) libdll.so
 
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -92,10 +94,11 @@ clobber	:
 
 install	:
 	rm -f $(LIBDIR)/libdll.so*
-	cp ./libdll.so.$(MJV).$(MNV) $(LIBDIR)/libdll.so.$(MJV).$(MNV)
+	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
+	 $(LIBDIR)/libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
 	cp ./linklist.h $(INCDIR)/linklist.h
 	/sbin/ldconfig
-	( cd $(LIBDIR); ln -s libdll.so.$(MJV) libdll.so )
+	( cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so )
 
 install-static:
 	cp ./libdll.a $(LIBDIR)/libdll.a
