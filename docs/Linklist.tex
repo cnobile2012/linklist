@@ -88,7 +88,7 @@ The intent of this document is to state the conditions under which a Package may
 \noindent
 Definitions:
 \begin{lquote}
-``Package'' refers to the collection of files distributed by the\linebreak Copyright Holder, and derivatives of that collection of files created through textual modification.
+``Package'' refers to the collection of files distributed by the Copyright Holder, and derivatives of that collection of files created through textual modification.
 
 ``Standard Version'' refers to such a Package if it has not been modified, or has been modified in accordance with the wishes of the Copyright Holder as specified below.
 
@@ -172,7 +172,7 @@ This package is sufficiently abstracted so that the programmer will neither need
 \vspace{8pt}
 
 \noindent
-Within this package is found the: source files written in C; make files for various platforms and compilers; text script which sets the environment correctly when it runs the demo program created by the make utility; README, INSTALL, and HISTORY text files; Artistic License; and the documentation in \LaTeXe\/ form.
+Within this package is found the: source files written in C; make files for various platforms and compilers; a text script which sets the environment correctly when it runs the demo program created by the make utility; README, INSTALL, and HISTORY text files; Artistic License; and the documentation in \LaTeXe\/ form.
 \vspace{8pt}
 
 \noindent
@@ -187,7 +187,7 @@ Then the library itself is broken into six groups: \textbf{initialization}, \tex
 
 (b) The status and state group returns various kinds of information about the status of the link list during its operation.
 
-(c) The pointer manipulation group allows the positioning of the current pointer to the head, tail or to an arbitrary node within the list.
+(c) The pointer manipulation group allows the positioning of the current pointer to the head, the tail, or an arbitrary node within the list.
 
 (d) The list update group adds and deletes nodes.
 
@@ -218,7 +218,7 @@ Most implementations of link lists allocate a single node per record and these n
 \vspace{8pt}
 
 \noindent
-A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment in which the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy as pictured on the following page.
+A well written Application Programming Interface (API) requires that the functions contained within it be reenterant and also creates an environment in which the code can be abstracted.  In order to take advantage of these two ideas the Doubly Linked List (hereafter referred to as the DLL) has a three level hierarchy as pictured in the figure.
 \vspace{8pt}
 
 \noindent
@@ -682,7 +682,7 @@ typedef enum
  The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates that a wrong value was passed in the argument \emph{dir}; \textbf{DLL\_MEM\_ERROR} indicates that memory could not be allocated; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_SwapRecord]\quad\\
- This function swaps the current record up or down one place in the list.  The swapped record will remain current after completion.  The second argument is passed the same enumerated define of type \emph{DLL\_InsertDir} as the function \textbf{DLL\_InsertRecord} above.  The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates a wrong value was passed in the argument \emph{dir}; \textbf{DLL\_NULL\_LIST} indicates that the list is empty and there is nothing to swap; \textbf{DLL\_NOT\_FOUND} indicates that the current node is either at the head and cannot be swapped above or is at the tail and cannot be swapped below; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function swaps the current record up or down one place in the list.  The swapped record will remain current after completion.  The second argument is passed the same enumerated define of type \emph{DLL\_InsertDir} as the function \textbf{DLL\_InsertRecord} above.  The value \textbf{DLL\_NOT\_MODIFIED}, if returned, indicates that a value other than the type \emph{DLL\_InsertDir} was passed in the argument \emph{dir}; \textbf{DLL\_NULL\_LIST} indicates that the list is empty and there are no nodes to swap; \textbf{DLL\_NOT\_FOUND} indicates that the current node is either at the head and cannot be swapped above or is at the tail and cannot be swapped below; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_UpdateCurrentRecord]\quad\\
  This function replaces the current data in an \emph{Info} structure with updated data from the application.  The entire structure gets overwritten so all elements in the updating structure will need to be present whether or not they have been changed.  The second argument of this function is passed a pointer to an \emph{Info} structure which contains the updated information.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
@@ -748,7 +748,7 @@ These functions retreive data from the list.  They all return the enumerated typ
 
 \end{verbatim}
 
-  The value \textbf{DLL\_NULL\_FUNCTION}, if returned, indicates that a \textbf{NULL} value was passed as the fourth argument; \textbf{DLL\_NULL\_LIST} indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+  The value \textbf{DLL\_NULL\_FUNCTION}, if returned, indicates that a \textbf{NULL} was passed as the fourth argument; \textbf{DLL\_NULL\_LIST} indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
  \item[DLL\_FindNthRecord]\quad\\
  This function returns in its second argument the record found by adding the skip value passed in the third argument to the index value of the current record.  The skip value is an \emph{unsigned long} integer.  See \textbf{DLL\_SetSearchModes} for setting the search direction and origin.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found in the list or that the \emph{skip} value was out of range; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
