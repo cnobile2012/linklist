@@ -1,7 +1,7 @@
 /*
  * dll_pthread_ext.h : Header file for the dll_pthread_ext.c source file.
  *
- * Copyright (c) 1996-1999 Carl J. Nobile
+ * Copyright (c) 1996-2001 Carl J. Nobile
  * Created: May 11, 2000
  *
  * $Author$

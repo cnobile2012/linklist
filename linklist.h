@@ -1,7 +1,7 @@
 /*
  * linklist.h : Header file for the linklist API
  *
- * Copyright (c) 1996-1999 Carl J. Nobile
+ * Copyright (c) 1996-2001 Carl J. Nobile
  * Created: December 22, 1996
  *
  * $Author$
@@ -17,67 +17,28 @@ extern "C"
 {
 #endif
 
-#if defined (_DLL_MAIN_C)
-#  if defined (_DLL_POSIX)
-#  include <pthread.h>
-#  define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
-
+#if defined (_DLL_THREADS)
+#  if defined (_DLL_MAIN_C)
+#  include "dll_lock_wrappers.h"
+#  else /* defined (_DLL_MAIN_C) */
 #    if defined (LINUX) || defined (OSF1)
-
-     /* Definitions for cross platform compatibility. */
-#    define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init((a),(b))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy((a))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_RLOCK(a)    if(pthread_rwlock_rdlock((a))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_WLOCK(a)    if(pthread_rwlock_wrlock((a))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_UNLOCK(a)   if(pthread_rwlock_unlock((a))) \
-                                      return(DLL_THR_ERROR)
-     /* With no return value. */
-#    define THREAD_RWLOCK_RLOCK_NR    (void) pthread_rwlock_rdlock
-#    define THREAD_RWLOCK_WLOCK_NR    (void) pthread_rwlock_wrlock
-#    define THREAD_RWLOCK_UNLOCK_NR   (void) pthread_rwlock_unlock
-
+#    include <pthread.h>
+#    define RWLOCK_T      pthread_rwlock_t
 #    elif defined (SOLARIS)
 #    include "dll_pthread_ext.h"
-
-#    define THREAD_RWLOCK_INIT(a,b)   if(pthread_rwlock_init_np((a),(b))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_DESTROY(a)  if(pthread_rwlock_destroy_np((a))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_RLOCK(a)    if(pthread_rwlock_rdlock_np((a))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_WLOCK(a)    if(pthread_rwlock_wrlock_np((a))) \
-                                      return(DLL_THR_ERROR)
-#    define THREAD_RWLOCK_UNLOCK(a)   if(pthread_rwlock_unlock_np((a))) \
-                                      return(DLL_THR_ERROR)
-     /* With no return value. */
-#    define THREAD_RWLOCK_RLOCK_NR    (void) pthread_rwlock_rdlock_np
-#    define THREAD_RWLOCK_WLOCK_NR    (void) pthread_rwlock_wrlock_np
-#    define THREAD_RWLOCK_UNLOCK_NR   (void) pthread_rwlock_unlock_np
+#    define RWLOCK_T      pthread_rwlock_t
 #    endif /* platform dependencies */
-#  else /* defined (_DLL_POSIX) */
-   /* Dummy macros if _DLL_POSIX is not defined */
-#  define THREAD_RWLOCK_STRUCT
-#  define THREAD_RWLOCK_INIT(a,b)
-#  define THREAD_RWLOCK_DESTROY(a)
-#  define THREAD_RWLOCK_RLOCK(a)
-#  define THREAD_RWLOCK_WLOCK(a)
-#  define THREAD_RWLOCK_UNLOCK(a)
-#  define THREAD_RWLOCK_RLOCK_NR
-#  define THREAD_RWLOCK_WLOCK_NR
-#  define THREAD_RWLOCK_UNLOCK_NR
-#  endif /* defined (_DLL_POSIX) */
-#else /* defined (_DLL_MAIN_C) */
-#define THREAD_RWLOCK_STRUCT      pthread_rwlock_t
-#  if defined (LINUX) || defined (OSF1)
-#  include <pthread.h>
-#  elif defined (SOLARIS)
-#  include "dll_pthread_ext.h"
-#  endif /* platform dependencies */
-#endif /* defined (_DLL_MAIN_C) */
+#  endif /* defined (_DLL_MAIN_C) */
+#else
+/* Dummy macros if _DLL_THREADS is not defined */
+#define RWLOCK_INIT(a,b)
+#define RWLOCK_DESTROY(a)
+#define RWLOCK_RLOCK(a)
+#define RWLOCK_WLOCK(a)
+#define RWLOCK_UNLOCK(a)
+#define RWLOCK_RLOCK_NR(a)
+#define RWLOCK_UNLOCK_NR(a)
+#endif /* defined (_DLL_THREADS) */
 
 typedef enum
    {
@@ -91,9 +52,10 @@ typedef enum
    DLL_READ_ERROR,         /* File read error */
    DLL_NOT_MODIFIED,       /* Unmodified list */
    DLL_NULL_FUNCTION,      /* NULL function pointer */
-#if defined (_DLL_POSIX)
-   DLL_THR_ERROR           /* Thread error */
+#if defined (_DLL_THREADS)
+   DLL_THR_ERROR,          /* Thread error */
 #endif
+   DLL_STK_ERROR           /* Stack error */
    } DLL_Return;
 
 /*
@@ -166,27 +128,39 @@ typedef struct node
    struct node *prior;
    } Node;
 
-
 typedef struct list
    {
-   Node                 *head;
-   Node                 *tail;
-   Node                 *current;
-   Node                 *saved;
-   size_t               infosize;
-   unsigned long        listsize;
-   unsigned long        current_index;
-   unsigned long        save_index;
-   DLL_Boolean          modified;
-   DLL_SrchOrigin       search_origin;
-   DLL_SrchDir          search_dir;
-#if defined (_DLL_POSIX)
-   THREAD_RWLOCK_STRUCT rwl_t;
+   DLL_Boolean    sessions;
+   void           *mainSession;
+   Node           *head;
+   Node           *tail;
+   Node           *current;
+   size_t         infosize;
+   unsigned long  listsize;
+   unsigned long  current_index;
+   DLL_Boolean    modified;
+   DLL_SrchOrigin search_origin;
+   DLL_SrchDir    search_dir;
+#if defined (_DLL_THREADS)
+   RWLOCK_T       rwl_t;
 #endif
    } List;
 #else
 typedef struct list List;
+typedef struct node Node;
 #endif   /* _DLL_MAIN_C || DEBUG */
+
+#define DEFAULT_STACK_SIZE    10
+
+typedef struct session
+   {
+   DLL_Boolean   sessions;
+   List          *list;
+   Node          **stack;
+   size_t        maxStackSize;
+   size_t        topOfStack;
+   unsigned long saveIndex;
+   } DLL_Session;
 
 typedef struct search_modes
    {
@@ -199,38 +173,43 @@ typedef struct search_modes
  * Prototypes
  */
 List *DLL_CreateList(List **list);
+List *DLL_CreateSession(List *list, size_t stackDepth);
 char *DLL_Version(void);
-DLL_Boolean DLL_IsListEmpty(List *list);
-DLL_Boolean DLL_IsListFull(List *list);
-DLL_Return DLL_AddRecord(List *list, Info *info,
+DLL_Boolean DLL_IsListEmpty(List *slist);
+DLL_Boolean DLL_IsListFull(List *slist);
+DLL_Return DLL_AddRecord(List *slist, Info *info,
  int (*pFun)(Info *, Info *));
-DLL_Return DLL_CurrentPointerToHead(List *list);
-DLL_Return DLL_CurrentPointerToTail(List *list);
-DLL_Return DLL_DecrementCurrentPointer(List *list);
-DLL_Return DLL_DeleteCurrentRecord(List *list);
-DLL_Return DLL_DeleteEntireList(List *list);
-DLL_Return DLL_DestroyList(List **list);
-DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long nRec);
-DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
+DLL_Return DLL_CurrentPointerToHead(List *slist);
+DLL_Return DLL_CurrentPointerToTail(List *slist);
+DLL_Return DLL_DecrementCurrentPointer(List *slist);
+DLL_Return DLL_DeleteCurrentRecord(List *slist);
+DLL_Return DLL_DeleteEntireList(List *slist);
+DLL_Return DLL_DeleteRecord(List *slist, Info *match,
  int (*pFun)(Info *, Info *));
-DLL_Return DLL_GetCurrentRecord(List *list, Info *record);
-DLL_Return DLL_GetNextRecord(List *list, Info *record);
-DLL_Return DLL_GetPriorRecord(List *list, Info *record);
+DLL_Return DLL_DestroyList(List **slist);
+DLL_Return DLL_FindNthRecord(List *slist, Info *record, unsigned long nRec);
+DLL_Return DLL_FindRecord(List *slist, Info *record, Info *match,
+ int (*pFun)(Info *, Info *));
+DLL_Return DLL_GetCurrentRecord(List *slist, Info *record);
+DLL_Return DLL_GetError(List *list);
+DLL_Return DLL_GetNextRecord(List *slist, Info *record);
+DLL_Return DLL_GetPriorRecord(List *slist, Info *record);
 DLL_Return DLL_InitializeList(List *list, size_t infosize);
-DLL_Return DLL_IncrementCurrentPointer(List *list);
-DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir);
-DLL_Return DLL_LoadList(List *list, const char *path,
+DLL_Return DLL_IncrementCurrentPointer(List *slist);
+DLL_Return DLL_InsertRecord(List *slist, Info *info, DLL_InsertDir dir);
+DLL_Return DLL_LoadList(List *slist, const char *path,
  int (*pFun)(Info *, Info *));
-DLL_Return DLL_RestoreCurrentPointer(List *list);
-DLL_Return DLL_SaveList(List *list, const char *path);
-DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
+DLL_Return DLL_RestoreCurrentPointer(List *slist);
+DLL_Return DLL_SaveList(List *slist, const char *path);
+DLL_Return DLL_SetSearchModes(List *slist, DLL_SrchOrigin origin,
  DLL_SrchDir dir);
-DLL_Return DLL_StoreCurrentPointer(List *list);
-DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir);
-DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
-DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp);
-unsigned long DLL_GetCurrentIndex(List *list);
-unsigned long DLL_GetNumberOfRecords(List *list);
+DLL_Return DLL_SetStackSize(List *slist, size_t stackDepth);
+DLL_Return DLL_StoreCurrentPointer(List *slist);
+DLL_Return DLL_SwapRecord(List *slist, DLL_InsertDir dir);
+DLL_Return DLL_UpdateCurrentRecord(List *slist, Info *record);
+DLL_SearchModes *DLL_GetSearchModes(List *slist, DLL_SearchModes *ssp);
+unsigned long DLL_GetCurrentIndex(List *slist);
+unsigned long DLL_GetNumberOfRecords(List *slist);
 
 #ifdef __cplusplus
 }

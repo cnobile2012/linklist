@@ -1,7 +1,7 @@
 /*
  * dll_test.c : Test program for double link library
  *
- * Copyright (c) 1996-2000 Carl J. Nobile
+ * Copyright (c) 1996-2001 Carl J. Nobile
  * Created: December 25, 1996
  *
  * $Author$

@@ -1,7 +1,7 @@
 /*
  * dll_pthread_ext.c : Pthread extension calls for the dll.
  *
- * Copyright (c) 1996-1999 Carl J. Nobile
+ * Copyright (c) 1996-2001 Carl J. Nobile
  * Created: May 11, 2000
  *
  * $Author$

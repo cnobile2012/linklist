@@ -1,8 +1,7 @@
 /*
- * dll_thread_test.c : Demo application for testing the implimentation of
- *                     threads in the DLL API.
+ * dll_thread_test.c : Unit test for testing threads in the DLL API.
  *
- * Copyright (c) 1996-2000 Carl J. Nobile
+ * Copyright (c) 1996-2001 Carl J. Nobile
  * Created: October 07, 2000
  *
  * $Author$
@@ -21,12 +20,17 @@
 #define FALSE        DLL_FALSE
 #define TRUE         DLL_TRUE
 
-#define NUM_TH       100
+#define NUM_TH       10
+#define NUM_RECORDS  100
 #define DISPLACEMENT 1000
+#define WHERE        "Generated from main."
+
 
 typedef struct my_stuff
    {
-   int number;
+   int  number;
+   char where;
+   char when
    } MyStuff;
 
 
@@ -49,7 +53,7 @@ int main(void)
    /* Build beginning of list */
    memset(info, '\0', sizeof(MyStuff));
 
-   for(i = 0; i < NUM_TH; i++)
+   for(i = 0; i < NUM_RECORDS; i++)
       {
       info->number = i + DISPLACEMENT;
       dllErrorHandler(DLL_AddRecord(list, info, NULL));
@@ -99,6 +103,8 @@ void dllErrorHandler(DLL_Return status)
       case DLL_THR_ERROR:
          (void) fprintf(stderr, "DLL Error: Thread error.\n");
          break;
+      case DLL_STK_ERROR:
+         (void) fprintf(stderr, "DLL Error: Stack error.\n");
       default:
          (void) fprintf(stderr, "DLL Error: Unknown error %d\n", status);
       }

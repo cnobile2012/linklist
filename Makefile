@@ -37,7 +37,7 @@ ifeq ($(OS),LINUX)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -m486 -pipe
-  COMPILER_OPT  = -ansi -fPIC -Wall -D_REENTRANT -D_GNU_SOURCE -D_DLL_POSIX
+  COMPILER_OPT  = -ansi -fPIC -Wall -D_REENTRANT -D_GNU_SOURCE -D_DLL_PTHREADS
   NON_DEBUG_OPT = -O2 -fomit-frame-pointer
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -shared -Wl,-soname,$(BASENAME).so.$(MAJOR_VER)
@@ -53,7 +53,7 @@ ifeq ($(OS),SOLARIS)
   AR            = ar rcs
   MACHINE_OPT   =
   COMPILER_OPT  = -v -KPIC -mt -xstrconst -D_POSIX_C_SOURCE=199506L \
-		  -D_DLL_POSIX
+		  -D_DLL_PTHREADS
   NON_DEBUG_OPT = -xO5 -dalign -xlibmil
   DEBUG_OPT     = -DDEBUG=1 -g -xF
   LDFLAGS       += -Wl,-G,-h,$(BASENAME).so.$(MAJOR_VER)
@@ -68,7 +68,7 @@ ifeq ($(OS),OSF1)
   CC            = cc
   AR            = ar rcs
   MACHINE_OPT   = -tune ev56
-  COMPILER_OPT  = -std1 -warnprotos -D_REENTRANT -pthread -w0 -D_DLL_POSIX
+  COMPILER_OPT  = -std1 -warnprotos -D_REENTRANT -pthread -w0 -D_DLL_PTHREADS
   NON_DEBUG_OPT = -O2 -newc -portable
   DEBUG_OPT     = -DDEBUG=1 -g -trapuv
   LDFLAGS       += -shared -msym -soname $(BASENAME).so.$(MAJOR_VER)
@@ -98,10 +98,17 @@ endif
 ###################
 CFLAGS          += -D$(OS) $(MACHINE_OPT) $(COMPILER_OPT)
 
+# Set DEBUG flag
 ifeq ($(DEBUG),YES)
   CFLAGS        += $(DEBUG_OPT)
 else
   CFLAGS        += $(NON_DEBUG_OPT)
+endif
+
+# Set THREAD flag
+ifeq ($(THREAD),YES)
+  CFLAGS        += -D_DLL_THREADS
+  EOBJS		+= dll_lock_wrappers.o
 endif
 
 # The options below should be used instead of the above on the Mac
@@ -118,36 +125,40 @@ PROG		= dll_main
 TEST		= dll_test
 SLIB		= $(BASENAME).so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
 SRCS		= $(PROG).c $(TEST).c
-OBJS1		= $(PROG).o $(EOBJS)
+OBJS1		= $(PROG).o $(EOBJS) 
 OBJS2		= $(TEST).o
 #--------------------------------------------------------------
 all	:
-	make $(SLIB) DEBUG=NO
-	make $(TEST)
+	make $(SLIB) THREAD=YES DEBUG=NO 
+	make $(TEST) THREAD=YES DEBUG=NO
+
+no-threads :
+	make $(SLIB) THREAD=NO DEBUG=NO 
+	make $(TEST) THREAD=NO DEBUG=NO
 
 debug	:
-	make $(SLIB) DEBUG=YES
-	make $(TEST) DEBUG=YES
+	make $(SLIB) THREAD=YES DEBUG=YES
+	make $(TEST) THREAD=YES DEBUG=YES
 
 static	:
-	make $(BASENAME).a DEBUG=NO
-	make $(TEST) DEBUG=NO
+	make $(BASENAME).a THREAD=YES DEBUG=NO
+	make $(TEST) THREAD=YES DEBUG=NO
 
 debug-static :
-	make $(BASENAME).a DEBUG=YES
-	make $(TEST) DEBUG=YES
+	make $(BASENAME).a THREAD=YES DEBUG=YES
+	make $(TEST) THREAD=YES DEBUG=YES
 
 # Make the test program from the installed shared libraries.
 demo	:
-	make $(TEST) DEBUG=NO
+	make $(TEST) THREAD=YES DEBUG=NO
 
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $<
 
 $(SLIB): $(OBJS1)
 	$(CC) $(LDFLAGS) $(OBJS1) -o $(SLIB)
-	ln -s $(SLIB) $(BASENAME).so.$(MAJOR_VER)
-	ln -s $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so
+	ln -sf $(SLIB) $(BASENAME).so.$(MAJOR_VER)
+	ln -sf $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so
 
 $(BASENAME).a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
