@@ -1,0 +1,12 @@
+Doubly Link List History File
+
+Ver 1.0.1 -- June 08, 1998 -- Minor bug fix
+
+(1) DLL_DestroyList() will now exit gracefully if passed a pointer to a 
+    NULL pointer.  This condition was never trapped in version 1.0.
+
+(2) Version numbers now include a second decimal point.
+
+(3) Added this history file.
+
+Ver 1.0 -- January 08, 1998 -- Initial release
