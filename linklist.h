@@ -55,6 +55,7 @@
 #    define THREAD_RWLOCK_UNLOCK_NR   (void) pthread_rwlock_unlock_np
 #    endif /* platform dependencies */
 #  else /* defined (_DLL_POSIX) */
+   /* Dummy macros if _DLL_POSIX is not defined */
 #  define THREAD_RWLOCK_STRUCT
 #  define THREAD_RWLOCK_INIT(a,b)
 #  define THREAD_RWLOCK_DESTROY(a)
@@ -183,12 +184,13 @@ typedef struct search_modes
    DLL_SrchDir    search_dir;
    } DLL_SearchModes;
 
-/*  typedef struct current_storage */
-/*     { */
-/*     Node          *saved; */
-/*     unsigned long save_index; */
-/*     } DLL_CurrentPtStore; */
-
+#if 0
+typedef struct current_storage
+   {
+   Node          *saved;
+   unsigned long save_index;
+   } DLL_CurrentPtStore;
+#endif
 
 /*
  * Prototypes
