@@ -12,6 +12,9 @@
 \documentclass[10pt,letterpaper]{report}
 
 \usepackage{alltt, graphicx}
+
+\newenvironment{lquote}{\begin{list}{}{}\item[]}{\end{list}}
+
 \pagestyle{plain}
 \pagenumbering{arabic}
 
@@ -56,7 +59,7 @@ The intent of this document is to state the conditions under which a Package may
 
 \noindent
 Definitions:
-\begin{quote}
+\begin{lquote}
 "Package" refers to the collection of files distributed by the\linebreak Copyright Holder, and derivatives of that collection of files created through textual modification.
 
 "Standard Version" refers to such a Package if it has not been modified, or has been modified in accordance with the wishes of the Copyright Holder as specified below.
@@ -68,7 +71,7 @@ Definitions:
 "Reasonable copying fee" is whatever you can justify on the basis of media cost, duplication charges, time of people involved, and so on.  (You will not be required to justify it to the Copyright Holder, but only to the computing community at large as a market that must bear the fee.)
 
 "Freely Available" means that no fee is charged for the item itself, though there may be fees involved in handling the item.  It also means that recipients of the item may redistribute it under the same conditions they received it.
-\end{quote}
+\end{lquote}
 
 \noindent
 1. You may make and give away verbatim copies of the source form of the Standard Version of this Package without restriction, provided that you duplicate all of the original copyright notices and associated disclaimers.
@@ -81,7 +84,7 @@ Definitions:
 \noindent
 3. You may otherwise modify your copy of this Package in any way, provided that you insert a prominent notice in each changed file stating how and when you changed that file, and provided that you do at least ONE of the following:
 
-\begin{quote}
+\begin{lquote}
 (a) place your modifications in the Public Domain or otherwise make them Freely Available, such as by posting said modifications to Usenet or an equivalent medium, or placing the modifications on a major archive site such as uunet.uu.net, or by allowing the Copyright Holder to include your modifications in the Standard Version of the Package.
 
 (b) use the modified Package only within your corporation or organization.
@@ -89,12 +92,12 @@ Definitions:
 (c) rename any non-standard executables so the names do not conflict with standard executables, which must also be provided, and provide a separate manual page for each non-standard executable that clearly documents how it differs from the Standard Version.
 
 (d) make other distribution arrangements with the Copyright Holder.
-\end{quote}
+\end{lquote}
 
 \noindent
 4. You may distribute the programs of this Package in object code or executable form, provided that you do at least ONE of the following:
 
-\begin{quote}
+\begin{lquote}
 (a) distribute a Standard Version of the executables and library files, together with instructions (in the manual page or equivalent) on where to get the Standard Version.
 
 (b) accompany the distribution with the machine-readable source of the Package with your modifications.
@@ -102,7 +105,7 @@ Definitions:
 (c) give non-standard executables non-standard names, and clearly document the differences in manual pages (or equivalent), together with instructions on where to get the Standard Version.
 
 (d) make other distribution arrangements with the Copyright Holder.
-\end{quote}
+\end{lquote}
 
 \noindent
 5. You may charge a reasonable copying fee for any distribution of this Package.  You may charge any fee you choose for support of this Package.  You may not charge a fee for this Package itself.  However, you may distribute this Package in aggregate with other (possibly commercial) programs as part of a larger (possibly commercial) software distribution provided that you do not advertise this Package as a product of your own.  You may embed this Package's interpreter within an executable of yours (by linking); this shall be construed as a mere form of aggregation, provided that the complete Standard Version of the interpreter is so embedded.
@@ -150,10 +153,10 @@ A short overview, will follow, discussing the philosophy of how the package work
 \noindent
 Then the library itself is broken into six groups: initialization, status, data manipulation, pointer manipulation, search, and input/output.
 
-\begin{quote}
+\begin{lquote}
 (a) The initialization group handles the creation, initializing, and destruction of the link list.
 
-(b) The status group returns various kinds of information about the status of the link list during its operation.
+(b) The status and state group returns various kinds of information about the status of the link list during its operation.
 
 (c) The pointer manipulation group allows the positioning of the current pointer to the head, tail or to an arbitrary node within the list.
 
@@ -162,7 +165,7 @@ Then the library itself is broken into six groups: initialization, status, data 
 (e) The search group returns the record information based on key data or on the absolute record position.
 
 (f) The input/output group saves or retrieves record data to or from a disk file.
-\end{quote}
+\end{lquote}
 
 \noindent
 At this writing there are 29 functions in the library, each one of which is thoroughly explained and examples given when needed.
@@ -328,15 +331,16 @@ typedef enum
 \normalsize
 
 \chapter*{Functions}
-The function calls below are grouped by their general function as described above.  They are written in manpage style so that I only have to document the API once.
+The following function calls are grouped by their general functionality, as described above.  They are written in manpage style so that I only have to document the API once.
 
 \section*{Initialization}
 \begin{description}
-\item[NAME]\hspace{1em}\\
-DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList, --- Initialization group
+\item[NAME]\quad\\
+DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList, --- Initialization Functions.
 
 \item[SYNOPSIS]
-\begin{alltt}\hspace{1em}
+\begin{alltt}
+
 #include <linklist.h>
 
 List *DLL_CreateList(List **list);
@@ -344,19 +348,147 @@ DLL_Return DLL_InitializeList(List *list, size_t infosize);
 void DLL_DestroyList(List **list);
 \end{alltt}
 
-\item[DESCRIPTION]\hspace{1em}\\
-The initialization group of functions must be used in the allocation and freeing of the memory used by the link list.  The function \emph{DLL\_CreateList} is called first with a pointer to the \textbf{Top Level Struct} type defined as \textbf{List}.  After the \textbf{Info Struct} has been defined the \emph{DLL\_InitializeList} function is called.  This function is passes the pointer returned from the previous function call and the size in bytes of the \textbf{Info Struct}.  Upon exiting the application the function \emph{DLL\_DestroyList} should be called to free any memory allocated.
+\item[DESCRIPTION]\quad\\
+The initialization group of functions must be used in the allocation and freeing of memory used by the link list.
 
-\item[RETURN VALUES]\hspace{1em}
  \begin{description}
- \item[DLL\_CreateList]\hspace{1em}\\
- Returns a pointer to the \emph{typedef} \textbf{List} (this value is also in the argument \textbf{list} after the call).
- \item[DLL\_InitializeList]\hspace{1em}\\
- Returns \textbf{DLL\_ZERO\_INFO} if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successfully.
- \item[DLL\_DestroyList]\hspace{1em}\\
- Returns nothing, however, the argument \textbf{list} is set to NULL.
+ \item[DLL\_CreateList]\quad\\
+ This function is called first to create the environment of the link list package.  It is passed \textbf{list} a pointer to a pointer of the \emph{Top Level Struct} type \emph{List}.  This pointer is returned both as the return value of the function and in the argument \textbf{list}.
+
+ \item[DLL\_InitializeList]\quad\\
+ After the \emph{Info Struct} has been defined this function is called to initialize the environment.  It is passed \textbf{list} the value returned from the previous function call and \textbf{infosize} the size in bytes of the \emph{Info Struct}.  It returns \textbf{DLL\_ZERO\_INFO} if \textbf{infosize} is zero; \textbf{DLL\_NULL\_LIST} if the pointer \textbf{list} is NULL; and \textbf{DLL\_NORMAL} if the initialization was successful.
+
+ \item[DLL\_DestroyList]\quad\\
+ Upon exiting the application this function is called to free any memory allocated.  It is passed \textbf{list} the value returned from \emph{DLL\_CreateList} and has no return value of its own, however, the argument \textbf{list} is set to NULL.
+ \end{description}
+
+\item[EXAMPLE]
+\small
+\begin{verbatim}
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <linklist.h>
+
+typedef struct name_addr    /* Sample data structure */
+   {
+   char name[30];
+   char street[40];
+   char city[22];
+   char state[3];
+   char zip[11];
+   } NameAddr;
+
+void main(void)
+   {
+   List *NAList = NULL;
+   DLL_Return DLL_Exit;
+
+   if(DLL_CreateList(&NAList) == NULL)
+      {
+      fputs("Fatal Memory error", stderr);
+      exit(EXIT_FAILURE);
+      }
+
+   if((DLL_Exit = DLL_InitializeList(NAList, sizeof(NameAddr)))
+    != DLL_NORMAL)
+      {
+      (void)(DLL_Exit == DLL_ZERO_INFO
+       && fputs("Size of address record is zero.\n\n", stderr));
+      (void)(DLL_Exit == DLL_NULL_LIST
+       && fputs("NAList points to a NULL address.\n\n", stderr));
+      exit(EXIT_FAILURE);
+      }
+
+   DoYourThingHere(NAList);
+
+   DLL_DestroyList(&NAList);
+   exit(EXIT_SUCCESS);
+   }
+\end{verbatim}
+\normalsize
+\end{description}
+
+\pagebreak
+\section*{Status}
+\begin{description}
+\item[NAME]\quad\\
+DLL\_Version(), DLL\_IsListEmpty(), DLL\_IsListFull(),\\
+DLL\_GetNumberOfRecords(), DLL\_SetSearchModes(),\\
+DLL\_GetSearchModes(), DLL\_GetCurrentIndex()\\
+ --- Status and State Functions.
+\item[SYNOPSIS]
+\begin{alltt}
+
+#include <linklist.h>
+
+char *DLL_Version(void);
+DLL_Boolean DLL_IsListEmpty(List *list);
+DLL_Boolean DLL_IsListFull(List *list);
+unsigned long DLL_GetNumberOfRecords(List *list);
+DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
+                              DLL_SrchDir dir);
+DLL_SearchModes *DLL_GetSearchModes(List *list);
+unsigned long DLL_GetCurrentIndex(List *list);
+\end{alltt}
+\item[DESCRIPTION]\quad\\
+All the functions below either return or set the status or state of some aspect of the link list.
+
+ \begin{description}
+ \item[DLL\_Version]\quad\\
+ This function has no arguments and returns a string in the following format:
+ \begin{alltt}
+Ver: 1.1.0  May 14 1999
+-------------------------------
+ Developed by: Carl J. Nobile
+Contributions: Charlie Buckheit
+               Graham Inchley
+ \end{alltt}
+ \vspace{-16pt}
+ \item[DLL\_IsListEmpty]\quad\\
+ This function determines if the link list has any nodes defined by testing if the head and tail pointers are NULL.  It is passed \textbf{list} a pointer to the \emph{Top Level Struct} and returns \textbf{DLL\_TRUE} if the list is empty and \textbf{DLL\_FALSE} if the list has valid nodes.
+
+ \item[DLL\_IsListFull]\quad\\
+ This function determines if there is enough memory to create a new \emph{Node Struct} and \emph{Info Struct} by creating and deleting them.  It is passed \textbf{list} a pointer to the \emph{Top Level Struct} and returns \textbf{DLL\_TRUE} if either of the two structures could not be allocated and \textbf{DLL\_FALSE} if the memory allocations were successful.
+
+ \item[DLL\_GetNumberOfRecords]\quad\\
+ This function returns the number of records currently in the link list by retrieving a counter value.  It is passed \textbf{list} a pointer to the \emph{Top Level Struct} and returns the number of nodes allocated where a return value of '0' is an empty list.
+
+ \item[DLL\_SetSearchModes]\quad\\
+ This function sets the search mode state table which is used by various function in the API.  It is passed \textbf{list} a pointer to the \emph{Top Level Struct}, \textbf{origin}, and \textbf{dir}.  The \textbf{origin} argument can take one of four values:
+
+  \begin{description}
+  \item[DLL\_HEAD] The origin of the search starts from the node which is at the head of the list.  This is the default value if none have been set beforehand.
+  \item[DLL\_CURRENT] The origin of the search starts from the currently selected node.
+  \item[DLL\_TAIL] The origin of the search starts from the node which is at the tail of the list.
+  \item[DLL\_ORIGIN\_DEFAULT] The origin of the search defaults to the last set value.
+  \end{description}
+
+ The \textbf{dir} argument can take one of three values:
+
+  \begin{description}
+  \item[DLL\_DOWN] The direction of the search is from the head to the tail nodes.  This is the default value if none have been set beforehand.
+  \item[DLL\_UP] The direction of the search is from the tail to the head nodes.
+  \item[DLL\_DIRECTION\_DEFAULT] The direction of the search defaults to the last set value.
+  \end{description}
+
+ It returns \textbf{DLL\_NOT\_MODIFIED} if an invalid value was passed in either \textbf{origin} or \textbf{dir}.  \textbf{DLL\_NORMAL} is returned if the state table was set.
+
+ \item[DLL\_GetSearchModes]\quad\\
+ This function gets the state of the search criteria, which can either be the default values or values set by \emph{DLL\_SetSearchModes}.  It is passed \textbf{list} a pointer to the \emph{Top Level Struct}.  It returns a pointer to the following structure:
+
+ \begin{alltt}
+typedef struct search_modes
+   \{
+    DLL_SrchOrigin search_origin;
+    DLL_SrchDir    search_dir;
+   \} DLL_SearchModes;
+ \end{alltt}
+
+ This pointer is static within this function so it must be copied immediatly after it is called.
 
 
  \end{description}
+
 \end{description}
 \end{document}

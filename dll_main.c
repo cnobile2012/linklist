@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1999 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 05/11/99
+ * Updated: 05/16/99
  *
  * $Author$
  * $Date$
@@ -14,6 +14,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "dll_main.h"
+
+/**************************
+ * Initialization Functions
+ */
 
 
 /*
@@ -90,6 +94,33 @@ DLL_Return DLL_InitializeList(List *list, size_t infosize)
 	}
 
 
+/******************
+ * Status and State Functions
+ */
+
+
+/*
+ * DLL_Version() : Returns a pointer to version information
+ *
+ * Status   : Public
+ *
+ * Arguments: NONE
+ *
+ * Return   : char * -- Pointer to version info
+ */
+char *DLL_Version(void)
+	{
+	memset(version, '\0', sizeof(version));
+	strcpy(version, VERSION);
+	strcat(version, "  ");
+	strcat(version, VERDATE);
+	strcat(version, "\n");
+	strcat(version, CREDITS);
+	strcat(version, "\n");
+	return(version);
+	}
+
+
 /*
  * DLL_IsListEmpty() : Checks for an empty list
  *
@@ -137,6 +168,109 @@ DLL_Boolean DLL_IsListFull(List *list)
 	free(newI);
 	return(DLL_FALSE);
 	}
+
+
+/*
+ * DLL_GetNumberOfRecords() : Return number of records.
+ *
+ * Status   : Public
+ *
+ * Arguments: list -- Pointer to type List
+ *
+ * Returns  : Number of records
+ */
+unsigned long DLL_GetNumberOfRecords(List *list)
+	{
+	return list->listsize;
+	}
+
+
+/*
+ * DLL_SetSearchModes() : Sets the pointer used to start a search origin
+ *                        and the direction indicator.
+ *
+ * Status   : Public
+ *
+ * Arguments: list             -- Pointer to type List
+ *            origin           -- Indicates the start search pointer to use
+ *            dir              -- Indicates the direction to search in
+ *
+ * Returns  : DLL_NORMAL       -- Values assigned were accepted
+ *            DLL_NOT_MODIFIED -- Values were not assigned--invalid type
+ *                                (defaults are still in place)
+ */
+DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
+ DLL_SrchDir dir)
+	{
+	switch(origin)
+		{
+		case DLL_HEAD:
+		case DLL_CURRENT:
+		case DLL_TAIL:
+		case DLL_ORIGIN_DEFAULT:
+			break;
+		default:
+			return(DLL_NOT_MODIFIED);
+		}
+
+	switch(dir)
+		{
+		case DLL_DOWN:
+		case DLL_UP:
+		case DLL_DIRECTION_DEFAULT:
+			break;
+		default:
+			return(DLL_NOT_MODIFIED);
+		}
+
+	if(origin != DLL_ORIGIN_DEFAULT)
+		list->search_origin = origin;
+
+	if(dir != DLL_DIRECTION_DEFAULT)
+		list->search_dir = dir;
+
+	return(DLL_NORMAL);
+	}
+
+
+/*
+ * DLL_GetSearchModes() : Returns the search modes
+ *
+ * Status   : Public
+ *
+ * Arguments: list -- Pointer to type List
+ *            ssp  -- Save structure pointer
+ *
+ * Returns  : Pointer to type DLL_SearchModes
+ */
+DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
+	{
+	ssp->search_origin = list->search_origin;
+	ssp->search_dir = list->search_dir;
+	return(ssp);
+	}
+
+
+/*
+ * DLL_GetCurrentIndex() : Return the index of the current record
+ *                         NOTE: The index is always referenced from
+ *                         the head of the list.
+ *
+ * Status : Public
+ *
+ * Arguments: list -- Pointer to type List
+ *
+ * Returns  : Current record's index
+ */
+unsigned long DLL_GetCurrentIndex(List *list)
+	{
+	return list->current_index;
+	}
+
+
+/********************************
+ * Pointer Manipulation Functions
+ */
 
 
 /*
@@ -271,38 +405,6 @@ DLL_Return DLL_RestoreCurrentPointer(List *list)
 	list->saved = NULL;
 	list->current_index = list->save_index;
 	return(DLL_NORMAL);
-	}
-
-
-/*
- * DLL_GetNumberOfRecords() : Return number of records.
- *
- * Status   : Public
- *
- * Arguments: list -- Pointer to type List
- *
- * Returns  : Number of records
- */
-unsigned long DLL_GetNumberOfRecords(List *list)
-	{
-	return list->listsize;
-	}
-
-
-/*
- * DLL_GetCurrentIndex() : Return the index of the current record
- *                         NOTE: The index is always referenced from
- *                         the head of the list.
- *
- * Status : Public
- *
- * Arguments: list -- Pointer to type List
- *
- * Returns  : Current record's index
- */
-unsigned long DLL_GetCurrentIndex(List *list)
-	{
-	return list->current_index;
 	}
 
 
@@ -670,6 +772,8 @@ DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
 	if(pFun == NULL)
 		return(DLL_NULL_FUNCTION);
 
+	save = list->current_index;
+
 	switch(list->search_origin)
 		{
 		case DLL_CURRENT:
@@ -678,19 +782,19 @@ DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
 			break;
 		case DLL_TAIL:
 			step = list->tail;
-			dir = DLL_UP;
+			list->search_dir = dir = DLL_UP;
+			list->current_index = list->listsize;
 			break;
 		case DLL_HEAD:
 		default:
 			list->search_origin = DLL_HEAD;
 			step = list->head;
-			dir = DLL_DOWN;
+			list->search_dir = dir = DLL_DOWN;
+			list->current_index = 1L;
 		}
 
 	if(step == NULL)
 		return(DLL_NULL_LIST);
-
-	save = list->current_index;
 
 	while(step != NULL)
 		{
@@ -726,14 +830,17 @@ DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
  *
  * Returns  : DLL_NORMAL    -- Node was found successfully
  *            DLL_NULL_LIST -- list->current is NULL
- *            DLL_NOT_FOUND -- Index value is too large
- *                             (current record remains unchanged).
+ *            DLL_NOT_FOUND -- Index value is too large or wrong dir value
+ *                             (current record index remains unchanged).
  */
 DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 	{
+	unsigned long save;
 	Node *step;
 	DLL_SrchDir dir;
 	register int nCnt;
+
+	save = list->current_index;
 
 	switch(list->search_origin)
 		{
@@ -743,13 +850,15 @@ DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 			break;
 		case DLL_TAIL:
 			step = list->tail;
-			dir = DLL_UP;
+			list->search_dir = dir = DLL_UP;
+			list->current_index = list->listsize;
 			break;
 		case DLL_HEAD:
 		default:
 			list->search_origin = DLL_HEAD;
 			step = list->head;
-			dir = DLL_DOWN;
+			list->search_dir = dir = DLL_DOWN;
+			list->current_index = 1L;
 		}
 
 	if(step == NULL)
@@ -758,7 +867,10 @@ DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 	if(skip <= 0 || ((dir == DLL_DOWN)
 	 ? (list->listsize < (list->current_index + skip))
 	 : (list->current_index <= skip)))
+		{
+		list->current_index = save;
 		return(DLL_NOT_FOUND);
+		}
 
 	switch(dir)
 		{
@@ -773,80 +885,13 @@ DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 
 			break;
 		default:
-			return(DLL_NOT_MODIFIED);
+			return(DLL_NOT_FOUND);
 		}
 
 	memcpy(record, step->info, list->infosize);
 	list->current = step;
 	list->current_index += (dir == DLL_DOWN) ? (1 * skip) : (-1 * skip);
 	return(DLL_NORMAL);
-	}
-
-
-/*
- * DLL_SetSearchModes() : Sets the pointer used to start a search origin
- *                        and the direction indicator.
- *
- * Status   : Public
- *
- * Arguments: list             -- Pointer to type List
- *            origin           -- Indicates the start search pointer to use
- *            dir              -- Indicates the direction to search in
- *
- * Returns  : DLL_NORMAL       -- Values assigned were accepted
- *            DLL_NOT_MODIFIED -- Values were not assigned--invalid type
- *                                (defaults are still in place)
- */
-DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
- DLL_SrchDir dir)
-	{
-	switch(origin)
-		{
-		case DLL_HEAD:
-		case DLL_CURRENT:
-		case DLL_TAIL:
-		case DLL_ORIGIN_DEFAULT:
-			break;
-		default:
-			return(DLL_NOT_MODIFIED);
-		}
-
-	switch(dir)
-		{
-		case DLL_DOWN:
-		case DLL_UP:
-		case DLL_DIRECTION_DEFAULT:
-			break;
-		default:
-			return(DLL_NOT_MODIFIED);
-		}
-
-	if(origin != DLL_ORIGIN_DEFAULT)
-		list->search_origin = origin;
-
-	if(dir != DLL_DIRECTION_DEFAULT)
-		list->search_dir = dir;
-
-	return(DLL_NORMAL);
-	}
-
-
-/*
- * DLL_GetSearchModes() : Returns the search modes
- *
- * Status   : Public
- *
- * Arguments: list -- Pointer to type List
- *
- * Returns  : Pointer to type DLL_SearchModes
- */
-DLL_SearchModes *DLL_GetSearchModes(List *list)
-	{
-	static DLL_SearchModes SM;
-
-	SM.search_origin = list->search_origin;
-	SM.search_dir = list->search_dir;
-	return(&SM);
 	}
 
 
@@ -1119,25 +1164,4 @@ DLL_Return DLL_LoadList(List *list, const char *path,
 	free(set);
 	fclose(fp);
 	return(ExitCode);
-	}
-
-
-/*
- * DLL_Version() : Returns a pointer to version information
- *
- * Status   : Public
- *
- * Arguments: NONE
- *
- * Return   : char * -- Pointer to version info
- */
-char *DLL_Version(void)
-	{
-	strcpy(version, VERSION);
-	strcat(version, "  ");
-	strcat(version, VERDATE);
-	strcat(version, "\n");
-	strcat(version, CREDITS);
-	strcat(version, "\n");
-	return(version);
 	}

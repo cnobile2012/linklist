@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 25, 1996
- * Updated: 02/07/99
+ * Updated: 05/16/99
  *
  * $Author$
  * $Date$
@@ -607,7 +607,7 @@ int method_menu(void)
 void find_by_match(List *list)
 	{
   	int (*pfun)() = NULL;
-	Boolean donef = FALSE, fieldf = FALSE;
+	Boolean donef = FALSE;
 	char *pField = NULL;
 
 	while(!donef)
@@ -623,10 +623,9 @@ void find_by_match(List *list)
 			case 3:		/* Choose search field */
 				pField = set_field(list, &pfun);
 				fputs("\n", stdout);
-				fieldf = TRUE;
 				continue;
 			case 4:		/* Do the search */
-				if(!fieldf)
+				if(pField == NULL)
 					{
 					fputs("No field has been set, please set a field.\n\n", stdout);
 					continue;
@@ -675,7 +674,7 @@ void find_by_match(List *list)
  */
 void find_by_Nth(List *list)
 	{
-	Boolean donef = FALSE, fieldf = FALSE;
+	Boolean donef = FALSE;
 	char s[80];
 	unsigned long num = 0L;
 
@@ -699,10 +698,9 @@ void find_by_Nth(List *list)
 					}
 
 				fputs("\n", stdout);
-				fieldf = TRUE;
 				continue;
 			case 4:		/* Do the search */
-				if(!fieldf)
+				if(num == 0L)
 					{
 					fputs("No skip number has been set, please set a number.\n\n",
 					 stdout);
@@ -929,12 +927,12 @@ int direction_menu(void)
 Boolean verify_criteria(List *list, char *pField, unsigned long num)
 	{
 	char yn[2], org[19], dir[22];
-	DLL_SearchModes *SearchModes;
+	DLL_SearchModes SearchModes;
 
 	strcpy(yn, "N");
-	SearchModes = DLL_GetSearchModes(list);
+	DLL_GetSearchModes(list, &SearchModes);
 
-	switch(SearchModes->search_origin)
+	switch(SearchModes.search_origin)
 		{
 		case DLL_ORIGIN_DEFAULT:
 			strcpy(org, "DLL_ORIGIN_DEFAULT");
@@ -950,7 +948,7 @@ Boolean verify_criteria(List *list, char *pField, unsigned long num)
 			break;
 		}
 
-	switch(SearchModes->search_dir)
+	switch(SearchModes.search_dir)
 		{
 		case DLL_DIRECTION_DEFAULT:
 			strcpy(dir, "DLL_DIRECTION_DEFAULT");

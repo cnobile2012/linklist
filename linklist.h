@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1998 Carl J. Nobile
  * Created: December 26, 1996
- * Updated: 05/11/99
+ * Updated: 05/16/99
  *
  * $Author$
  * $Date$
@@ -114,6 +114,6 @@ DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
 DLL_Return DLL_StoreCurrentPointer(List *list);
 DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir);
 DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
-DLL_SearchModes *DLL_GetSearchModes(List *list);
+DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);

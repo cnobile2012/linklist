@@ -3,7 +3,7 @@
  *
  * Copyright (c) 1996-1999 Carl J. Nobile
  * Created: December 22, 1996
- * Updated: 05/11/99
+ * Updated: 05/16/99
  *
  * $Author$
  * $Date$
@@ -12,9 +12,12 @@
 
 #define VERSION   "Ver: 1.1.0"
 #define VERDATE   __DATE__
-#define CREDITS   "Developed by Carl J. Nobile"
+#define CREDITS   "-------------------------------\n\
+ Developed by: Carl J. Nobile\n\
+Contributions: Charlie Buckheit\n\
+               Graham Inchley\n"
 
-static char version[128];
+static char version[sizeof(VERSION) + sizeof(VERDATE) + sizeof(CREDITS) + 1];
 
 
 /*
@@ -97,8 +100,8 @@ typedef struct list
 	Node           *saved;
 	size_t         infosize;
 	unsigned long  listsize;
-	unsigned long	current_index;
-	unsigned long	save_index;
+	unsigned long  current_index;
+	unsigned long  save_index;
 	DLL_Boolean    modified;
 	DLL_SrchOrigin search_origin;
 	DLL_SrchDir    search_dir;
@@ -143,6 +146,6 @@ DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
 DLL_Return DLL_StoreCurrentPointer(List *list);
 DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir);
 DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
-DLL_SearchModes *DLL_GetSearchModes(List *list);
+DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);

@@ -6,7 +6,7 @@ $Date$
 $Revision$
 *** End CVS Information ***
 
-Ver 1.1.0 -- April 
+Ver 1.1.0 -- May 
 
 (1)  Added four new functions DLL_GetCurrentIndex(), DLL_InsertRecord(),
      DLL_SwapRecord(), and DLL_FindNthRecord()--read the docs on how to
@@ -27,6 +27,9 @@ Ver 1.1.0 -- April
 (6)  Fixed the sym-links to the library and created a script (demo.sh)
      to run dll_test using the libraries just built instead of defaulting
      to a pre-installed version.
+
+(7)  Re-wrote DLL_GetSearchModes() so it is now thread safe.  This will
+     break some code, see docs.
 
 Ver 1.0.3 -- November 04, 1998
 
