@@ -17,7 +17,7 @@ static void _pthread_rwl_write_clean(void *rwlp);
 
 
 /*
- * pthread_rwl_init_np() : Initialize read, write, and delete lock.
+ * pthread_rwlock_init_np() : Initialize read, write, and delete lock.
  *
  * Arguments: rwlp    -- Pointer to lock structure.
  *            attrp   -- Attribute value (non-functional at this time).
@@ -29,7 +29,7 @@ static void _pthread_rwl_write_clean(void *rwlp);
  *       return values, consult your documentation for the correct values.
  */
 int
-pthread_rwl_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
+pthread_rwlock_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
    {
    int status = 0;
 
@@ -61,7 +61,7 @@ pthread_rwl_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
 
 
 /*
- * pthread_rwl_destroy_np() : Destroy read, write, and delete lock.
+ * pthread_rwlock_destroy_np() : Destroy read, write, and delete lock.
  *
  * Arguments: rwlp    -- Pointer to lock structure.
  *
@@ -73,7 +73,7 @@ pthread_rwl_init_np(pthread_rwl_t *rwlp, pthread_rwlattr_t *attrp)
  *       return values, consult your documentation for the correct values.
  */
 int
-pthread_rwl_destroy_np(pthread_rwl_t *rwlp)
+pthread_rwlock_destroy_np(pthread_rwl_t *rwlp)
    {
    int status, status1, status2;
 
@@ -110,7 +110,7 @@ pthread_rwl_destroy_np(pthread_rwl_t *rwlp)
 
 
 /*
- * pthread_rwl_rlock_np() : Aquire read lock.
+ * pthread_rwlock_rdlock_np() : Aquire read lock.
  *
  * Arguments: rwlp    -- Pointer to lock structure.
  *
@@ -119,7 +119,7 @@ pthread_rwl_destroy_np(pthread_rwl_t *rwlp)
  *            EBUSY   -- The mutex is currently locked.
  */
 int
-pthread_rwl_rlock_np(pthread_rwl_t *rwlp)
+pthread_rwlock_rdlock_np(pthread_rwl_t *rwlp)
    {
    int status;
 
@@ -129,7 +129,7 @@ pthread_rwl_rlock_np(pthread_rwl_t *rwlp)
    if((status = pthread_mutex_lock(&rwlp->mutex)) != 0)
       return(status);
 
-   while(rwlp->w_active)
+   if(rwlp->w_active)
       {
       rwlp->w_pending++;
       pthread_cleanup_push(_pthread_rwl_read_clean, (void *) rwlp);
@@ -151,7 +151,7 @@ pthread_rwl_rlock_np(pthread_rwl_t *rwlp)
 
 
 /*
- * pthread_rwl_runlock_np() : Unlock read.
+ * pthread_rwlock_runlock_np() : Unlock read.
  *
  * Arguments: rwlp    -- Pointer to lock structure.
  *
@@ -160,7 +160,7 @@ pthread_rwl_rlock_np(pthread_rwl_t *rwlp)
  *            EBUSY   -- The mutex is currently locked.
  */
 int
-pthread_rwl_runlock_np(pthread_rwl_t *rwlp)
+pthread_rwlock_runlock_np(pthread_rwl_t *rwlp)
    {
    int status, status1;
 
@@ -173,7 +173,7 @@ pthread_rwl_runlock_np(pthread_rwl_t *rwlp)
    rwlp->r_active--;
 
    if(rwlp->r_active == 0 && rwlp->w_pending > 0)
-      pthread_cond_signal(&rwlp->write);
+      status = pthread_cond_signal(&rwlp->write);
 
    status1 = pthread_mutex_unlock(&rwlp->mutex);
    return(status1 == 0 ? status : status1);
@@ -181,7 +181,7 @@ pthread_rwl_runlock_np(pthread_rwl_t *rwlp)
 
 
 /*
- * pthread_rwl_wlock_np() : Aquire write lock
+ * pthread_rwlock_wrlock_np() : Aquire write lock
  *
  * Arguments: rwlp    -- Pointer to lock structure.
  *
@@ -190,7 +190,7 @@ pthread_rwl_runlock_np(pthread_rwl_t *rwlp)
  *            EBUSY   -- The mutex is currently locked.
  */
 int
-pthread_rwl_wlock_np(pthread_rwl_t *rwlp)
+pthread_rwlock_wrlock_np(pthread_rwl_t *rwlp)
    {
    int status;
 
@@ -222,7 +222,7 @@ pthread_rwl_wlock_np(pthread_rwl_t *rwlp)
 
 
 /*
- * pthread_rwl_wunlock_np() : Unlock write
+ * pthread_rwlock_wunlock_np() : Unlock write
  *
  * Arguments: rwlp    -- Pointer to lock structure.
  *
@@ -231,7 +231,7 @@ pthread_rwl_wlock_np(pthread_rwl_t *rwlp)
  *            EBUSY   -- The mutex is currently locked.
  */
 int
-pthread_rwl_wunlock_np(pthread_rwl_t *rwlp)
+pthread_rwlock_wunlock_np(pthread_rwl_t *rwlp)
    {
    int status;
 
@@ -243,7 +243,7 @@ pthread_rwl_wunlock_np(pthread_rwl_t *rwlp)
 
    rwlp->w_active = 0;
 
-   if(rwlp->w_pending > 0 &&
+   if(rwlp->r_pending > 0 &&
     (status = pthread_cond_broadcast(&rwlp->read)) != 0)
       {
       pthread_mutex_unlock(&rwlp->mutex);
@@ -262,15 +262,15 @@ pthread_rwl_wunlock_np(pthread_rwl_t *rwlp)
 
 
 /*
- * _pthread_rwl_read_cleanup() : Clean up mutex lock if there is a an internal
- *                             problem with the pthread API.
+ * _pthread_rwlock_read_cleanup() : Clean up mutex lock if there is a an
+ *                                  internal problem with the pthread API.
  *
  * Arguments: rwlp -- Pointer to lock structure
  *
  * Returns  : None
  */
 static void
-_pthread_rwl_read_cleanup(void *rwlp)
+_pthread_rwlock_read_cleanup(void *rwlp)
    {
    pthread_rwl_t *rwl_tmp = (pthread_rwl_t *) rwlp;
 
@@ -280,8 +280,8 @@ _pthread_rwl_read_cleanup(void *rwlp)
 
 
 /*
- * _pthread_rwl_write_cleanup() : Clean up mutex lock if there is a an internal
- *                              problem with the pthread API.
+ * _pthread_rwlock_write_cleanup() : Clean up mutex lock if there is a an
+ *                                   internal problem with the pthread API.
  *
  * Arguments: rwlp -- Pointer to lock structure
  *
