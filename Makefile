@@ -3,7 +3,7 @@
 #
 # Copyright (c) 1996-1998 Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 07/05/99
+# Updated: 06/14/2007
 #
 # $Author$
 # $Date$
@@ -23,7 +23,6 @@
 AR	= ar rcs
 CC	= gcc
 
-ERRFILE	= {$*}.err
 DEBUG	= -g -DDEBUG
 OFP	= -fomit-frame-pointer
 SHARED	= -fPIC
@@ -71,7 +70,7 @@ test	:
 	make $(TEST) DEBUG= THISLIB=-ldll
 
 .c.o	: $(SRCS)
-	$(CC) $(CFLAGS) -c $< 2>$(ERRFILE)
+	$(CC) $(CFLAGS) -c $<
 
 libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL): $(OBJS1)
 	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
@@ -84,7 +83,7 @@ libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
 
 $(TEST)	: $(OBJS2)
-	$(CC) $(OBJS2) -o $(TEST) $(THISLIB) 2>{linker}.err
+	$(CC) $(OBJS2) -o $(TEST) $(THISLIB)
 
 $(PROG).o: $(PROG).c $(PROG).h
 $(TEST).o: $(TEST).c linklist.h dll_dbg.h
@@ -111,10 +110,10 @@ tarball	:
 
 #--------------------------------------------------------------
 clean	:
-	-rm *.o *~ *.bak \#*\# *.err core
+	-rm *.o *~ *.bak \#*\# core
 
-clobber	:
-	-rm *.o *~ *.bak \#*\# *.err $(TEST) core libdll.*
+clobber	: clean
+	-rm libdll.*
 
 distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
