@@ -14,46 +14,46 @@
  * type defines
  */
 typedef enum
-	{
-	DLL_FALSE,
-	DLL_TRUE
-	} DLL_Boolean;
+  {
+  DLL_FALSE,
+  DLL_TRUE
+  } DLL_Boolean;
 
 typedef enum
-	{
-	DLL_NORMAL,					/* normal operation */
-	DLL_MEM_ERROR,				/* malloc error */
-	DLL_ZERO_INFO,				/* sizeof(Info) is zero */
-	DLL_NULL_LIST,				/* List is NULL */
-	DLL_NOT_FOUND,				/* Record not found */
-	DLL_OPEN_ERROR,			/* Cannot open file */
-	DLL_WRITE_ERROR,			/* File write error */
-	DLL_READ_ERROR,			/* File read error */
-	DLL_NOT_MODIFIED,			/* Unmodified list */
-	DLL_NULL_FUNCTION			/* NULL function pointer */
-	} DLL_Return;
+  {
+  DLL_NORMAL,					/* normal operation */
+  DLL_MEM_ERROR,				/* malloc error */
+  DLL_ZERO_INFO,				/* sizeof(Info) is zero */
+  DLL_NULL_LIST,				/* List is NULL */
+  DLL_NOT_FOUND,				/* Record not found */
+  DLL_OPEN_ERROR,			/* Cannot open file */
+  DLL_WRITE_ERROR,			/* File write error */
+  DLL_READ_ERROR,			/* File read error */
+  DLL_NOT_MODIFIED,			/* Unmodified list */
+  DLL_NULL_FUNCTION			/* NULL function pointer */
+  } DLL_Return;
 
 typedef enum
-	{
-	DLL_ORIGIN_DEFAULT,		/* Use current origin setting */
-	DLL_HEAD,					/* Set origin to head pointer */
-	DLL_CURRENT,				/* Set origin to current pointer */
-	DLL_TAIL						/* Set origin to tail pointer */
-	} DLL_SrchOrigin;
+  {
+  DLL_ORIGIN_DEFAULT,		/* Use current origin setting */
+  DLL_HEAD,					/* Set origin to head pointer */
+  DLL_CURRENT,				/* Set origin to current pointer */
+  DLL_TAIL						/* Set origin to tail pointer */
+  } DLL_SrchOrigin;
 
 typedef enum
-	{
-	DLL_DIRECTION_DEFAULT,	/* Use current direction setting */
-	DLL_DOWN,					/* Set direction to down */
-	DLL_UP						/* Set direction to up */
-	} DLL_SrchDir;
+  {
+  DLL_DIRECTION_DEFAULT,	/* Use current direction setting */
+  DLL_DOWN,					/* Set direction to down */
+  DLL_UP						/* Set direction to up */
+  } DLL_SrchDir;
 
 typedef enum
-	{
-	DLL_INSERT_DEFAULT,		/* Use current insert setting */
-	DLL_ABOVE,					/* Insert new record ABOVE current record */
-	DLL_BELOW					/* Insert new record BELOW current record */
-	} DLL_InsertDir;
+  {
+  DLL_INSERT_DEFAULT,		/* Use current insert setting */
+  DLL_ABOVE,					/* Insert new record ABOVE current record */
+  DLL_BELOW					/* Insert new record BELOW current record */
+  } DLL_InsertDir;
 
 /*
  * Structures
@@ -76,10 +76,10 @@ typedef struct list List;
 typedef void Info;
  
 typedef struct search_modes
-	{
-	DLL_SrchOrigin search_origin;
-	DLL_SrchDir    search_dir;
-	} DLL_SearchModes;
+  {
+  DLL_SrchOrigin search_origin;
+  DLL_SrchDir    search_dir;
+  } DLL_SearchModes;
 
 /*
  * Prototypes
