@@ -1,4 +1,4 @@
-Doubly Linked List API Ver. 1.1.0
+Doubly Linked List API Ver. 1.2.0
 
 *** Begin CVS Information ***
 $Author$
@@ -40,11 +40,11 @@ LIBRARY USAGE
 
 When new code is compiled it will link to libdll.so, and when a program
 executes it will look for libdll.so.1.  This is why they are sym-linked
-to libdll.so.1.1.0 the current version.
+to libdll.so.1.2.0 the current version.
 
 TO-DO
 
-I'm am thinking about writing perl, python, and/or tcl extensions.  If you
+I am thinking about writing perl, python, and/or tcl extensions.  If you
 would find any or all of these extensions useful send me a note, it might
 push the process along some.
 
@@ -57,11 +57,12 @@ changed on the fly.  This should drastically speed up operations.
 WEB SITE
 
 Yes I finally have a web site for this at:
-http://eggwarmer.AppliedTheory.com/~cnobile
 
-This is my personal page where links to the Doubly Link List can be found.
+http://tetrasys.homelinux.org/
+
+The above URL is my personal page where links to the Doubly Link List can
+be found.
 
 EMAIL
 
-Carl J. Nobile <cnobile@AppliedTheory.com>
-Carl J. Nobile <cnobile@suffolk.lib.ny.us>
+Carl J. Nobile <carl.nobile@gmail.com>

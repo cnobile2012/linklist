@@ -38,7 +38,7 @@ DOCLIB	= /usr/doc
 
 THISLIB	= -L. -ldll
 MAJORVERSION = 1
-MINORVERSION = 1
+MINORVERSION = 2
 PATCHLEVEL = 0
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
@@ -105,15 +105,18 @@ DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
-tarball	:
+tarball	: log
 	( cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME) )
+
+log	: clean
+	@rcs2log -h gmail.com -R > ChangeLog
 
 #--------------------------------------------------------------
 clean	:
 	@rm -f *.o *~ *.bak \#*\# core
 
 clobber	: clean
-	@rm -f libdll.* $(TEST)
+	@rm -f libdll.* $(TEST) ChangeLog
 
 distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
