@@ -1,7 +1,7 @@
 #
 # Makefile for LLIBDLL.lib  (MS C Version 6.0)
 #
-# Copyright (c) 1996-1998 Carl J. Nobile
+# Copyright (c) 1996-2007 Carl J. Nobile
 # Created: January 10, 1997
 # Updated: 11/04/98
 #
@@ -18,7 +18,6 @@ MYNAME	= mslibdll.mak
 
 MODEL	= L
 LIB	= .\;$(C6PATH)\c600\lib
-ERRFILE	= {$*}.err
 DEBUG	= -DDEBUG -Od -Zi
 OPTIONS	= -Ox -W4 -A$(MODEL)
 CFLAGS	= $(OPTIONS) $(DEBUG) /F A000
@@ -42,16 +41,16 @@ debug	:
 	make -f$(MYNAME) $(TEST).exe OPTIONS=
 
 .c.obj	:
-	$(CC) $(CFLAGS) -c $< >$(ERRFILE)
+	$(CC) $(CFLAGS) -c $<
 
 $(MODEL)libdll.lib: $(OBJS1)
 	$(RM) $@
 	$(AR) $@ +$(OBJS1);
 
 $(TEST).exe: $(OBJS2)
-	$(CC) $(OBJS2) $(CFLAGS) $(MODEL)libdll.lib >{link}.err
+	$(CC) $(OBJS2) $(CFLAGS) $(MODEL)libdll.lib
 
-$(PROG).obj: $(PROG).c $(PROG).h
+$(PROG).obj: $(PROG).c linklist.h
 $(TEST).obj: $(TEST).c linklist.h $(MODEL)libdll.lib
 
 #-------------------------------------------------

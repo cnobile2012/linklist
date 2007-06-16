@@ -1,7 +1,7 @@
 #
 # Makefile for Doubly Linked List API (Linux version)
 #
-# Copyright (c) 1996-1998 Carl J. Nobile
+# Copyright (c) 1996-2007 Carl J. Nobile
 # Created: May 26, 1997
 # Updated: 06/14/2007
 #
@@ -85,8 +85,8 @@ libdll.a: $(OBJS1)
 $(TEST)	: $(OBJS2)
 	$(CC) $(OBJS2) -o $(TEST) $(THISLIB)
 
-$(PROG).o: $(PROG).c $(PROG).h
-$(TEST).o: $(TEST).c linklist.h dll_dbg.h
+$(PROG).o: $(PROG).c linklist.h
+$(TEST).o: $(TEST).c linklist.h
 #--------------------------------------------------------------
 html	:
 	( cd docs; latex2html -local_icons -no_images Linklist.tex )
@@ -110,10 +110,10 @@ tarball	:
 
 #--------------------------------------------------------------
 clean	:
-	-rm *.o *~ *.bak \#*\# core
+	@rm -f *.o *~ *.bak \#*\# core
 
 clobber	: clean
-	-rm libdll.*
+	@rm -f libdll.* $(TEST)
 
 distclean: clobber
 	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
@@ -121,7 +121,6 @@ distclean: clobber
 install	: install-docs
 	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	( cd $(LIBDIR); \
 	 ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
 	 libdll.so.$(MAJORVERSION) )
@@ -130,7 +129,6 @@ install	: install-docs
 
 install-static:
 	cp ./linklist.h $(INCDIR)/linklist.h
-	cp ./dll_dbg.h $(INCDIR)/dll_dbg.h
 	cp ./libdll.a $(LIBDIR)/libdll.a
 
 install-docs:
@@ -139,10 +137,10 @@ install-docs:
 	install -m 444 docs/Linklist/* $(DOCLIB)/$(DISTNAME)
 
 uninstall: uninstall-docs
-	rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
+	rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h
 
 uninstall-static:
-	rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h $(INCDIR)/dll_dbg.h
+	rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h
 
 uninstall-docs:
 	rm -rf $(DOCLIB)/$(DISTNAME)
