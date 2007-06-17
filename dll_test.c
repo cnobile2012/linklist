@@ -8,6 +8,24 @@
  * $Author$
  * $Date$
  * $Revision$
+ *
+ * Note on the copyright licenses.
+ * -------------------------------
+ * This Double Link List API is covered under either the Artistic or the
+ * Eclipse license. The Eclipse license is more business friendly so I
+ * have added it. Retaining the Artistic license prevents anybody that
+ * preferred it from complaining.
+ *
+ **************************************************************************
+ * Copyright (c) 2007 Carl J. Nobile.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Carl J. Nobile - initial API and implementation
+ **************************************************************************
  */
 
 #include <stdio.h>
