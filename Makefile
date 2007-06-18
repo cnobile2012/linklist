@@ -9,6 +9,24 @@
 # $Date$
 # $Revision$
 #
+#
+# Note on the copyright licenses.
+# -------------------------------
+# This Double Link List API is covered under either the Artistic or the
+# Eclipse license. The Eclipse license is more business friendly so I
+# have added it. Retaining the Artistic license prevents anybody that
+# preferred it from complaining.
+#
+##########################################################################
+# Copyright (c) 2007 Carl J. Nobile.
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#    Carl J. Nobile - initial API and implementation
+##########################################################################
 # Mac contributions to this Makefile by Charlie Buckeit
 #
 # To compile a shared version of libdll with test program execute:
@@ -32,13 +50,15 @@ OPTIONS	= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions -Wall
 #OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
 
 # Change the directory paths below to reflect your system
-LIBDIR	= /usr/local/lib
-INCDIR	= /usr/local/include
-DOCLIB	= /usr/doc
+PREFIX	= /usr/local
+LIBDIR	= $(PREFIX)/lib
+INCDIR	= $(PREFIX)/include
+DOCLIB	= $(PREFIX)/share/doc
 
+# There should be no need to change anything below this line.
 THISLIB	= -L. -ldll
 MAJORVERSION = 1
-MINORVERSION = 2
+MINORVERSION = 1
 PATCHLEVEL = 0
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
@@ -49,7 +69,7 @@ SRCS	= $(PROG).c $(TEST).c
 OBJS1	= $(PROG).o
 OBJS2	= $(TEST).o
 #--------------------------------------------------------------
-all	:
+all	: 
 	make libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) DEBUG=
 	make $(TEST) DEBUG=
 
@@ -91,7 +111,7 @@ $(TEST).o: $(TEST).c linklist.h
 html	:
 	( cd docs; latex2html -local_icons -no_images Linklist.tex )
 	( cd docs/Linklist; rm -rf TMP *.aux *.dvi *.log *.tex *.toc *.pl *.old )
-	( cd docs/Linklist; ln -sf ../image.gif img1.gif )
+	( cd docs/Linklist; ln -sf ../linklistDiagram.png img1.png )
 
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
@@ -105,11 +125,11 @@ DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
-tarball	: log
+tarball	: docs log
 	( cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME) )
 
 log	: clean
-	@rcs2log -h gmail.com -R > ChangeLog
+	@rcs2log -h borboleta.TetraSys.org -R > ChangeLog
 
 #--------------------------------------------------------------
 clean	:
@@ -119,7 +139,7 @@ clobber	: clean
 	@rm -f libdll.* $(TEST) ChangeLog
 
 distclean: clobber
-	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
+	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *~)
 
 install	: install-docs
 	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
