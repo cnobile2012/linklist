@@ -108,18 +108,19 @@ $(TEST)	: $(OBJS2)
 $(PROG).o: $(PROG).c linklist.h
 $(TEST).o: $(TEST).c linklist.h
 #--------------------------------------------------------------
-html	:
-	( cd docs; latex2html -local_icons -no_images Linklist.tex )
-	( cd docs/Linklist; rm -rf TMP *.aux *.dvi *.log *.tex *.toc *.pl *.old )
-	( cd docs/Linklist; ln -sf ../linklistDiagram.png img1.png )
-
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
 postscript:
 	( cd docs; latex Linklist.tex; latex Linklist.tex; \
 	 dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps )
 
-docs	: postscript html
+pdf	:
+	( cd docs; tex2pdf Linklist.tex )
+
+html	:
+	( cd docs; latex2html -local_icons -no_images Linklist.tex )
+
+docs	: postscript pdf html
 
 DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
