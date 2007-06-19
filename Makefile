@@ -158,6 +158,7 @@ install-static:
 install-docs:
 	install -d $(DOCLIB)/$(DISTNAME)
 	install -m 444 docs/*.ps.gz $(DOCLIB)/$(DISTNAME)
+	install -m 444 docs/*.pdf $(DOCLIB)/$(DISTNAME)
 	install -m 444 docs/Linklist/* $(DOCLIB)/$(DISTNAME)
 
 uninstall: uninstall-docs
