@@ -34,25 +34,32 @@ make install or make install-static.  To install the docs enter
 make install-docs.  The default directory is /usr/docs/linklist.x.x.x.
 Edit the Makefile if you want a different directories.
 
-Note: If you have an old version of the library installed the test
-      program (dll_test) will pull that library in when shared objects
-      are used.  If you want to test the new library use the demo.sh
-      script instead of running the test program directly.  The script
-      will set the environment correctly.
+NOTES:
 
-Note: The makefiles for the djgpp and MS6.0 compilers have not been
-      tested for years.  I doubt if they work any more and none of the
-      new stuff has been added to them.  I've left them in the
-      distribution for those daring soles who might want to use them.
+1) IMPORTANT -- If you do not change the PREFIX environment in the Makefile
+   the libraries and the header file will be put into /usr/local/... This
+   means that when The Makefile runs ldconfig it may not actually do anything
+   unless you have put /usr/local/lib in your /etc/ld.so.conf.d/ directory. I
+   generally just make a file named local.conf with /usr/local/lib in it. Older
+   systems just put everything in the /etc/ld.so.conf file itself.
+
+2) If you have an old version of the library installed the test program
+   (dll_test) will pull that library in when shared objects are used.  If
+   you want to test the new library use the demo.sh script instead of running
+   the test program directly.  The script will set the environment correctly.
+
+3) The makefiles for the djgpp and MS6.0 compilers have not been tested for
+   years.  I doubt if they work any more and none of the new stuff has been
+   added to them.  I've left them in the distribution for those daring soles
+   who might want to use them.
+
+The documentation is now much more complete.  This distribution now provides a
+postscript, pdf, and html versions of the documentation.
 
 If you have any problems, drop me a line at:
 
-The documentation is now much more complete.  This distribution now
-provides a postscript file and html pages.
-
 Contact me at:
 
-cnobile@AppliedTheory.com
-or
-cnobile@suffolk.lib.ny.us
+carl.nobile@gmail.com
 
+tetrasys.homelinux.org
