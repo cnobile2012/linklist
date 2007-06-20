@@ -11,3 +11,4 @@ dll_test
 *.toc
 docs/CVS
 docs/.cvsignore
+linklist-*.lsm
