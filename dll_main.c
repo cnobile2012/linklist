@@ -1,19 +1,39 @@
 /*
  * dll_main.c : An API for a double linked list.
  *
- * Copyright (c) 1996-1999 Carl J. Nobile
+ * Copyright (c) 1996-2007 Carl J. Nobile
  * Created: December 22, 1996
  * Updated: 06/14/99
  *
  * $Author$
  * $Date$
  * $Revision$
+ *
+ * Note on the copyright licenses.
+ * -------------------------------
+ * This Double Link List API is covered under either the Artistic or the
+ * Eclipse license. The Eclipse license is more business friendly so I
+ * have added it. Retaining the Artistic license prevents anybody that
+ * preferred it from complaining.
+ *
+ **************************************************************************
+ * Copyright (c) 2007 Carl J. Nobile.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Carl J. Nobile - initial API and implementation
+ **************************************************************************
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "dll_main.h"
+
+#define  _DLL_MAIN_C
+#include "linklist.h"
 
 /**************************
  * Initialization Functions
@@ -30,12 +50,12 @@
  *            NULL if unsuccessfull
  */
 List *DLL_CreateList(List **list)
-	{
-	if((*list = (List *) malloc(sizeof(List))) == NULL)
-		return(NULL);
+   {
+   if((*list = (List *) malloc(sizeof(List))) == NULL)
+      return(NULL);
 
-	return(*list);
-	}
+   return(*list);
+   }
 
 
 /*
@@ -48,14 +68,14 @@ List *DLL_CreateList(List **list)
  * Returns  : NONE
  */
 void DLL_DestroyList(List **list)
-	{
-	if(*list == NULL)
-		return;
+   {
+   if(*list == NULL)
+      return;
 
-	DLL_DeleteEntireList(*list);
-	free(*list);
-	*list = NULL;
-	}
+   DLL_DeleteEntireList(*list);
+   free(*list);
+   *list = NULL;
+   }
 
 
 /*
@@ -71,29 +91,29 @@ void DLL_DestroyList(List **list)
  *            DLL_NULL_LIST -- Info is NULL
  */
 DLL_Return DLL_InitializeList(List *list, size_t infosize)
-	{
-	if(infosize == (size_t) 0)
-		return(DLL_ZERO_INFO);
+   {
+   if(infosize == (size_t) 0)
+      return(DLL_ZERO_INFO);
 
-	if(list == NULL)
-		return(DLL_NULL_LIST);
+   if(list == NULL)
+      return(DLL_NULL_LIST);
 
-	list->head = NULL;
-	list->tail = NULL;
-	list->current = NULL;
-	list->saved = NULL;
-	list->infosize = infosize;
-	list->listsize = 0L;
-	list->modified = DLL_FALSE;
-	list->search_origin = DLL_HEAD;
-	list->search_dir = DLL_DOWN;
-	list->save_index = 0L;
-	list->current_index = 0L;
-	return(DLL_NORMAL);
-	}
+   list->head = NULL;
+   list->tail = NULL;
+   list->current = NULL;
+   list->saved = NULL;
+   list->infosize = infosize;
+   list->listsize = 0L;
+   list->modified = DLL_FALSE;
+   list->search_origin = DLL_HEAD;
+   list->search_dir = DLL_DOWN;
+   list->save_index = 0L;
+   list->current_index = 0L;
+   return(DLL_NORMAL);
+   }
 
 
-/******************
+/****************************
  * Status and State Functions
  */
 
@@ -107,16 +127,16 @@ DLL_Return DLL_InitializeList(List *list, size_t infosize)
  * Return   : char * -- Pointer to version info
  */
 char *DLL_Version(void)
-	{
-	memset(version, '\0', sizeof(version));
-	strcpy(version, VERSION);
-	strcat(version, "  ");
-	strcat(version, VERDATE);
-	strcat(version, "\n");
-	strcat(version, CREDITS);
-	strcat(version, "\n");
-	return(version);
-	}
+   {
+   memset(version, '\0', sizeof(version));
+   strcpy(version, VERSION);
+   strcat(version, "  ");
+   strcat(version, VERDATE);
+   strcat(version, "\n");
+   strcat(version, CREDITS);
+   strcat(version, "\n");
+   return(version);
+   }
 
 
 /*
@@ -130,12 +150,12 @@ char *DLL_Version(void)
  *            DLL_FALSE -- List has items in it
  */
 DLL_Boolean DLL_IsListEmpty(List *list)
-	{
-	if(list->head == NULL || list->tail == NULL)
-		return(DLL_TRUE);
+   {
+   if(list->head == NULL || list->tail == NULL)
+      return(DLL_TRUE);
 
-	return(DLL_FALSE);
-	}
+   return(DLL_FALSE);
+   }
 
 
 /*
@@ -149,23 +169,23 @@ DLL_Boolean DLL_IsListEmpty(List *list)
  *            DLL_FALSE -- List is empty or partially full
  */
 DLL_Boolean DLL_IsListFull(List *list)
-	{
-	Node *newN;
-	Info *newI;
+   {
+   Node *newN;
+   Info *newI;
 
-	if((newN = (Node *) malloc(sizeof(Node))) == NULL)
-		return(DLL_TRUE);
+   if((newN = (Node *) malloc(sizeof(Node))) == NULL)
+      return(DLL_TRUE);
 
-	if((newI = (Info *) malloc(list->infosize)) == NULL)
-		{
-		free(newN);
-		return(DLL_TRUE);
-		}
+   if((newI = (Info *) malloc(list->infosize)) == NULL)
+      {
+      free(newN);
+      return(DLL_TRUE);
+      }
 
-	free(newN);
-	free(newI);
-	return(DLL_FALSE);
-	}
+   free(newN);
+   free(newI);
+   return(DLL_FALSE);
+   }
 
 
 /*
@@ -178,9 +198,9 @@ DLL_Boolean DLL_IsListFull(List *list)
  * Returns  : Number of records
  */
 unsigned long DLL_GetNumberOfRecords(List *list)
-	{
-	return list->listsize;
-	}
+   {
+   return list->listsize;
+   }
 
 
 /*
@@ -199,36 +219,36 @@ unsigned long DLL_GetNumberOfRecords(List *list)
  */
 DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
  DLL_SrchDir dir)
-	{
-	switch(origin)
-		{
-		case DLL_HEAD:
-		case DLL_CURRENT:
-		case DLL_TAIL:
-		case DLL_ORIGIN_DEFAULT:
-			break;
-		default:
-			return(DLL_NOT_MODIFIED);
-		}
+   {
+   switch(origin)
+      {
+      case DLL_HEAD:
+      case DLL_CURRENT:
+      case DLL_TAIL:
+      case DLL_ORIGIN_DEFAULT:
+         break;
+      default:
+         return(DLL_NOT_MODIFIED);
+      }
 
-	switch(dir)
-		{
-		case DLL_DOWN:
-		case DLL_UP:
-		case DLL_DIRECTION_DEFAULT:
-			break;
-		default:
-			return(DLL_NOT_MODIFIED);
-		}
+   switch(dir)
+      {
+      case DLL_DOWN:
+      case DLL_UP:
+      case DLL_DIRECTION_DEFAULT:
+         break;
+      default:
+         return(DLL_NOT_MODIFIED);
+      }
 
-	if(origin != DLL_ORIGIN_DEFAULT)
-		list->search_origin = origin;
+   if(origin != DLL_ORIGIN_DEFAULT)
+      list->search_origin = origin;
 
-	if(dir != DLL_DIRECTION_DEFAULT)
-		list->search_dir = dir;
+   if(dir != DLL_DIRECTION_DEFAULT)
+      list->search_dir = dir;
 
-	return(DLL_NORMAL);
-	}
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -242,11 +262,11 @@ DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
  * Returns  : Pointer to type DLL_SearchModes
  */
 DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
-	{
-	ssp->search_origin = list->search_origin;
-	ssp->search_dir = list->search_dir;
-	return(ssp);
-	}
+   {
+   ssp->search_origin = list->search_origin;
+   ssp->search_dir = list->search_dir;
+   return(ssp);
+   }
 
 
 /*
@@ -261,9 +281,9 @@ DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp)
  * Returns  : Current record's index
  */
 unsigned long DLL_GetCurrentIndex(List *list)
-	{
-	return list->current_index;
-	}
+   {
+   return list->current_index;
+   }
 
 
 /********************************
@@ -281,14 +301,14 @@ unsigned long DLL_GetCurrentIndex(List *list)
  *            DLL_NULL_LIST -- Empty list
  */ 
 DLL_Return DLL_CurrentPointerToHead(List *list)
-	{
-	if(list->head == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->head == NULL)
+      return(DLL_NULL_LIST);
 
-	list->current = list->head;
-	list->current_index = 1L;
-	return(DLL_NORMAL);
-	}
+   list->current = list->head;
+   list->current_index = 1L;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -302,14 +322,14 @@ DLL_Return DLL_CurrentPointerToHead(List *list)
  *            DLL_NULL_LIST -- Empty list
  */ 
 DLL_Return DLL_CurrentPointerToTail(List *list)
-	{
-	if(list->tail == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->tail == NULL)
+      return(DLL_NULL_LIST);
 
-	list->current = list->tail;
-	list->current_index = list->listsize;
-	return(DLL_NORMAL);
-	}
+   list->current = list->tail;
+   list->current_index = list->listsize;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -324,17 +344,17 @@ DLL_Return DLL_CurrentPointerToTail(List *list)
  *            DLL_NOT_FOUND -- Record not found
  */ 
 DLL_Return DLL_IncrementCurrentPointer(List *list)
-	{
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	if(list->current->next == NULL)
-		return(DLL_NOT_FOUND);
+   if(list->current->next == NULL)
+      return(DLL_NOT_FOUND);
 
-	list->current = list->current->next;
-	list->current_index++;
-	return(DLL_NORMAL);
-	}
+   list->current = list->current->next;
+   list->current_index++;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -349,17 +369,17 @@ DLL_Return DLL_IncrementCurrentPointer(List *list)
  *            DLL_NOT_FOUND -- Record not found
  */ 
 DLL_Return DLL_DecrementCurrentPointer(List *list)
-	{
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	if(list->current->prior == NULL)
-		return(DLL_NOT_FOUND);
+   if(list->current->prior == NULL)
+      return(DLL_NOT_FOUND);
 
-	list->current = list->current->prior;
-	list->current_index--;
-	return(DLL_NORMAL);
-	}
+   list->current = list->current->prior;
+   list->current_index--;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -373,14 +393,14 @@ DLL_Return DLL_DecrementCurrentPointer(List *list)
  *            DLL_NOT_FOUND -- Record not found
  */ 
 DLL_Return DLL_StoreCurrentPointer(List *list)
-	{
-	if(list->current == NULL)
-		return(DLL_NOT_FOUND);
+   {
+   if(list->current == NULL)
+      return(DLL_NOT_FOUND);
 
-	list->saved = list->current;
-	list->save_index = list->current_index;
-	return(DLL_NORMAL);
-	}
+   list->saved = list->current;
+   list->save_index = list->current_index;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -394,15 +414,15 @@ DLL_Return DLL_StoreCurrentPointer(List *list)
  *            DLL_NOT_FOUND -- Record not found
  */ 
 DLL_Return DLL_RestoreCurrentPointer(List *list)
-	{
-	if(list->saved == NULL)
-		return(DLL_NOT_FOUND);
+   {
+   if(list->saved == NULL)
+      return(DLL_NOT_FOUND);
 
-	list->current = list->saved;
-	list->saved = NULL;
-	list->current_index = list->save_index;
-	return(DLL_NORMAL);
-	}
+   list->current = list->saved;
+   list->saved = NULL;
+   list->current_index = list->save_index;
+   return(DLL_NORMAL);
+   }
 
 
 /***********************
@@ -422,98 +442,98 @@ DLL_Return DLL_RestoreCurrentPointer(List *list)
  *            DLL_MEM_ERROR -- Memory allocation failed
  */
 DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
-	{
-	Node *newN, *old, *step;
-	Info *newI;
+   {
+   Node *newN, *old, *step;
+   Info *newI;
 
-	/* Allocate space for new node */
-	if((newN = (Node *) malloc(sizeof(Node))) == NULL)
-		return(DLL_MEM_ERROR);
+   /* Allocate space for new node */
+   if((newN = (Node *) malloc(sizeof(Node))) == NULL)
+      return(DLL_MEM_ERROR);
 
-	/* Allocate space for new info */
-	if((newI = (Info *) malloc(list->infosize)) == NULL)
-		{
-		free(newN);
-		return(DLL_MEM_ERROR);
-		}
+   /* Allocate space for new info */
+   if((newI = (Info *) malloc(list->infosize)) == NULL)
+      {
+      free(newN);
+      return(DLL_MEM_ERROR);
+      }
 
-	/* Put new info into allocated space */
-	memcpy(newI, info, list->infosize);
+   /* Put new info into allocated space */
+   memcpy(newI, info, list->infosize);
 
-	/* If list->head is NULL, assume empty list and this is the 1st record. */
-	if(list->head == NULL)
-		{
-		newN->info = newI;
-		newN->next = NULL;
-		newN->prior = NULL;
-		list->head = newN;
-		list->tail = newN;
-		list->current = newN;
-		list->listsize = 1L;
-		list->current_index = 1L;
-		list->modified = DLL_TRUE;
-		return(DLL_NORMAL);
-		}
+   /* If list->head is NULL, assume empty list and this is the 1st record. */
+   if(list->head == NULL)
+      {
+      newN->info = newI;
+      newN->next = NULL;
+      newN->prior = NULL;
+      list->head = newN;
+      list->tail = newN;
+      list->current = newN;
+      list->listsize = 1L;
+      list->current_index = 1L;
+      list->modified = DLL_TRUE;
+      return(DLL_NORMAL);
+      }
 
-	if(pFun != NULL)				/* If NULL don't do sort */
-		{
-		step = list->head;
-		old = list->tail;
+   if(pFun != NULL)				/* If NULL don't do sort */
+      {
+      step = list->head;
+      old = list->tail;
 
-		while(step != NULL)		/* Loop through records until a match is found */
-			{
-			if(((*pFun)(step->info, newI)) >= 0)
-				break;
+      while(step != NULL)		/* Loop through records until a match is found */
+         {
+         if(((*pFun)(step->info, newI)) >= 0)
+            break;
 
-			list->current_index++;
-			old = step;
-			step = (Node *) step->next;
-			}
-		}
-	else
-		{
-		step = NULL;
-		old = list->tail;
-		}
+         list->current_index++;
+         old = step;
+         step = (Node *) step->next;
+         }
+      }
+   else
+      {
+      step = NULL;
+      old = list->tail;
+      }
 
-	/*
-  	 * The order of the 'if' statements below is critical and
-  	 * cannot be changed or a no sort (NULL) situation will fail.
-  	 */
-	if(step == NULL)				/* New last record */
-		{
-		newN->info = newI;
-		old->next = newN;
-		newN->next = NULL;
-		newN->prior = old;
-		list->tail = newN;
-		list->current = newN;
-		}
-	else
-		if(step->prior == NULL)	/* New first record */
-			{
-			newN->info = newI;
-			newN->prior = NULL;
-			newN->next = step;
-			step->prior = newN;
-			list->head = newN;
-			list->current = newN;
-			}
-		else							/* New middle record */
-			{
-			newN->info = newI;
-			step->prior->next = newN;
-			newN->next = step;
-			newN->prior = step->prior;
-			step->prior = newN;
-			list->current = newN;
-			}
+   /*
+    * The order of the 'if' statements below is critical and
+    * cannot be changed or a no sort (NULL) situation will fail.
+    */
+   if(step == NULL)				/* New last record */
+      {
+      newN->info = newI;
+      old->next = newN;
+      newN->next = NULL;
+      newN->prior = old;
+      list->tail = newN;
+      list->current = newN;
+      }
+   else
+      if(step->prior == NULL)	/* New first record */
+         {
+         newN->info = newI;
+         newN->prior = NULL;
+         newN->next = step;
+         step->prior = newN;
+         list->head = newN;
+         list->current = newN;
+         }
+      else							/* New middle record */
+         {
+         newN->info = newI;
+         step->prior->next = newN;
+         newN->next = step;
+         newN->prior = step->prior;
+         step->prior = newN;
+         list->current = newN;
+         }
 
-	list->listsize++;
-	list->current_index++;
-	list->modified = DLL_TRUE;
-	return(DLL_NORMAL);
-	}
+   list->listsize++;
+   list->current_index++;
+   list->modified = DLL_TRUE;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -532,88 +552,88 @@ DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
  *                                or DLL_BELOW)
  */
 DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
-	{
-	Node *newN;
-	Info *newI;
+   {
+   Node *newN;
+   Info *newI;
 
-	/* Allocate space for new node */
-	if((newN = (Node *) malloc(sizeof(Node))) == NULL)
-		return(DLL_MEM_ERROR);
+   /* Allocate space for new node */
+   if((newN = (Node *) malloc(sizeof(Node))) == NULL)
+      return(DLL_MEM_ERROR);
 
-	/* Allocate space for new info */
-	if((newI = (Info *) malloc(list->infosize)) == NULL)
-		{
-		free(newN);
-		return(DLL_MEM_ERROR);
-		}
+   /* Allocate space for new info */
+   if((newI = (Info *) malloc(list->infosize)) == NULL)
+      {
+      free(newN);
+      return(DLL_MEM_ERROR);
+      }
 
-	/* Put new info into allocated space */
-	memcpy(newI, info, list->infosize);
+   /* Put new info into allocated space */
+   memcpy(newI, info, list->infosize);
 
-	/* If list->head is NULL, assume empty list and this is the 1st record. */
-	if(list->head == NULL)
-		{
-		newN->info = newI;
-		newN->next = NULL;
-		newN->prior = NULL;
-		list->head = newN;
-		list->tail = newN;
-		list->current = newN;
-		list->listsize = 1L;
-		list->current_index = 1L;
-		list->modified = DLL_TRUE;
-		return(DLL_NORMAL);
-		}
+   /* If list->head is NULL, assume empty list and this is the 1st record. */
+   if(list->head == NULL)
+      {
+      newN->info = newI;
+      newN->next = NULL;
+      newN->prior = NULL;
+      list->head = newN;
+      list->tail = newN;
+      list->current = newN;
+      list->listsize = 1L;
+      list->current_index = 1L;
+      list->modified = DLL_TRUE;
+      return(DLL_NORMAL);
+      }
 
-	/* Decide what to do according to dir */
-	switch(dir)
-		{
-		case DLL_ABOVE:
-			newN->info = newI;
-			newN->next = list->current;
-			newN->prior = list->current->prior;
+   /* Decide what to do according to dir */
+   switch(dir)
+      {
+      case DLL_ABOVE:
+         newN->info = newI;
+         newN->next = list->current;
+         newN->prior = list->current->prior;
 
-			/* If current is not at head */
-			if(list->current->prior)
-				list->current->prior->next = newN;
+         /* If current is not at head */
+         if(list->current->prior)
+            list->current->prior->next = newN;
 
-			list->current->prior = newN;
+         list->current->prior = newN;
 
-			/* If none above new one, set head */
-			if(newN->prior == NULL)
-				list->head = newN;
+         /* If none above new one, set head */
+         if(newN->prior == NULL)
+            list->head = newN;
 
-			list->current = newN;
-			break;
-		case DLL_BELOW:
-			newN->info = newI;
-			newN->next = list->current->next;
-			newN->prior = list->current;
+         list->current = newN;
+         break;
+      case DLL_BELOW:
+         newN->info = newI;
+         newN->next = list->current->next;
+         newN->prior = list->current;
 
-			/* If current is not at tail */
-			if(list->current->next)
-				list->current->next->prior = newN;
+         /* If current is not at tail */
+         if(list->current->next)
+            list->current->next->prior = newN;
 
-			list->current->next = newN;
+         list->current->next = newN;
 
-			/* If none below new one, set tail */
-			if(newN->next == NULL)
-				list->tail = newN;
+         /* If none below new one, set tail */
+         if(newN->next == NULL)
+            list->tail = newN;
 
-			list->current = newN;
-			list->current_index++;
-			break;
-		default:
-			free(newI);
-			free(newN);
-			return(DLL_NOT_MODIFIED);
-			break;
-		}
+         list->current = newN;
+         list->current_index++;
+         break;
+      default:
+         free(newI);
+         free(newN);
+         return(DLL_NOT_MODIFIED);
+         break;
+      }
 
-	list->listsize++;
-	list->modified = DLL_TRUE;
-	return(DLL_NORMAL);
-	}
+   list->listsize++;
+   list->modified = DLL_TRUE;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -633,98 +653,98 @@ DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
  *                                list indicated by dir.
  */
 DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir)
-	{
-	Node *swap, *newPrior, *newNext;
+   {
+   Node *swap, *newPrior, *newNext;
 
-	/* If current is NULL, can't swap it */
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   /* If current is NULL, can't swap it */
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	/* Decide what to do according to dir */
-	switch(dir)
-		{
-		case DLL_ABOVE:
-			swap = list->current;
+   /* Decide what to do according to dir */
+   switch(dir)
+      {
+      case DLL_ABOVE:
+         swap = list->current;
 
-			/* current is at head */
-			if(swap->prior == NULL)
-				return(DLL_NOT_FOUND);
+         /* current is at head */
+         if(swap->prior == NULL)
+            return(DLL_NOT_FOUND);
 
-			/* Save current new prior and new next */
-			newPrior = swap->prior->prior;
-			newNext = swap->prior;
+         /* Save current new prior and new next */
+         newPrior = swap->prior->prior;
+         newNext = swap->prior;
 
-			/* If prior node is not at head */
-			if(newPrior != NULL)
-				newPrior->next = swap;
+         /* If prior node is not at head */
+         if(newPrior != NULL)
+            newPrior->next = swap;
 
-			/* Set up old next record's prior node */
-			if(swap->next != NULL)
-				swap->next->prior = newNext;
+         /* Set up old next record's prior node */
+         if(swap->next != NULL)
+            swap->next->prior = newNext;
 
-			/* Set up new next record's next & prior nodes */
-			newNext->next = swap->next;
-			newNext->prior = swap;
+         /* Set up new next record's next & prior nodes */
+         newNext->next = swap->next;
+         newNext->prior = swap;
 
-			/* Set the current record's new next & prior node */
-			swap->prior = newPrior;
-			swap->next = newNext;
+         /* Set the current record's new next & prior node */
+         swap->prior = newPrior;
+         swap->next = newNext;
 
-			/* If current is now at head, set list head */
-			if(newPrior == NULL)
-				list->head = swap;
+         /* If current is now at head, set list head */
+         if(newPrior == NULL)
+            list->head = swap;
 
-			/* If current used to be at tail, set list tail */
-			if(newNext->next == NULL)
-				list->tail = newNext;
+         /* If current used to be at tail, set list tail */
+         if(newNext->next == NULL)
+            list->tail = newNext;
 
-			list->current_index--;
-			break;
-		case DLL_BELOW:
-			swap = list->current;
+         list->current_index--;
+         break;
+      case DLL_BELOW:
+         swap = list->current;
 
-			/* current is at tail */
-			if(swap->next == NULL)
-				return(DLL_NOT_FOUND);
+         /* current is at tail */
+         if(swap->next == NULL)
+            return(DLL_NOT_FOUND);
 
-			/* Save current new prior and new next */
-			newPrior = swap->next;
-			newNext = swap->next->next;
+         /* Save current new prior and new next */
+         newPrior = swap->next;
+         newNext = swap->next->next;
 
-			/* If next node is not at tail */
-			if(newNext != NULL)
-				newNext->prior = swap;
+         /* If next node is not at tail */
+         if(newNext != NULL)
+            newNext->prior = swap;
 
-			/* Set up old prior record's next node */
-			if(swap->prior != NULL)
-				swap->prior->next = newPrior;
+         /* Set up old prior record's next node */
+         if(swap->prior != NULL)
+            swap->prior->next = newPrior;
 
-			/* Set up new prior record's next & prior nodes */
-			newPrior->next = swap;
-			newPrior->prior = swap->prior;
+         /* Set up new prior record's next & prior nodes */
+         newPrior->next = swap;
+         newPrior->prior = swap->prior;
 
-			/* Set the current record's new next & prior node */
-			swap->prior = newPrior;
-			swap->next = newNext;
+         /* Set the current record's new next & prior node */
+         swap->prior = newPrior;
+         swap->next = newNext;
 
-			/* If current is now at tail, set list tail */
-			if(newNext == NULL)
-				list->tail = swap;
+         /* If current is now at tail, set list tail */
+         if(newNext == NULL)
+            list->tail = swap;
 
-			/* If current used to be at head, set list head */
-			if(newPrior->prior == NULL)
-				list->head = newPrior;
+         /* If current used to be at head, set list head */
+         if(newPrior->prior == NULL)
+            list->head = newPrior;
 
-			list->current_index++;
-			break;
-		default:
-			return(DLL_NOT_MODIFIED);
-			break;
-		}
+         list->current_index++;
+         break;
+      default:
+         return(DLL_NOT_MODIFIED);
+         break;
+      }
 
-	list->modified = DLL_TRUE;
-	return(DLL_NORMAL);
-	}
+   list->modified = DLL_TRUE;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -739,13 +759,13 @@ DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir)
  *            DLL_NULL_LIST -- Empty list
  */
 DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record)
-	{
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	memcpy(list->current->info, record, list->infosize);
-	return(DLL_NORMAL);
-	}
+   memcpy(list->current->info, record, list->infosize);
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -759,46 +779,46 @@ DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record)
  *            DLL_NULL_LIST -- List is empty
  */
 DLL_Return DLL_DeleteCurrentRecord(List *list)
-	{
-	Info *oldI;
-	Node *oldN;
+   {
+   Info *oldI;
+   Node *oldN;
 
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	oldI = list->current->info;
-	oldN = list->current;
+   oldI = list->current->info;
+   oldN = list->current;
 
-	if(list->current == list->head)		/* current is first record */
-		{
-		/* A single record in a list can't do this ...next->prior */
-		if(list->current->next != NULL)
-			list->current->next->prior = NULL;
+   if(list->current == list->head)		/* current is first record */
+      {
+      /* A single record in a list can't do this ...next->prior */
+      if(list->current->next != NULL)
+         list->current->next->prior = NULL;
 
-		list->head = list->current->next;
-		list->current = list->head;
-		}
-	else
-		if(list->current == list->tail)	/* current is last record */
-			{
-			list->current->prior->next = NULL;
-			list->tail = list->current->prior;
-			list->current = list->tail;
-			list->current_index--;
-			}
-		else										/* current is a middle record */
-			{
-			list->current->prior->next = list->current->next;
-			list->current->next->prior = list->current->prior;
-			list->current = list->current->next;
-			}
+      list->head = list->current->next;
+      list->current = list->head;
+      }
+   else
+      if(list->current == list->tail)	/* current is last record */
+         {
+         list->current->prior->next = NULL;
+         list->tail = list->current->prior;
+         list->current = list->tail;
+         list->current_index--;
+         }
+      else										/* current is a middle record */
+         {
+         list->current->prior->next = list->current->next;
+         list->current->next->prior = list->current->prior;
+         list->current = list->current->next;
+         }
 			
-	free(oldI);
-	free(oldN);
-	list->listsize--;
-	list->modified = DLL_TRUE;
-	return(DLL_NORMAL);
-	}
+   free(oldI);
+   free(oldN);
+   list->listsize--;
+   list->modified = DLL_TRUE;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -812,34 +832,34 @@ DLL_Return DLL_DeleteCurrentRecord(List *list)
  *            DLL_NULL_LIST -- List is empty
  */
 DLL_Return DLL_DeleteEntireList(List *list)
-	{
-	Info *oldI;
-	Node *oldN;
+   {
+   Info *oldI;
+   Node *oldN;
 
-	if(list->head == NULL)
-		return(DLL_NULL_LIST);
+   if(list->head == NULL)
+      return(DLL_NULL_LIST);
 
-	do
-		{
-		oldI = list->head->info;
-		oldN = list->head;
-		list->head = list->head->next;
-		free(oldI);
-		free(oldN);
-		}
-	while(list->head != NULL);
+   do
+      {
+      oldI = list->head->info;
+      oldN = list->head;
+      list->head = list->head->next;
+      free(oldI);
+      free(oldN);
+      }
+   while(list->head != NULL);
 
-	list->head = NULL;
-	list->tail = NULL;
-	list->current = NULL;
-	list->saved = NULL;
-	list->listsize = 0L;
-	list->current_index = 0L;
-	list->modified = DLL_TRUE;
-	list->search_origin = DLL_HEAD;
-	list->search_dir = DLL_DOWN;
-	return(DLL_NORMAL);
-	}
+   list->head = NULL;
+   list->tail = NULL;
+   list->current = NULL;
+   list->saved = NULL;
+   list->listsize = 0L;
+   list->current_index = 0L;
+   list->modified = DLL_TRUE;
+   list->search_origin = DLL_HEAD;
+   list->search_dir = DLL_DOWN;
+   return(DLL_NORMAL);
+   }
 
 
 /******************
@@ -864,54 +884,54 @@ DLL_Return DLL_DeleteEntireList(List *list)
  */
 DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
  int (*pFun)(Info *, Info *))
-	{
-	unsigned long save;
-	Node *step;
-	DLL_SrchDir dir;
+   {
+   unsigned long save;
+   Node *step;
+   DLL_SrchDir dir;
 
-	if(pFun == NULL)
-		return(DLL_NULL_FUNCTION);
+   if(pFun == NULL)
+      return(DLL_NULL_FUNCTION);
 
-	save = list->current_index;
+   save = list->current_index;
 
-	switch(list->search_origin)
-		{
-		case DLL_CURRENT:
-			step = list->current;
-			dir = list->search_dir;
-			break;
-		case DLL_TAIL:
-			step = list->tail;
-			list->search_dir = dir = DLL_UP;
-			list->current_index = list->listsize;
-			break;
-		case DLL_HEAD:
-		default:
-			list->search_origin = DLL_HEAD;
-			step = list->head;
-			list->search_dir = dir = DLL_DOWN;
-			list->current_index = 1L;
-		}
+   switch(list->search_origin)
+      {
+      case DLL_CURRENT:
+         step = list->current;
+         dir = list->search_dir;
+         break;
+      case DLL_TAIL:
+         step = list->tail;
+         list->search_dir = dir = DLL_UP;
+         list->current_index = list->listsize;
+         break;
+      case DLL_HEAD:
+      default:
+         list->search_origin = DLL_HEAD;
+         step = list->head;
+         list->search_dir = dir = DLL_DOWN;
+         list->current_index = 1L;
+      }
 
-	if(step == NULL)
-		return(DLL_NULL_LIST);
+   if(step == NULL)
+      return(DLL_NULL_LIST);
 
-	while(step != NULL)
-		{
-		if(((*pFun)(step->info, match)) == 0)
-			{
-			memcpy(record, step->info, list->infosize);
-			list->current = step;
-			return(DLL_NORMAL);
-			}
+   while(step != NULL)
+      {
+      if(((*pFun)(step->info, match)) == 0)
+         {
+         memcpy(record, step->info, list->infosize);
+         list->current = step;
+         return(DLL_NORMAL);
+         }
 
-		step = (dir == DLL_DOWN) ? (Node *) step->next : (Node *) step->prior;
-		list->current_index += (dir == DLL_DOWN) ? 1 : -1;
-		}
+      step = (dir == DLL_DOWN) ? (Node *) step->next : (Node *) step->prior;
+      list->current_index += (dir == DLL_DOWN) ? 1 : -1;
+      }
 
-	list->current_index = save;
-	return(DLL_NOT_FOUND);
-	}
+   list->current_index = save;
+   return(DLL_NOT_FOUND);
+   }
 
 
 /*
@@ -934,65 +954,65 @@ DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
  *                             (current record index remains unchanged).
  */
 DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
-	{
-	unsigned long save;
-	Node *step;
-	DLL_SrchDir dir;
-	register int nCnt;
+   {
+   unsigned long save;
+   Node *step;
+   DLL_SrchDir dir;
+   register int nCnt;
 
-	save = list->current_index;
+   save = list->current_index;
 
-	switch(list->search_origin)
-		{
-		case DLL_CURRENT:
-			step = list->current;
-			dir = list->search_dir;
-			break;
-		case DLL_TAIL:
-			step = list->tail;
-			list->search_dir = dir = DLL_UP;
-			list->current_index = list->listsize;
-			break;
-		case DLL_HEAD:
-		default:
-			list->search_origin = DLL_HEAD;
-			step = list->head;
-			list->search_dir = dir = DLL_DOWN;
-			list->current_index = 1L;
-		}
+   switch(list->search_origin)
+      {
+      case DLL_CURRENT:
+         step = list->current;
+         dir = list->search_dir;
+         break;
+      case DLL_TAIL:
+         step = list->tail;
+         list->search_dir = dir = DLL_UP;
+         list->current_index = list->listsize;
+         break;
+      case DLL_HEAD:
+      default:
+         list->search_origin = DLL_HEAD;
+         step = list->head;
+         list->search_dir = dir = DLL_DOWN;
+         list->current_index = 1L;
+      }
 
-	if(step == NULL)
-		return(DLL_NULL_LIST);
+   if(step == NULL)
+      return(DLL_NULL_LIST);
 
-	if(skip <= 0 || ((dir == DLL_DOWN)
-	 ? (list->listsize < (list->current_index + skip))
-	 : (list->current_index <= skip)))
-		{
-		list->current_index = save;
-		return(DLL_NOT_FOUND);
-		}
+   if(skip <= 0 || ((dir == DLL_DOWN)
+       ? (list->listsize < (list->current_index + skip))
+       : (list->current_index <= skip)))
+      {
+      list->current_index = save;
+      return(DLL_NOT_FOUND);
+      }
 
-	switch(dir)
-		{
-		case DLL_DOWN:
-			for(nCnt = 0; nCnt < skip && step->next != NULL; nCnt++)
-				step = step->next;
+   switch(dir)
+      {
+      case DLL_DOWN:
+         for(nCnt = 0; nCnt < skip && step->next != NULL; nCnt++)
+            step = step->next;
 
-			break;
-		case DLL_UP:
-			for(nCnt = 0; nCnt < skip && step->prior != NULL; nCnt++)
-				step = step->prior;
+         break;
+      case DLL_UP:
+         for(nCnt = 0; nCnt < skip && step->prior != NULL; nCnt++)
+            step = step->prior;
 
-			break;
-		default:
-			return(DLL_NOT_FOUND);
-		}
+         break;
+      default:
+         return(DLL_NOT_FOUND);
+      }
 
-	memcpy(record, step->info, list->infosize);
-	list->current = step;
-	list->current_index += (dir == DLL_DOWN) ? (1 * skip) : (-1 * skip);
-	return(DLL_NORMAL);
-	}
+   memcpy(record, step->info, list->infosize);
+   list->current = step;
+   list->current_index += (dir == DLL_DOWN) ? (1 * skip) : (-1 * skip);
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -1007,13 +1027,13 @@ DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
  *            DLL_NULL_LIST -- List is empty
  */
 DLL_Return DLL_GetCurrentRecord(List *list, Info *record)
-	{
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	memcpy(record, list->current->info, list->infosize);
-	return(DLL_NORMAL);
-	}
+   memcpy(record, list->current->info, list->infosize);
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -1029,18 +1049,18 @@ DLL_Return DLL_GetCurrentRecord(List *list, Info *record)
  *            DLL_NOT_FOUND -- Beginning of list
  */
 DLL_Return DLL_GetPriorRecord(List *list, Info *record)
-	{
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	if(list->current->prior == NULL)
-		return(DLL_NOT_FOUND);
+   if(list->current->prior == NULL)
+      return(DLL_NOT_FOUND);
 
-	list->current = list->current->prior;
-	memcpy(record, list->current->info, list->infosize);
-	list->current_index--;
-	return(DLL_NORMAL);
-	}
+   list->current = list->current->prior;
+   memcpy(record, list->current->info, list->infosize);
+   list->current_index--;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -1056,18 +1076,18 @@ DLL_Return DLL_GetPriorRecord(List *list, Info *record)
  *            DLL_NOT_FOUND -- End of list
  */
 DLL_Return DLL_GetNextRecord(List *list, Info *record)
-	{
-	if(list->current == NULL)
-		return(DLL_NULL_LIST);
+   {
+   if(list->current == NULL)
+      return(DLL_NULL_LIST);
 
-	if(list->current->next == NULL)
-		return(DLL_NOT_FOUND);
+   if(list->current->next == NULL)
+      return(DLL_NOT_FOUND);
 
-	list->current = list->current->next;
-	memcpy(record, list->current->info, list->infosize);
-	list->current_index++;
-	return(DLL_NORMAL);
-	}
+   list->current = list->current->next;
+   memcpy(record, list->current->info, list->infosize);
+   list->current_index++;
+   return(DLL_NORMAL);
+   }
 
 
 /************************
@@ -1089,36 +1109,36 @@ DLL_Return DLL_GetNextRecord(List *list, Info *record)
  *            DLL_NOT_MODIFIED -- Unmodified list no save was done
  */
 DLL_Return DLL_SaveList(List *list, const char *path)
-	{
-	Node *step;
-	FILE *fp;
+   {
+   Node *step;
+   FILE *fp;
 
-	if(list->head == NULL)
-		return(DLL_NULL_LIST);
+   if(list->head == NULL)
+      return(DLL_NULL_LIST);
 
-	if(list->modified == DLL_FALSE)
-		return(DLL_NOT_MODIFIED);
+   if(list->modified == DLL_FALSE)
+      return(DLL_NOT_MODIFIED);
 
-	if((fp = fopen(path, "wb")) == NULL)
-		return(DLL_OPEN_ERROR);
+   if((fp = fopen(path, "wb")) == NULL)
+      return(DLL_OPEN_ERROR);
 
-	step = list->head;
+   step = list->head;
 
-	while(step != NULL)
-		{
-		if(fwrite(step->info, 1, list->infosize, fp) != list->infosize)
-			{
-			fclose(fp);
-			return(DLL_WRITE_ERROR);
-			}
+   while(step != NULL)
+      {
+      if(fwrite(step->info, 1, list->infosize, fp) != list->infosize)
+         {
+         fclose(fp);
+         return(DLL_WRITE_ERROR);
+         }
 
-		step = (Node *) step->next;
-		}
+      step = (Node *) step->next;
+      }
 
-	fclose(fp);
-	list->modified = DLL_FALSE;
-	return(DLL_NORMAL);
-	}
+   fclose(fp);
+   list->modified = DLL_FALSE;
+   return(DLL_NORMAL);
+   }
 
 
 /*
@@ -1137,41 +1157,41 @@ DLL_Return DLL_SaveList(List *list, const char *path)
  */
 DLL_Return DLL_LoadList(List *list, const char *path,
  int (*pFun)(Info *, Info *))
-	{
-	Info *set;
-	FILE *fp;
-	DLL_Return ExitCode;
+   {
+   Info *set;
+   FILE *fp;
+   DLL_Return ExitCode;
 
-	if((fp = fopen(path, "rb")) == NULL)
-		return(DLL_OPEN_ERROR);
+   if((fp = fopen(path, "rb")) == NULL)
+      return(DLL_OPEN_ERROR);
 
-	DLL_DeleteEntireList(list);
+   DLL_DeleteEntireList(list);
 
-	list->head = list->tail = NULL;
+   list->head = list->tail = NULL;
 
-	if((set = (Info *) malloc(list->infosize)) == NULL)
-		return(DLL_MEM_ERROR);
+   if((set = (Info *) malloc(list->infosize)) == NULL)
+      return(DLL_MEM_ERROR);
 
-	for(;;)
-		{
-		if(fread(set, 1, list->infosize, fp) != list->infosize)
-			{
-			if(feof(fp))
-				ExitCode = DLL_NORMAL;
-			else
-				ExitCode = DLL_READ_ERROR;
+   for(;;)
+      {
+      if(fread(set, 1, list->infosize, fp) != list->infosize)
+         {
+         if(feof(fp))
+            ExitCode = DLL_NORMAL;
+         else
+            ExitCode = DLL_READ_ERROR;
 
-			break;
-			}
+         break;
+         }
 
-		if((ExitCode = DLL_AddRecord(list, set, pFun)) == DLL_MEM_ERROR)
-			break;
-		}
+      if((ExitCode = DLL_AddRecord(list, set, pFun)) == DLL_MEM_ERROR)
+         break;
+      }
 
-	if(!pFun)
-		list->modified = DLL_FALSE;
+   if(!pFun)
+      list->modified = DLL_FALSE;
 
-	free(set);
-	fclose(fp);
-	return(ExitCode);
-	}
+   free(set);
+   fclose(fp);
+   return(ExitCode);
+   }

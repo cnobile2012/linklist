@@ -5,10 +5,10 @@ test.dat
 libdll.*
 dll_test
 *.o
-*.err
 *.aux
 *.dvi
 *.log
 *.toc
 docs/CVS
 docs/.cvsignore
+linklist-*.lsm
