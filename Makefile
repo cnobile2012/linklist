@@ -140,7 +140,7 @@ clobber	: clean
 	@rm -f libdll.* $(TEST) ChangeLog
 
 distclean: clobber
-	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *~)
+	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *.pdf *~)
 
 install	: install-docs
 	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
