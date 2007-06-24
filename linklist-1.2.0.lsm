@@ -1,0 +1,21 @@
+Begin3
+Title:		linklist
+Version:	1.2.0
+Entered-date:	16JUN07
+Description:	An API for a doubly linklist. This API is re-entrant so
+		more than one list can be created per application. For a
+		more complete description see the May 1998 issue of the
+		Linux Journal and the Postscript and HTML documentation
+		in the package. The original source for the documentation
+		is now in Latex.
+Keywords:	linklist API libs
+Author:		carl.nobile@gmail.com (Carl J. Nobile)
+Maintained-by:	carl.nobile@gmail.com (Carl J. Nobile)
+Primary-site:	ibiblio.org/pub/linux/libs
+		52KB linklist-1.2.0.tar.gz
+		739 linklist-1.2.0.lsm
+Alternate-site:
+Original-site:	http://tetrasys.homelinux.org/
+Platforms:
+Copying-policy:	Artistic & Eclipse Licenses
+End
