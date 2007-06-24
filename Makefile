@@ -58,7 +58,7 @@ DOCLIB	= $(PREFIX)/share/doc
 # There should be no need to change anything below this line.
 THISLIB	= -L. -ldll
 MAJORVERSION = 1
-MINORVERSION = 1
+MINORVERSION = 2
 PATCHLEVEL = 0
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
