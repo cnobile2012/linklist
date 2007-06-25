@@ -1,4 +1,4 @@
-Begin3
+Begin4
 Title:		linklist
 Version:	1.2.0
 Entered-date:	24JUN07
@@ -13,9 +13,9 @@ Author:		carl.nobile@gmail.com (Carl J. Nobile)
 Maintained-by:	carl.nobile@gmail.com (Carl J. Nobile)
 Primary-site:	ibiblio.org/pub/linux/libs
 		334KB linklist-1.2.0.tar.gz
-		731 linklist-1.2.0.lsm
-Alternate-site:
-Original-site:	http://tetrasys.homelinux.org/
-Platforms:
-Copying-policy:	Artistic & Eclipse Licenses
+		759B linklist-1.2.0.lsm
+Alternate-site: http://tetrasys.homelinux.org/home/Linklist/
+Original-site:
+Platforms: UNIX/Linux
+Copying-policy:	Artistic and Eclipse Licenses
 End
