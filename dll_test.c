@@ -37,6 +37,8 @@
 #define FALSE     DLL_FALSE
 #define TRUE      DLL_TRUE
 
+#define BUFSIZE   80
+
 /* Structures */
 typedef struct name_addr
    {
@@ -95,7 +97,7 @@ Boolean get_current_record(List *list);
 Boolean verify_criteria(List *list, char *pField, unsigned long num);
 
 
-void main(void)
+int main(void)
    {
    List *addr_list = NULL;
    DLL_Return ExitCode;
@@ -181,6 +183,8 @@ void main(void)
             exit(EXIT_SUCCESS);
          }
       }
+
+   return 0;
    }
 
 
@@ -189,7 +193,7 @@ void main(void)
  */
 int main_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs(" (1) Add an address             ", stdout);
@@ -212,7 +216,7 @@ int main_menu(void)
    do
       {
       fputs("\nEnter your choice: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 16);
@@ -253,7 +257,9 @@ void enter(List *list)
        stdout);
       input("Enter name: ", put_addr.name, sizeof(put_addr.name));
 
-      if(!put_addr.name[0])
+      if(put_addr.name[0] == '\r' ||
+       put_addr.name[0] == '\n' ||
+       put_addr.name[0] == '\0')
          break;
 
       input("Enter Street: ", put_addr.street, sizeof(put_addr.street));
@@ -284,7 +290,7 @@ void enter(List *list)
  */
 int sort_menu(void)
    {
-   char s[81];
+   char s[BUFSIZE];
    int  c;
 
    fputs("Sort options\n", stdout);
@@ -297,7 +303,7 @@ int sort_menu(void)
    do
       {
       fputs("\nEnter your choice: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
@@ -372,7 +378,7 @@ void insert(List *list)
  */
 int insert_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Insert above current record\n", stdout);
@@ -381,7 +387,7 @@ int insert_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -457,7 +463,7 @@ void update(List *list)
  */
 int update_select(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Name\n", stdout);
@@ -470,7 +476,7 @@ int update_select(void)
    do
       {
       fputs("\nEnter field to update choice: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 6);
@@ -485,14 +491,14 @@ int update_select(void)
  */
 void input(char *prompt, char *s, size_t count)
    {
-   char str[256];
+   char str[BUFSIZE*4];
 
    memset(str, '\0', sizeof(str));
 
    for(;;)
       {
       fputs(prompt, stdout);
-      gets(str);
+      fgets(str, (BUFSIZE*4)-1, stdin);
 
       if(strlen(str) < count)
          break;
@@ -596,7 +602,7 @@ void search(List *list)
  */
 int method_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int c;
 
    fputs("(1) Find a record by matching criteria\n", stdout);
@@ -605,7 +611,7 @@ int method_menu(void)
    do
       {
       fputs("\nChoose a find method: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -841,7 +847,7 @@ char *set_field(List *list, int (**pfun)())
  */
 int find_by_match_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Choose search origin\n", stdout);
@@ -852,7 +858,7 @@ int find_by_match_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
@@ -867,7 +873,7 @@ int find_by_match_menu(void)
  */
 int find_by_Nth_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Choose search origin\n", stdout);
@@ -878,7 +884,7 @@ int find_by_Nth_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
@@ -893,7 +899,7 @@ int find_by_Nth_menu(void)
  */
 int origin_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Originate at head\n", stdout);
@@ -903,7 +909,7 @@ int origin_menu(void)
    do
       {
       fputs("\nChoose origin of search: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 3);
@@ -918,7 +924,7 @@ int origin_menu(void)
  */
 int direction_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Direction down\n", stdout);
@@ -927,7 +933,7 @@ int direction_menu(void)
    do
       {
       fputs("\nChoose direction of search: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -1002,7 +1008,7 @@ Boolean verify_criteria(List *list, char *pField, unsigned long num)
  */
 int field_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Name field\n", stdout);
@@ -1014,7 +1020,7 @@ int field_menu(void)
    do
       {
       fputs("\nChoose field to search on: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 5);
@@ -1348,7 +1354,7 @@ void swap_record(List *list)
  */
 int swap_menu(void)
    {
-   char s[80];
+   char s[BUFSIZE];
    int  c;
 
    fputs("(1) Swap above one record\n", stdout);
@@ -1357,7 +1363,7 @@ int swap_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      gets(s);
+      fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
