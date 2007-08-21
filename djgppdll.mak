@@ -49,7 +49,7 @@ $(TEST).exe: $(OBJS2)
 #	coff2exe -s c:/djgpp/bin/go32.exe $(TEST)
 	$(RM) $(TEST)
 
-$(PROG).o: $(PROG).c $(PROG).h
+$(PROG).o: $(PROG).c linklist.h
 $(TEST).o: $(TEST).c linklist.h libdll.a
 #-------------------------------------------------
 
