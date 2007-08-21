@@ -25,7 +25,7 @@
 
 \title{A Users Guide for the\\
        Doubly Linked List API\\
-       Version 1.1.0}
+       Version 1.2.0}
 \author{Carl J. Nobile\\
 	carl.nobile@gmail.com}
 \date{Created: March 28, 1999\\
@@ -570,9 +570,9 @@ DLL_Boolean DLL_IsListEmpty(List *list);
 DLL_Boolean DLL_IsListFull(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);
 DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
-            DLL_SrchDir dir);
+                              DLL_SrchDir dir);
 DLL_SearchModes *DLL_GetSearchModes(List *list,
-                 DLL_SearchModes *ssp);
+                                    DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
 \end{verbatim}
 \normalsize
@@ -584,11 +584,12 @@ All the functions below except \emph{DLL\_Version} take as their first argument 
  \item[DLL\_Version]\quad\\
  This function has no arguments and returns a string in the following format:
  \begin{verbatim}
-Ver: 1.1.0  May 17 1999
+Ver: 1.2.0  June 24 2007
 -------------------------------
  Developed by: Carl J. Nobile
 Contributions: Charlie Buckheit
                Graham Inchley
+               Wai-Sun Chia
  \end{verbatim}
  \vspace{-16pt}
  \item[DLL\_IsListEmpty]\quad\\
