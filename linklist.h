@@ -115,9 +115,10 @@ typedef void Info;
                   "Developed by:  Carl J. Nobile\n" \
                   "Contributions: Charlie Buckheit\n" \
                   "               Graham Inchley\n" \
-                  "               Wai-Sun Chia\n"
+                  "               Wai-Sun Chia\n" \
+                  "               Mark M. Feenstra\n"
 
-static char version[sizeof(VERSION) + sizeof(VERDATE) + sizeof(CREDITS) + 1];
+static char *version;
 #endif   /* _DLL_MAIN_C */
 
 #if defined (_DLL_MAIN_C) || defined (DEBUG)

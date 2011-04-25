@@ -268,13 +268,21 @@ _getSession(List *slist)
 char *
 DLL_Version(void)
    {
-   memset(version, '\0', sizeof(version));
-   strcpy(version, VERSION);
-   strcat(version, "  ");
-   strcat(version, VERDATE);
-   strcat(version, "\n");
-   strcat(version, CREDITS);
-   strcat(version, "\n");
+   if(version == NULL)
+       {
+       int size = sizeof(VERSION) + sizeof(VERDATE) + sizeof(CREDITS) + 4;
+
+       if((version = (char *) malloc(size)) != NULL)
+           {
+           strcpy(version, VERSION);
+           strcat(version, "  ");
+           strcat(version, VERDATE);
+           strcat(version, "\n");
+           strcat(version, CREDITS);
+           strcat(version, "\n");
+           }
+       }
+
    return(version);
    }
 
