@@ -44,7 +44,8 @@ CC	= gcc
 DEBUG	= -g -DDEBUG
 OFP	= -fomit-frame-pointer
 SHARED	= -fPIC
-OPTIONS	= -O3 -m486 -ansi -pipe -fstrength-reduce -finline-functions -Wall
+OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall \
+          -Wno-unused-result
 
 # The options below should be used instead of the above on the Mac
 #OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
@@ -59,7 +60,7 @@ DOCLIB	= $(PREFIX)/share/doc
 THISLIB	= -L. -ldll
 MAJORVERSION = 1
 MINORVERSION = 2
-PATCHLEVEL = 0
+PATCHLEVEL = 1
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
