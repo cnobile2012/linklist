@@ -36,8 +36,9 @@ ifeq ($(OS),LINUX)
   src_prefix	= $(HOME)/dev/$(DIR_NAME)
   CC            = gcc
   AR            = ar rcs
-  MACHINE_OPT   = -m486 -pipe
-  COMPILER_OPT  = -ansi -fPIC -Wall -D_REENTRANT -D_GNU_SOURCE -D_DLL_PTHREADS
+  MACHINE_OPT   = -pipe
+  COMPILER_OPT  = -ansi -fPIC -Wall -D_REENTRANT -D_GNU_SOURCE -D_DLL_PTHREADS \
+                  -Wno-unused-result
   NON_DEBUG_OPT = -O2 -fomit-frame-pointer
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -shared -Wl,-soname,$(BASENAME).so.$(MAJOR_VER)
@@ -83,7 +84,7 @@ ifeq ($(OS),AIX)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -pipe
-  COMPILER_OPT  = -ansi -Wall
+  COMPILER_OPT  = -ansi -Wall -Wno-unused-result
   NON_DEBUG_OPT = -O2 -fomit-frame-pointer
   DEBUG_OPT     = -DDEBUG=1 -ggdb -Wundef -Wpointer-arith
   LDFLAGS       += -Wl,-G,-bshared
@@ -112,8 +113,6 @@ ifeq ($(THREAD),YES)
 endif
 
 # The options below should be used instead of the above on the Mac
-#OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
-
 LIBDIR		= $(prefix)/lib
 INCDIR		= $(prefix)/include
 DISTNAME	= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)-beta
