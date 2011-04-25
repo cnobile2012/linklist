@@ -128,7 +128,11 @@ DLL_Return DLL_InitializeList(List *list, size_t infosize)
  */
 char *DLL_Version(void)
    {
-   memset(version, '\0', sizeof(version));
+   int size = sizeof(VERSION) + sizeof(VERDATE) + sizeof(CREDITS) + 4;
+
+   if((version = (char *) malloc(size)) == NULL)
+      return(NULL);
+
    strcpy(version, VERSION);
    strcat(version, "  ");
    strcat(version, VERDATE);
