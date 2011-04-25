@@ -109,7 +109,7 @@ typedef void Info;
                   "               Wai-Sun Chia\n" \
                   "               Mark M. Feenstra\n"
 
-static char version[sizeof(VERSION) + sizeof(VERDATE) + sizeof(CREDITS) + 1];
+static char *version;
 #endif   /* _DLL_MAIN_C */
 
 #if defined (_DLL_MAIN_C) || defined (DEBUG)
