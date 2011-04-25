@@ -100,7 +100,7 @@ typedef enum
 typedef void Info;
 
 #if defined (_DLL_MAIN_C)
-#define VERSION   "Ver: 1.2.0"
+#define VERSION   "Ver: 1.2.1"
 #define VERDATE   __DATE__
 #define CREDITS   "-------------------------------\n" \
                   "Developed by:  Carl J. Nobile\n" \
