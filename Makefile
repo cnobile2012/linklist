@@ -44,7 +44,8 @@ CC	= gcc
 DEBUG	= -g -DDEBUG
 OFP	= -fomit-frame-pointer
 SHARED	= -fPIC
-OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall
+OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall \
+          -Wno-unused-result
 
 # The options below should be used instead of the above on the Mac
 #OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
