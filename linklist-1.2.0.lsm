@@ -1,7 +1,7 @@
 Begin4
 Title:		linklist
-Version:	1.2.0
-Entered-date:	24JUN07
+Version:	1.2.1
+Entered-date:	25APR11
 Description:	An API for a doubly linklist. This API is re-entrant so
 		more than one list can be created per application. For a
 		more complete description see the May 1998 issue of the
@@ -12,8 +12,8 @@ Keywords:	linklist API libs
 Author:		carl.nobile@gmail.com (Carl J. Nobile)
 Maintained-by:	carl.nobile@gmail.com (Carl J. Nobile)
 Primary-site:	ibiblio.org/pub/linux/libs
-		334KB linklist-1.2.0.tar.gz
-		759B linklist-1.2.0.lsm
+		334KB linklist-1.2.1.tar.gz
+		759B linklist-1.2.1.lsm
 Alternate-site: http://tetrasys.homelinux.org/home/Linklist/
 Original-site:
 Platforms: UNIX/Linux
