@@ -128,7 +128,7 @@ DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
-tarball	: docs log
+tarball	: docs log clobber
 	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME))
 
 log	: clean
@@ -139,11 +139,12 @@ clean	:
 	@rm -f *.o *~ *.bak \#*\# core
 
 clobber	: clean
-	@rm -f libdll.* $(TEST) ChangeLog
+	@rm -f libdll.* $(TEST)
+	@(cd docs; rm -rf *.aux *.log *.toc *.eps *~ *-pdf.tex)
 
 distclean: clobber
-	@(cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *.eps \
-         *.pdf *~ *-pdf.tex)
+	@rm -f ChangeLog
+	@(cd docs; rm -rf Linklist *.dvi *.ps *.ps.gz *.pdf)
 
 install	: install-docs
 	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
