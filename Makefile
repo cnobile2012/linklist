@@ -96,9 +96,9 @@ test	:
 libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL): $(OBJS1)
 	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
 	 -o libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(OBJS1)
-	ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
+	ln -sf libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
 	 libdll.so.$(MAJORVERSION)
-	ln -s libdll.so.$(MAJORVERSION) libdll.so
+	ln -sf libdll.so.$(MAJORVERSION) libdll.so
 
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -112,26 +112,27 @@ $(TEST).o: $(TEST).c linklist.h
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
 postscript:
-	( cd docs; latex Linklist.tex; latex Linklist.tex; \
-	 dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps )
+	(cd docs; convert linklistDiagram.png -resize 75% linklistDiagram.eps; \
+         latex Linklist.tex; latex Linklist.tex; \
+	 dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps)
 
-pdf	:
-	( cd docs; tex2pdf Linklist.tex )
+pdf	: postscript
+	(cd docs; zcat Linklist.ps.gz | ps2pdf - Linklist.pdf)
 
 html	:
-	( cd docs; latex2html -local_icons -no_images Linklist.tex )
+	(cd docs; latex2html -local_icons -no_images Linklist.tex)
 
-docs	: postscript pdf html
+docs	: html pdf
 
 DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
 tarball	: docs log
-	( cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME) )
+	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME))
 
 log	: clean
-	@rcs2log -h borboleta.TetraSys.org -R > ChangeLog
+	@rcs2log -h foundation.TetraSys.org -R > ChangeLog
 
 #--------------------------------------------------------------
 clean	:
@@ -141,15 +142,16 @@ clobber	: clean
 	@rm -f libdll.* $(TEST) ChangeLog
 
 distclean: clobber
-	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *.pdf *~)
+	@(cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *.eps \
+         *.pdf *~ *-pdf.tex)
 
 install	: install-docs
 	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	( cd $(LIBDIR); \
+	(cd $(LIBDIR); \
 	 ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
-	 libdll.so.$(MAJORVERSION) )
-	( cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so )
+	 libdll.so.$(MAJORVERSION))
+	(cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so)
 	/sbin/ldconfig
 
 install-static:
