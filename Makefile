@@ -1,9 +1,8 @@
 #
 # Makefile for Doubly Linked List API (Linux version)
 #
-# Copyright (c) 1996-2007 Carl J. Nobile
+# Copyright (c) 1996-2011 Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 06/14/2007
 #
 # $Author$
 # $Date$
@@ -18,7 +17,7 @@
 # preferred it from complaining.
 #
 ##########################################################################
-# Copyright (c) 2007 Carl J. Nobile.
+# Copyright (c) 1996-2011 Carl J. Nobile.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
