@@ -119,7 +119,7 @@ pdf	: postscript
 	(cd docs; zcat Linklist.ps.gz | ps2pdf - Linklist.pdf)
 
 html	:
-	(cd docs; latex2html -local_icons -no_images Linklist.tex)
+	(cd docs; latex2html -local_icons -images Linklist.tex)
 
 docs	: html pdf
 
