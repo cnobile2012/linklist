@@ -103,7 +103,7 @@ typedef void Info;
 #define VERSION   "Ver: 1.2.1"
 #define VERDATE   __DATE__
 #define CREDITS   "-------------------------------\n" \
-                  "Developed by:  Carl J. Nobile\n" \
+                  " Developed by: Carl J. Nobile\n" \
                   "Contributions: Charlie Buckheit\n" \
                   "               Graham Inchley\n" \
                   "               Wai-Sun Chia\n" \
