@@ -110,25 +110,32 @@ $(TEST).o: $(TEST).c linklist.h
 #--------------------------------------------------------------
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
-postscript:
-	(cd docs; convert linklistDiagram.png -resize 75% linklistDiagram.eps; \
+postscript: image
+	(cd docs; \
          latex Linklist.tex; latex Linklist.tex; \
 	 dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps)
 
 pdf	: postscript
-	(cd docs; zcat Linklist.ps.gz | ps2pdf - Linklist.pdf)
+	(cd docs; \
+         zcat Linklist.ps.gz | ps2pdf - Linklist.pdf)
 
-html	:
-	(cd docs; latex2html -local_icons -images Linklist.tex)
+html	: image
+	(cd docs; \
+         latex2html -local_icons -images Linklist.tex)
 
 docs	: html pdf
+
+image	:
+	(cd docs; \
+         convert linklistDiagram.png -resize 75% linklistDiagram.eps)
 
 DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
-tarball	: docs log clobber
-	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME))
+tarball	: docs log
+	(cd ..; \
+         tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME))
 
 log	: clean
 	@rcs2log -h foundation.TetraSys.org -R > ChangeLog
