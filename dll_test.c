@@ -145,7 +145,7 @@ int main(void)
          case 7:
             delete_current_record(addr_list);
             break;
-         case 8: 
+         case 8:
             get_prior_record(addr_list);
             break;
          case 9:
@@ -216,7 +216,7 @@ int main_menu(void)
    do
       {
       fputs("\nEnter your choice: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 16);
@@ -303,7 +303,7 @@ int sort_menu(void)
    do
       {
       fputs("\nEnter your choice: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
@@ -387,14 +387,14 @@ int insert_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
 
    fputs("\n", stdout);
    return(c);
-   } 
+   }
 
 
 /*
@@ -476,7 +476,7 @@ int update_select(void)
    do
       {
       fputs("\nEnter field to update choice: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 6);
@@ -498,7 +498,7 @@ void input(char *prompt, char *s, size_t count)
    for(;;)
       {
       fputs(prompt, stdout);
-      fgets(str, (BUFSIZE*4)-1, stdin);
+      (void) fgets(str, (BUFSIZE*4)-1, stdin);
 
       if(strlen(str) < count)
          break;
@@ -592,7 +592,7 @@ void search(List *list)
             continue;
          }
       }
-	
+
    return;
    }
 
@@ -611,7 +611,7 @@ int method_menu(void)
    do
       {
       fputs("\nChoose a find method: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -858,14 +858,14 @@ int find_by_match_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
 
    fputs("\n", stdout);
    return(c);
-   } 
+   }
 
 
 /*
@@ -884,14 +884,14 @@ int find_by_Nth_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 4);
 
    fputs("\n", stdout);
    return(c);
-   } 
+   }
 
 
 /*
@@ -909,14 +909,14 @@ int origin_menu(void)
    do
       {
       fputs("\nChoose origin of search: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 3);
 
    fputs("\n", stdout);
    return(c);
-   } 
+   }
 
 
 /*
@@ -933,7 +933,7 @@ int direction_menu(void)
    do
       {
       fputs("\nChoose direction of search: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
@@ -1020,14 +1020,14 @@ int field_menu(void)
    do
       {
       fputs("\nChoose field to search on: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 5);
 
    fputs("\n", stdout);
    return(c);
-   } 
+   }
 
 
 /*
@@ -1363,14 +1363,14 @@ int swap_menu(void)
    do
       {
       fputs("\nSet search parameter: ", stdout);
-      fgets(s, BUFSIZE-1, stdin);
+      (void) fgets(s, BUFSIZE-1, stdin);
       c = atoi(s);
       }
    while(c < 0 || c > 2);
 
    fputs("\n", stdout);
    return(c);
-   } 
+   }
 
 
 /*
