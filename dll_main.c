@@ -482,12 +482,12 @@ DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
       return(DLL_NORMAL);
       }
 
-   if(pFun != NULL)				/* If NULL don't do sort */
+   if(pFun != NULL)        /* If NULL, don't do sort */
       {
       step = list->head;
       old = list->tail;
 
-      while(step != NULL)		/* Loop through records until a match is found */
+      while(step != NULL)  /* Loop through records until a match is found */
          {
          if(((*pFun)(step->info, newI)) >= 0)
             break;
@@ -507,7 +507,7 @@ DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
     * The order of the 'if' statements below is critical and
     * cannot be changed or a no sort (NULL) situation will fail.
     */
-   if(step == NULL)				/* New last record */
+   if(step == NULL)        /* New last record */
       {
       newN->info = newI;
       old->next = newN;
@@ -517,7 +517,7 @@ DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
       list->current = newN;
       }
    else
-      if(step->prior == NULL)	/* New first record */
+      if(step->prior == NULL)        /* New first record */
          {
          newN->info = newI;
          newN->prior = NULL;
@@ -526,7 +526,7 @@ DLL_Return DLL_AddRecord(List *list, Info *info, int (*pFun)(Info *, Info *))
          list->head = newN;
          list->current = newN;
          }
-      else							/* New middle record */
+      else        /* New middle record */
          {
          newN->info = newI;
          step->prior->next = newN;
@@ -796,7 +796,7 @@ DLL_Return DLL_DeleteCurrentRecord(List *list)
    oldI = list->current->info;
    oldN = list->current;
 
-   if(list->current == list->head)		/* current is first record */
+   if(list->current == list->head)        /* current is first record */
       {
       /* A single record in a list can't do this ...next->prior */
       if(list->current->next != NULL)
@@ -806,7 +806,7 @@ DLL_Return DLL_DeleteCurrentRecord(List *list)
       list->current = list->head;
       }
    else
-      if(list->current == list->tail)	/* current is last record */
+      if(list->current == list->tail)        /* current is last record */
          {
          list->current->prior->next = NULL;
          list->tail = list->current->prior;
@@ -819,7 +819,7 @@ DLL_Return DLL_DeleteCurrentRecord(List *list)
          list->current->next->prior = list->current->prior;
          list->current = list->current->next;
          }
-			
+
    free(oldI);
    free(oldN);
    list->listsize--;
