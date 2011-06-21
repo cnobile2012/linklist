@@ -57,10 +57,11 @@ INCDIR	= $(PREFIX)/include
 DOCLIB	= $(PREFIX)/share/doc
 
 # There should be no need to change anything below this line.
-THISLIB	= -L. -ldll
-MAJORVERSION = 1
-MINORVERSION = 2
-PATCHLEVEL = 1
+THISLIB		= -L. -ldll
+MAJORVERSION	= 1
+MINORVERSION	= 2
+PATCHLEVEL	= 1
+VERSION		= ${MAJORVERSION}.${MINORVERSION}.${PATCHLEVEL}
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
@@ -71,11 +72,11 @@ OBJS1	= $(PROG).o
 OBJS2	= $(TEST).o
 #--------------------------------------------------------------
 all	: 
-	make libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) DEBUG=
+	make libdll.so.$(VERSION) DEBUG=
 	make $(TEST) DEBUG=
 
 debug	:
-	make libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) OFP=
+	make libdll.so.$(VERSION) OFP=
 	make $(TEST) OFP=
 
 static	:
@@ -93,12 +94,11 @@ test	:
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $<
 
-libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL): $(OBJS1)
+libdll.so.$(VERSION): $(OBJS1)
 	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
-	 -o libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(OBJS1)
-	ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
-	 libdll.so.$(MAJORVERSION)
-	ln -s libdll.so.$(MAJORVERSION) libdll.so
+         -o libdll.so.$(VERSION) $(OBJS1)
+	-ln -s libdll.so.$(VERSION) libdll.so.$(MAJORVERSION)
+	-ln -s libdll.so.$(MAJORVERSION) libdll.so
 
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -124,7 +124,7 @@ html	:
 
 docs	: html pdf
 
-DISTNAME= linklist-$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)
+DISTNAME= linklist-$(VERSION)
 EXCLUDEFILE= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
@@ -146,11 +146,9 @@ distclean: clobber
          *.pdf *~ *-pdf.tex)
 
 install	: install-docs
-	cp ./libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) $(LIBDIR)
+	cp ./libdll.so.$(VERSION) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	(cd $(LIBDIR); \
-	 ln -s libdll.so.$(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL) \
-	 libdll.so.$(MAJORVERSION))
+	(cd $(LIBDIR); ln -s libdll.so.$(VERSION) libdll.so.$(MAJORVERSION))
 	(cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so)
 	/sbin/ldconfig
 
@@ -158,7 +156,7 @@ install-static:
 	cp ./linklist.h $(INCDIR)/linklist.h
 	cp ./libdll.a $(LIBDIR)/libdll.a
 
-install-docs:
+install-docs: docs
 	install -d $(DOCLIB)/$(DISTNAME)
 	install -m 444 docs/*.ps.gz $(DOCLIB)/$(DISTNAME)
 	install -m 444 docs/*.pdf $(DOCLIB)/$(DISTNAME)
