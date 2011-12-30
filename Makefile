@@ -1,9 +1,9 @@
 #
 # Makefile for Doubly Linked List API (Linux version)
 #
-# Copyright (c) 1996-2007 Carl J. Nobile
+# Copyright (c) 1996-2011 Carl J. Nobile
 # Created: May 26, 1997
-# Updated: 06/14/2007
+# Updated: 12/27/2011
 #
 # $Author$
 # $Date$
@@ -59,9 +59,10 @@ DOCLIB	= $(PREFIX)/share/doc
 # There should be no need to change anything below this line.
 THISLIB		= -L. -ldll
 MAJORVERSION	= 1
-MINORVERSION	= 2
-PATCHLEVEL	= 1
+MINORVERSION	= 3
+PATCHLEVEL	= 0
 VERSION		= ${MAJORVERSION}.${MINORVERSION}.${PATCHLEVEL}
+TODAY		= $(shell date +"%Y-%m-%d_%H%M")
 
 CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
@@ -97,8 +98,8 @@ test	:
 libdll.so.$(VERSION): $(OBJS1)
 	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
          -o libdll.so.$(VERSION) $(OBJS1)
-	-ln -s libdll.so.$(VERSION) libdll.so.$(MAJORVERSION)
-	-ln -s libdll.so.$(MAJORVERSION) libdll.so
+	-ln -sf libdll.so.$(VERSION) libdll.so.$(MAJORVERSION)
+	-ln -sf libdll.so.$(MAJORVERSION) libdll.so
 
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -108,6 +109,9 @@ $(TEST)	: $(OBJS2)
 
 $(PROG).o: $(PROG).c linklist.h
 $(TEST).o: $(TEST).c linklist.h
+
+runtest	: all
+	@(echo; cd test; ./ll_test.py)
 #--------------------------------------------------------------
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
@@ -124,19 +128,25 @@ html	:
 
 docs	: html pdf
 
-DISTNAME= linklist-$(VERSION)
-EXCLUDEFILE= $(DISTNAME)/tar-exclude
+DISTNAME	= linklist-$(VERSION)
+EXCLUDEFILE	= $(DISTNAME)/tar-exclude
 
 # Unless you're me you won't need this.
 tarball	: docs log
 	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME))
+
+cvs-tag	:
+	cvs tag ll-${MAJORVERSION}-${MINORVERSION}-${PATCHLEVEL}-${TODAY}
+
+cvs-branch:
+	cvs tag -b ll-${MAJORVERSION}-${MINORVERSION}-${PATCHLEVEL}-${TODAY}-br
 
 log	: clean
 	@rcs2log -h foundation.TetraSys.org -R > ChangeLog
 
 #--------------------------------------------------------------
 clean	:
-	@rm -f *.o *~ *.bak \#*\# core
+	@rm -f *.o *~ *.bak \#*\# core test/*~ test/\#*\#
 
 clobber	: clean
 	@rm -f libdll.* $(TEST) ChangeLog
@@ -148,8 +158,8 @@ distclean: clobber
 install	: install-docs
 	cp ./libdll.so.$(VERSION) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	(cd $(LIBDIR); ln -s libdll.so.$(VERSION) libdll.so.$(MAJORVERSION))
-	(cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so)
+	-(cd $(LIBDIR); ln -s libdll.so.$(VERSION) libdll.so.$(MAJORVERSION))
+	-(cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so)
 	/sbin/ldconfig
 
 install-static:
