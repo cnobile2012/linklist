@@ -1,4 +1,4 @@
-Installation of linklist-1.3.0.tar.gz for Linux
+Installation of the Doubly Linked List
 
 *** Begin CVS Information ***
 $Author$
@@ -22,14 +22,14 @@ Installing on Linux
 To install use tar to extract the files into the directory where you
 want it to reside.  Usually in /usr/local/src.
 
-tar -xvzf linklist-1.3.0.tar.gz -C /your/path
+tar -xvzf linklist-2.0.0.tar.gz -C /your/path
 
 The above tar command only works with GNU tar.  If you don't have this
 tar try:
 
-cp linklist-1.3.0.tar.gz /your/path
+cp linklist-2.0.0.tar.gz /your/path
 cd /your/path
-gzcat linklist-1.3.0.tar.gz | tar xvf -
+gzcat linklist-2.0.0.tar.gz | tar xvf -
 
 Next cd to the linklist.x.x.x directory and type one of the following,
 assuming you're using the GNU compiler:
@@ -73,4 +73,4 @@ If you have any problems, please contact me at:
 
 carl.nobile@gmail.com
 
-tetrasys-design.net
+wiki.tetrasys-design.net
