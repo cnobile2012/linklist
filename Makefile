@@ -1,7 +1,7 @@
 #
 # Makefile for Doubly Linked List API (Linux version)
 #
-# Copyright (c) 1996-2011 Carl J. Nobile
+# Copyright (c) 1996-2012 Carl J. Nobile
 # Created: May 26, 1997
 # Updated: 12/27/2011
 #
@@ -58,8 +58,8 @@ DOCLIB	= $(PREFIX)/share/doc
 
 # There should be no need to change anything below this line.
 THISLIB		= -L. -ldll
-MAJORVERSION	= 1
-MINORVERSION	= 3
+MAJORVERSION	= 2
+MINORVERSION	= 0
 PATCHLEVEL	= 0
 VERSION		= ${MAJORVERSION}.${MINORVERSION}.${PATCHLEVEL}
 TODAY		= $(shell date +"%Y-%m-%d_%H%M")
