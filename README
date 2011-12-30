@@ -1,4 +1,4 @@
-Doubly Linked List API Ver. 1.2.0
+Doubly Linked List API Ver. 2.0.0
 
 *** Begin CVS Information ***
 $Author$
@@ -6,7 +6,7 @@ $Date$
 $Revision$
 *** End CVS Information ***
 
-Copyright (c) 1996-2007  Carl J. Nobile
+Copyright (c) 1996-2012  Carl J. Nobile
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,9 @@ important so we all know what to expect in future releases.  The major
 number (1 at this time) changes when there is a paradigm shift in the way
 the package works (See below TO-DO).  There could be incompatibilities
 with code written using different major number versions.  The middle
-number changes when important new features are added and the minor version
-number changes generally for bug fixes.  There should be no
-incompatibilities between mid and minor version changes.
+revision number changes when important new features are added and the minor
+version number changes generally for bug fixes and patches.  There should
+be no incompatibilities between mid and minor version changes.
 
 COMPILATION
 
@@ -40,25 +40,26 @@ LIBRARY USAGE
 
 When new code is compiled it will link to libdll.so, and when a program
 executes it will look for libdll.so.1.  This is why they are sym-linked
-to libdll.so.1.2.0 the current version.
+to libdll.so.2.0.0 the current version.
 
 TO-DO
 
-I am thinking about writing perl, python, and/or tcl extensions.  If you
-would find any or all of these extensions useful send me a note, it might
-push the process along some.
-
-I am planning a change the major version also.  At present the linklist
-defaults to doing memory allocations for each node created. This is
-wasteful of resources and time consuming.  It is my hope to create a
+The major version will change with the following code changes.  At present
+the linklist defaults to doing memory allocations for each node created. This
+is wasteful of resources and time consuming.  It is my hope to create a
 mechanism to allow larger blocks of memory to be allocated which can be
-changed on the fly.  This should drastically speed up operations.
+changed on the fly.  This should substantially speed up operations.
+
+There is a fully thread safe version in the works, but I have been putting it
+off for some years now. If ever I decide that it is something that people
+really want I may continue with it, but for now it will stay in a maybe-will-do
+state.
 
 WEB SITE
 
-Yes I finally have a web site for this at:
+Yes I have a WIKI for this and my other projects at:
 
-http://tetrasys.homelinux.org/
+http://wiki.tetrasys-design.net/
 
 The above URL is my personal page where links to the Doubly Link List can
 be found.
