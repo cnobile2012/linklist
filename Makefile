@@ -38,77 +38,27 @@
 # To compile the test program only using an installed shared library execute:
 #     make test
 #
-AR	= ar rcs
-CC	= gcc
 
-DEBUG	= -g -DDEBUG
-OFP	= -fomit-frame-pointer
-SHARED	= -fPIC
-OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall \
-          -Wno-unused-result
+include linklist.mk
 
-# The options below should be used instead of the above on the Mac
-#OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
+DISTNAME	= linklist-$(VERSION)
+EXCLUDEFILE	= $(DISTNAME)/tar-exclude
 
-# Change the directory paths below to reflect your system
-PREFIX	= /usr/local
-LIBDIR	= $(PREFIX)/lib
-INCDIR	= $(PREFIX)/include
-DOCLIB	= $(PREFIX)/share/doc
-
-# There should be no need to change anything below this line.
-THISLIB		= -L. -ldll
-MAJORVERSION	= 2
-MINORVERSION	= 0
-PATCHLEVEL	= 0
-VERSION		= ${MAJORVERSION}.${MINORVERSION}.${PATCHLEVEL}
-TODAY		= $(shell date +"%Y-%m-%d_%H%M")
-
-CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
-#--------------------------------------------------------------
-PROG	= dll_main
-TEST	= dll_test
-SRCS	= $(PROG).c $(TEST).c
-OBJS1	= $(PROG).o
-OBJS2	= $(TEST).o
-#--------------------------------------------------------------
-all	: 
-	make libdll.so.$(VERSION) DEBUG=
-	make $(TEST) DEBUG=
+all	:
+	@(cd src; make all)
 
 debug	:
-	make libdll.so.$(VERSION) OFP=
-	make $(TEST) OFP=
+	@(cd src; make debug)
 
 static	:
-	make libdll.a SHARED= DEBUG=
-	make $(TEST) SHARED= DEBUG=
+	@(cd src; make static)
 
 debug-static :
-	make libdll.a SHARED= OFP=
-	make $(TEST) SHARED= OFP=
+	@(cd src; make debug-static)
 
 # Make the test program from the installed shared libraries.
 test	:
-	make $(TEST) DEBUG= THISLIB=-ldll
-
-.c.o	: $(SRCS)
-	$(CC) $(CFLAGS) -c $<
-
-libdll.so.$(VERSION): $(OBJS1)
-	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
-         -o libdll.so.$(VERSION) $(OBJS1)
-	-ln -sf libdll.so.$(VERSION) libdll.so.$(MAJORVERSION)
-	-ln -sf libdll.so.$(MAJORVERSION) libdll.so
-
-libdll.a: $(OBJS1)
-	$(AR) $@ $(OBJS1)
-
-$(TEST)	: $(OBJS2)
-	$(CC) $(OBJS2) -o $(TEST) $(THISLIB)
-
-$(PROG).o: $(PROG).c linklist.h
-$(TEST).o: $(TEST).c linklist.h
+	@(cd src; make test)
 
 runtest	: all
 	@(echo; cd test; ./ll_test.py)
@@ -128,9 +78,6 @@ html	:
 
 docs	: html pdf
 
-DISTNAME	= linklist-$(VERSION)
-EXCLUDEFILE	= $(DISTNAME)/tar-exclude
-
 # Unless you're me you won't need this.
 tarball	: docs log
 	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME))
@@ -146,25 +93,23 @@ log	: clean
 
 #--------------------------------------------------------------
 clean	:
-	@rm -f *.o *~ *.bak \#*\# core test/*~ test/\#*\#
+	@(cd src; make clean)
+	@rm -f *~ \#*\# test/*~ test/\#*\#
 
 clobber	: clean
-	@rm -f libdll.* $(TEST) ChangeLog
+	@(cd src; make clobber)
+	@rm -f ChangeLog
 
 distclean: clobber
+	@(cd src; make distclean)
 	@(cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *.eps \
          *.pdf *~ *-pdf.tex)
 
 install	: install-docs
-	cp ./libdll.so.$(VERSION) $(LIBDIR)
-	cp ./linklist.h $(INCDIR)/linklist.h
-	-(cd $(LIBDIR); ln -s libdll.so.$(VERSION) libdll.so.$(MAJORVERSION))
-	-(cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so)
-	/sbin/ldconfig
+	@(cd src; make install)
 
 install-static:
-	cp ./linklist.h $(INCDIR)/linklist.h
-	cp ./libdll.a $(LIBDIR)/libdll.a
+	@(cd src; make install-static)
 
 install-docs: docs
 	install -d $(DOCLIB)/$(DISTNAME)
@@ -176,7 +121,7 @@ uninstall: uninstall-docs
 	rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h
 
 uninstall-static:
-	rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h
+	@(cd src; make uninstall-static)
 
 uninstall-docs:
 	rm -rf $(DOCLIB)/$(DISTNAME)
