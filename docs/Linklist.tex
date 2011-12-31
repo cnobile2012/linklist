@@ -10,7 +10,7 @@
 %  dvips -t letter Linklist.dvi -o Linklist.ps
 %
 % To make html:
-%  latex2html -local_icons -no_images Linklist.tex
+%  latex2html -local_icons -images Linklist.tex
 %
 \documentclass[10pt,letterpaper,titlepage]{article}
 
@@ -25,7 +25,7 @@
 
 \title{A Users Guide for the\\
        Doubly Linked List API\\
-       Version 1.2.0}
+       Version 2.0.0}
 \author{Carl J. Nobile\\
 	carl.nobile@gmail.com}
 \date{Created: March 28, 1999\\
@@ -460,9 +460,9 @@ The last enumerated type is used to determine the direction of insertion or the 
 \begin{verbatim}
 typedef enum
    {
-   DLL_INSERT_DEFAULT,    /* Use current insert setting */
-   DLL_ABOVE,             /* Insert new record ABOVE current record */
-   DLL_BELOW              /* Insert new record BELOW current record */
+   DLL_INSERT_DEFAULT, /* Does nothing legacy value--don't use it */
+   DLL_ABOVE,          /* Insert new record ABOVE current record toward head */
+   DLL_BELOW           /* Insert new record BELOW current record toward tail */
    } DLL_InsertDir;
 \end{verbatim}
 \normalsize
@@ -474,7 +474,7 @@ The following function calls are grouped by their general functionality, as desc
 \subsection{Initialization}
 \begin{description}
 \item[NAME]\quad\\
-DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList, --- Initialization Functions.
+DLL\_CreateList, DLL\_InitializeList, DLL\_DestroyList
 
 \item[SYNOPSIS]
 \begin{verbatim}
@@ -555,8 +555,7 @@ void main(void)
 \item[NAME]\quad\\
 DLL\_Version, DLL\_IsListEmpty, DLL\_IsListFull,\\
 DLL\_GetNumberOfRecords, DLL\_SetSearchModes,\\
-DLL\_GetSearchModes, DLL\_GetCurrentIndex\\
- --- Status and State Functions.
+DLL\_GetSearchModes, DLL\_GetCurrentIndex
 
 \item[SYNOPSIS]
 \small
@@ -583,13 +582,14 @@ All the functions below except \emph{DLL\_Version} take as their first argument 
 \item[DLL\_Version]\quad\\
  This function has no arguments and returns a string in the following format:
 \begin{verbatim}
-Ver: 1.2.0  June 24 2007
+Ver: 2.0.0  December 30 2011
 -------------------------------
  Developed by: Carl J. Nobile
 Contributions: Charlie Buckheit
                Graham Inchley
                Wai-Sun Chia
                Mark M. Feenstra
+               Lianqi Qiu
 \end{verbatim}
 \vspace{-16pt}
 \item[DLL\_IsListEmpty]\quad\\
@@ -649,11 +649,11 @@ Examples of most of these functions can be seen in the source file \emph{dll\_te
 \item[NAME]\quad\\
 DLL\_CurrentPointerToHead, DLL\_CurrentPointerToTail,\\
 DLL\_IncrementCurrentPointer, DLL\_DecrementCurrentPointer,\\
-DLL\_StoreCurrentPointer, DLL\_RestoreCurrentPointer\\
-  --- Pointer Manipulation Functions.
+DLL\_StoreCurrentPointer, DLL\_RestoreCurrentPointer
 
 \item[SYNOPSIS]
 \begin{verbatim}
+
 #include <linklist.h>
 
 DLL_Return DLL_CurrentPointerToHead(List *list);
@@ -702,10 +702,11 @@ Examples of most of these functions can be seen in the source file \emph{dll\_te
 \item[NAME]\quad\\
 DLL\_AddRecord, DLL\_InsertRecord, DLL\_SwapRecord,\\
 DLL\_UpdateCurrentRecord, DLL\_DeleteCurrentRecord,\\
-DLL\_DeleteEntireList --- List Update Functions.
+DLL\_DeleteEntireList
 
 \item[SYNOPSIS]
 \begin{verbatim}
+
 #include <linklist.h>
 
 DLL_Return DLL_AddRecord(List *list, Info *info,
@@ -741,8 +742,8 @@ These functions manipulate the data in the link list.  They all return the enume
 \begin{verbatim}
    int sort_foo(Info *record, Info *compare)
       {
-      return(strcmp(rcrd->info_element,
-                    cmp->info_element));
+      return(strcmp(record->info_element,
+                    compare->info_element));
       }
 
 \end{verbatim}
@@ -792,7 +793,7 @@ Examples of most of these functions can be seen in the source file \emph{dll\_te
 \begin{description}
 \item[NAME]\quad\\
 DLL\_FindRecord, DLL\_FindNthRecord, DLL\_GetCurrentRecord,\\
-DLL\_GetPriorRecord, DLL\_GetNextRecord -- Search Functions.
+DLL\_GetPriorRecord, DLL\_GetNextRecord
 
 \item[SYNOPSIS]
 \begin{verbatim}
@@ -833,13 +834,12 @@ These functions retreive data from the list.  They all return the enumerated typ
       return(strcmp(rcrd->info_element,
                     cmp->info_element));
       }
-
 \end{verbatim}
 
   The value \textbf{DLL\_NULL\_FUNCTION}, if returned, indicates that a \textbf{NULL} was passed as the fourth argument; \textbf{DLL\_NULL\_LIST} indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
 \item[DLL\_FindNthRecord]\quad\\
- This function returns in its second argument the record found by adding the skip value passed in the third argument to the index value of the current record.  The skip value is an \emph{unsigned long} integer.  See \textbf{DLL\_SetSearchModes} for setting the search direction and origin.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found in the list or that the \emph{skip} value was out of range; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
+ This function returns in its second argument the record found by adding the skip value passed in the third argument to the index value of the current record.  The skip value is an \emph{unsigned long} integer and should always be a positive number.  See \textbf{DLL\_SetSearchModes} for setting the search direction and origin.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_NOT\_FOUND} indicates that a record could not be found in the list or that the \emph{skip} value was out of range; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
 \item[DLL\_GetCurrentRecord]\quad\\
  This function returns in its second argument the current record.  The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
@@ -860,10 +860,11 @@ Examples of most of these functions can be seen in the source file \emph{dll\_te
 \subsection{Input/Output}
 \begin{description}
 \item[NAME]\quad\\
-DLL\_SaveList, DLL\_LoadList -- Input/Output Functions.
+DLL\_SaveList, DLL\_LoadList
 
 \item[SYNOPSIS]
 \begin{verbatim}
+
 #include <linklist.h>
 
 DLL_Return DLL_SaveList(List *list, const char *path);
@@ -883,7 +884,7 @@ These functions are designed to easily write and read the link list data to a di
   The value \textbf{DLL\_NULL\_LIST}, if returned, indicates that the list is empty; \textbf{DLL\_OPEN\_ERROR} indicates that the file could not be opened for writing; \textbf{DLL\_WRITE\_ERROR} indicates that there was an error while writing to the file meaning that the data in the list should not be trusted; \textbf{DLL\_NOT\_MODIFIED} indicates that the list has not been modified since the last save and no updating to the file was done; and \textbf{DLL\_NORMAL} indicates that the function succeeded in its task.
 
 \item[DLL\_LoadList]\quad\\
- This function retrieves from a file data based on the same criteria that it was saved with.  See \emph{DLL\_SaveList} above.  The third argument \textbf{pFun} is a pointer to a sorting function the same as can be found in \textbf{DLL\_AddRecord}.  A \emph{NULL} function pointer can be passes if no sorting is needed.
+ This function retrieves from a file data based on the same criteria that it was saved with.  See \emph{DLL\_SaveList} above.  The third argument \textbf{pFun} is a pointer to a sorting function the same as can be found in \textbf{DLL\_AddRecord}.  A \emph{NULL} function pointer can be passes if no sorting is needed.  The \textbf{list->current\_index} will have an arbitrary value it depending on the sort algorithm used. Use one of the \textbf{DLL\_CurrentPointerToHead} or \textbf{DLL\_CurrentPointerToTail} functions to get the known location.
 \vspace{8pt}
 
  Where the return value is
