@@ -1,7 +1,7 @@
 /*
  * linklist.h : Public header for applications
  *
- * Copyright (c) 1996-2007 Carl J. Nobile
+ * Copyright (c) 1996-2012 Carl J. Nobile
  * Created: December 26, 1996
  *
  * $Author$
@@ -16,7 +16,7 @@
  * preferred it from complaining.
  *
  **************************************************************************
- * Copyright (c) 2007 Carl J. Nobile.
+ * Copyright (c) 2012 Carl J. Nobile.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,38 +46,41 @@ typedef enum
 
 typedef enum
    {
-   DLL_NORMAL,              /* normal operation */
-   DLL_MEM_ERROR,           /* malloc error */
-   DLL_ZERO_INFO,           /* sizeof(Info) is zero */
-   DLL_NULL_LIST,           /* List is NULL */
-   DLL_NOT_FOUND,           /* Record not found */
-   DLL_OPEN_ERROR,          /* Cannot open file */
-   DLL_WRITE_ERROR,         /* File write error */
-   DLL_READ_ERROR,          /* File read error */
-   DLL_NOT_MODIFIED,        /* Unmodified list */
-   DLL_NULL_FUNCTION        /* NULL function pointer */
+   DLL_NORMAL,            /* normal operation */
+   DLL_MEM_ERROR,         /* malloc error */
+   DLL_ZERO_INFO,         /* sizeof(Info) is zero */
+   DLL_NULL_LIST,         /* List is NULL */
+   DLL_NOT_FOUND,         /* Record not found */
+   DLL_OPEN_ERROR,        /* Cannot open file */
+   DLL_WRITE_ERROR,       /* File write error */
+   DLL_READ_ERROR,        /* File read error */
+   DLL_NOT_MODIFIED,      /* Unmodified list */
+   DLL_NULL_FUNCTION,     /* NULL function pointer */
+   DLL_CONTINUE           /* Continue process--internal use only */
    } DLL_Return;
 
 typedef enum
    {
-   DLL_ORIGIN_DEFAULT,      /* Use current origin setting */
-   DLL_HEAD,                /* Set origin to head pointer */
-   DLL_CURRENT,             /* Set origin to current pointer */
-   DLL_TAIL                 /* Set origin to tail pointer */
+   DLL_ORIGIN_DEFAULT,    /* Use current origin setting */
+   DLL_HEAD,              /* Set origin to head pointer */
+   DLL_CURRENT,           /* Set origin to current pointer */
+   DLL_TAIL               /* Set origin to tail pointer */
    } DLL_SrchOrigin;
 
 typedef enum
    {
-   DLL_DIRECTION_DEFAULT,   /* Use current direction setting */
-   DLL_DOWN,                /* Set direction to down */
-   DLL_UP                   /* Set direction to up */
+   DLL_DIRECTION_DEFAULT, /* Use current direction setting */
+   DLL_DOWN,              /* Set direction to down */
+   DLL_UP                 /* Set direction to up */
    } DLL_SrchDir;
 
 typedef enum
    {
-   DLL_INSERT_DEFAULT,      /* Use current insert setting */
-   DLL_ABOVE,               /* Insert new record ABOVE current record */
-   DLL_BELOW                /* Insert new record BELOW current record */
+   DLL_INSERT_DEFAULT,    /* Does nothing legacy value--don't use it */
+   DLL_ABOVE,             /* Insert new record ABOVE current record
+                             toward head */
+   DLL_BELOW              /* Insert new record BELOW current record
+                              toward tail */
    } DLL_InsertDir;
 
 /*
@@ -100,14 +103,15 @@ typedef enum
 typedef void Info;
 
 #if defined (_DLL_MAIN_C)
-#define VERSION   "Ver: 1.2.1"
+#define VERSION   "Ver: 2.0.0"
 #define VERDATE   __DATE__
 #define CREDITS   "-------------------------------\n" \
                   " Developed by: Carl J. Nobile\n" \
                   "Contributions: Charlie Buckheit\n" \
                   "               Graham Inchley\n" \
                   "               Wai-Sun Chia\n" \
-                  "               Mark M. Feenstra\n"
+                  "               Mark M. Feenstra\n" \
+                  "               Lianqi Qiu"
 
 static char *version;
 #endif   /* _DLL_MAIN_C */
@@ -181,6 +185,10 @@ DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
 DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);
+size_t _getListSize();
+void _initializeList(List *list, size_t infosize);
+DLL_Return _createNewRecord(List *list, Info *info, Node **newN, Info **newI);
+void _printList(List *list);
 
 #ifdef __cplusplus
 }
