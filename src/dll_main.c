@@ -113,7 +113,7 @@ DLL_Return DLL_InitializeList(List *list, size_t infosize)
  *
  * Status   : Public
  *
- * Arguments: NONE
+ * Arguments: void
  *
  * Return   : char * -- Pointer to version info
  */
