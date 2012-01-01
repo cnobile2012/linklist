@@ -8,6 +8,24 @@
 # $Date$
 # $Revision$
 #
+#
+# Note on the copyright licenses.
+# -------------------------------
+# This Double Link List API is covered under either the Artistic or the
+# Eclipse license. The Eclipse license is more business friendly so I
+# have added it. Retaining the Artistic license prevents anybody that
+# preferred it from complaining.
+#
+##########################################################################
+# Copyright (c) 2007 Carl J. Nobile.
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v10.html
+#
+# Contributors:
+#    Carl J. Nobile - initial API and implementation
+##########################################################################
 # Mac contributions to this Makefile by Charlie Buckeit
 #
 # To compile a shared version of libdll with test program execute:
@@ -22,10 +40,13 @@
 
 include osdetect.mk
 
+PACKAGE_PREFIX  = $(shell pwd)
 MAJOR_VER	= 2
 MINOR_VER	= 0
 PATCH_LVL	= 0
-DIR_NAME	= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
+VERSION		= $(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
+DIR_NAME	= linklist-$(VERSION)
+DISTNAME	= $(DIR_NAME)-beta # Remove -beta when not a beta anymore.
 
 ##################################
 # CONFIGURE PLATFORM ENVIRONMENT #
@@ -33,7 +54,7 @@ DIR_NAME	= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
 ifeq ($(OS),LINUX)
   prefix  	= /usr/local
   doc_prefix	= /usr/doc
-  src_prefix	= $(HOME)/dev/$(DIR_NAME)
+  src_prefix	= $(PACKAGE_PREFIX)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -pipe
@@ -47,9 +68,9 @@ ifeq ($(OS),LINUX)
 endif
 
 ifeq ($(OS),SOLARIS)
-  prefix  	= $(HOME)/lib
-  doc_prefix	= $(HOME)/doc
-  src_prefix	= $(HOME)/dev/$(DIR_NAME)
+  prefix  	= /usr/local
+  doc_prefix	= /usr/doc
+  src_prefix	= $(PACKAGE_PREFIX)
   CC            = /usr/local/SUNWspro/bin/cc
   AR            = ar rcs
   MACHINE_OPT   =
@@ -63,9 +84,9 @@ ifeq ($(OS),SOLARIS)
 endif
 
 ifeq ($(OS),OSF1)
-  prefix  	= $(HOME)/lib
-  doc_prefix	= $(HOME)/doc
-  src_prefix	= $(HOME)/$(DIR_NAME)
+  prefix  	= /usr/local
+  doc_prefix	= /usr/doc
+  src_prefix	= $(PACKAGE_PREFIX)
   CC            = cc
   AR            = ar rcs
   MACHINE_OPT   = -tune ev56
@@ -78,9 +99,9 @@ ifeq ($(OS),OSF1)
 endif
 
 ifeq ($(OS),AIX)
-  prefix  	= $(HOME)/lib
-  doc_prefix	= $(HOME)/doc
-  src_prefix	= $(HOME)/dev/$(DIR_NAME)
+  prefix  	= /usr/local
+  doc_prefix	= /usr/doc
+  src_prefix	= $(PACKAGE_PREFIX)
   CC            = gcc
   AR            = ar rcs
   MACHINE_OPT   = -pipe
@@ -115,14 +136,13 @@ endif
 # The options below should be used instead of the above on the Mac
 LIBDIR		= $(prefix)/lib
 INCDIR		= $(prefix)/include
-DISTNAME	= linklist-$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)-beta
 EXCLUDEFILE	= $(DIR_NAME)/tar-exclude
 
 #--------------------------------------------------------------
 BASENAME	= libdll
 PROG		= dll_main
 TEST		= dll_test
-SLIB		= $(BASENAME).so.$(MAJOR_VER).$(MINOR_VER).$(PATCH_LVL)
+SLIB		= $(BASENAME).so.$(VERSION)
 SRCS		= $(PROG).c $(TEST).c
 OBJS1		= $(PROG).o $(EOBJS) 
 OBJS2		= $(TEST).o
@@ -156,8 +176,8 @@ demo	:
 
 $(SLIB): $(OBJS1)
 	$(CC) $(LDFLAGS) $(OBJS1) -o $(SLIB)
-	ln -sf $(SLIB) $(BASENAME).so.$(MAJOR_VER)
-	ln -sf $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so
+	-ln -sf $(SLIB) $(BASENAME).so.$(MAJOR_VER)
+	-ln -sf $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so
 
 $(BASENAME).a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -168,48 +188,56 @@ $(TEST)	: $(OBJS2)
 $(PROG).o: $(PROG).c linklist.h
 $(TEST).o: $(TEST).c linklist.h
 #--------------------------------------------------------------
-html	:
-	( cd docs; latex2html -local_icons Linklist.tex )
-	( cd docs/Linklist; rm -rf TMP *.aux *.dvi *.log *.tex *.toc *.pl *.old )
-	( cd docs/Linklist; ln -sf ../image.gif img1.gif )
-
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
 postscript:
-	( cd docs; latex Linklist.tex; latex Linklist.tex; \
-	 dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps )
+	(cd docs; convert linklistDiagram.png -resize 75% linklistDiagram.eps; \
+         latex Linklist.tex; latex Linklist.tex; \
+         dvips -t letter Linklist.dvi -o Linklist.ps; gzip -9 *.ps)
 
-docs	: postscript html
+pdf	: postscript
+	(cd docs; zcat Linklist.ps.gz | ps2pdf - Linklist.pdf)
+
+html	:
+	(cd docs; latex2html -local_icons -no_images Linklist.tex)
+
+docs	: html pdf
+
+EXCLUDEFILE= $(DIR_NAME)/tar-exclude
 
 # Unless you're me you won't need this.
-tarball	:
-	( cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DIR_NAME) )
+tarball	: docs log clobber
+	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DIR_NAME))
 
+log	: clean
+	@rcs2log -h foundation.TetraSys.org -R > ChangeLog
 #--------------------------------------------------------------
 clean	:
-	-rm -f *.o *~ *.bak \#*\# core so_locations
+	@rm -f *.o *~ *.bak \#*\# core
 
 clobber	: clean
-	-rm $(TEST) $(BASENAME).*
+	@rm $(TEST) $(BASENAME).*
+	@(cd docs; rm -rf *.aux *.log *.toc *.eps *~ *-pdf.tex)
 
 distclean: clobber
-	( cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz )
+	@rm -f ChangeLog
+	@(cd docs; rm -rf Linklist *.dvi *.ps *.ps.gz *.pdf)
 
 install	: install-docs
 	cp ./$(SLIB) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	( cd $(LIBDIR); \
-	 ln -s $(SLIB) $(BASENAME).so.$(MAJOR_VER) )
-	( cd $(LIBDIR); ln -s $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so )
+	-(cd $(LIBDIR); ln -s $(SLIB) $(BASENAME).so.$(MAJOR_VER))
+	-(cd $(LIBDIR); ln -s $(BASENAME).so.$(MAJOR_VER) $(BASENAME).so)
 	/sbin/ldconfig
 
 install-static:
 	cp ./linklist.h $(INCDIR)/linklist.h
 	cp ./$(BASENAME).a $(LIBDIR)/$(BASENAME).a
 
-install-docs:
+install-docs: docs
 	install -d $(DOCLIB)/$(DISTNAME)
 	install -m 444 docs/*.ps.gz $(DOCLIB)/$(DISTNAME)
+	install -m 444 docs/*.pdf $(DOCLIB)/$(DISTNAME)
 	install -m 444 docs/Linklist/* $(DOCLIB)/$(DISTNAME)
 
 uninstall: uninstall-docs
