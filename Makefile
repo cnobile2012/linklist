@@ -94,7 +94,8 @@ log	: clean
 #--------------------------------------------------------------
 clean	:
 	@(cd src; make clean)
-	@rm -f *~ \#*\# test/*~ test/\#*\#
+	@(cd src/dlinklist; rm -f *~ \#*\# *.pyc *.pyo)
+	@rm -f *~ \#*\# test/*~ test/\#*\# test/*.pyc test/*.pyo
 
 clobber	: clean
 	@(cd src; make clobber)
