@@ -44,7 +44,7 @@ include linklist.mk
 DISTNAME	= linklist-$(VERSION)
 EXCLUDEFILE	= $(DISTNAME)/tar-exclude
 
-all	:
+all	: egg
 	@(cd src; make all)
 
 debug	:
@@ -62,6 +62,13 @@ test	:
 
 runtest	: all
 	@(echo; cd test; ./ll_test.py)
+
+python-api:
+	@python setup.py build
+
+egg	: python-api
+	@python setup.py bdist_egg
+
 #--------------------------------------------------------------
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
@@ -99,7 +106,7 @@ clean	:
 
 clobber	: clean
 	@(cd src; make clobber)
-	@rm -f ChangeLog
+	@rm -rf ChangeLog build dist
 
 distclean: clobber
 	@(cd src; make distclean)

@@ -107,7 +107,7 @@ clean	:
 	@rm -f *.o *~ *.bak \#*\# core test/*~ test/\#*\#
 
 clobber	: clean
-	@rm -f libdll.* $(TEST) ChangeLog
+	@rm -rf libdll.* $(TEST) DLinklist.egg-info
 
 distclean: clobber
 
