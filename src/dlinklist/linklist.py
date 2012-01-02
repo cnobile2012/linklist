@@ -1,5 +1,5 @@
 #
-# dlinklist/dlinklist.py
+# dlinklist/linklist.py
 #
 # ctypes wrapper for the Doubly Linked list API.
 #
@@ -9,9 +9,11 @@
 #
 
 import logging
-from ctypes import *
+from ctypes import CDLL, CFUNCTYPE, POINTER, Structure, byref, cast, \
+     string_at, c_void_p, c_int, c_ulong, c_bool, c_size_t, c_char_p
 
-import dlinklist
+
+import dlinklist as dll
 
 
 class Return(object):
@@ -144,7 +146,7 @@ class SearchModes(Structure):
 
 
 class DLinklist(object):
-    __LIBRARY = ("libdll.so", "../src/libdll.so",)
+    __LIBRARY = ("./libdll.so", "../src/libdll.so",)
 
     def __init__(self, logname="", disableLogging=False):
         if not logname: logging.basicConfig()
@@ -155,17 +157,20 @@ class DLinklist(object):
 
         for path in self.__LIBRARY:
             try:
-                self._lib = CDLL(self.__LIBRARY)
+                self._lib = CDLL(path)
                 break
             except:
                 pass
 
         if not self._lib:
-            raise dlinklist.LibraryNotFoundException(self.__LIBRARY[0])
+            lib = self.__LIBRARY[0][2:]
+            msg = "Could not load library: %s"
+            self._log.critical(msg, lib)
+            raise dll.LibraryNotFoundException(msg % lib)
 
     def create(self, infoSize):
         list_p = self.createList()
-        return self.initalize(list__p, infoSize)
+        return self.initialize(list_p, infoSize)
 
     def createList(self):
         """
@@ -183,7 +188,7 @@ class DLinklist(object):
             list_p = createList(byref(control))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         self._log.debug("List address: %s", hex(cast(list_p, c_void_p).value))
         return list_p
@@ -201,14 +206,14 @@ class DLinklist(object):
         try:
             initList = self._lib.DLL_InitializeList
             initList.argtypes = (POINTER(List), c_size_t)
-            retval = initList(list_p, c_size_t(sizeof(Info)))
+            retval = initList(list_p, c_size_t(infoSize))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
         return list_p
 
@@ -227,7 +232,7 @@ class DLinklist(object):
             destroyList(byref(list_p))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
     def isListEmpty(self, list_p):
         """
@@ -243,7 +248,7 @@ class DLinklist(object):
             retval = isListEmpty(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         return retval
 
@@ -261,7 +266,7 @@ class DLinklist(object):
             retval = isListFull(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         return retval
 
@@ -278,7 +283,7 @@ class DLinklist(object):
             retval = getNumberOfRecords(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         return retval
 
@@ -300,11 +305,11 @@ class DLinklist(object):
             retval = setSearchModes(list_p, origin, dir)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def getSearchModes(self, list_p, sm):
         """
@@ -322,9 +327,9 @@ class DLinklist(object):
             modes = modes_p.contents # Dereference pointer
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
-        return modes.search_origin, modes.search_dir
+        return modes
 
     def getCurrentIndex(self, list_p):
         """
@@ -340,7 +345,7 @@ class DLinklist(object):
             retval = getCurrentIndex(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         return retval
 
@@ -358,11 +363,11 @@ class DLinklist(object):
             retval = currentPointerToHead(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def currentPointerToTail(self, list_p):
         """
@@ -378,11 +383,11 @@ class DLinklist(object):
             retval = currentPointerToTail(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def incrementCurrentPointer(self, list_p):
         """
@@ -399,11 +404,11 @@ class DLinklist(object):
             retval = incrementCurrentPointer(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def decrementCurrentPointer(self, list_p):
         """
@@ -420,11 +425,11 @@ class DLinklist(object):
             retval = decrementCurrentPointer(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def storeCurrentPointer(self, list_p):
         """
@@ -440,11 +445,11 @@ class DLinklist(object):
             retval = storeCurrentPointer(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def restoreCurrentPointer(self, list_p):
         """
@@ -460,11 +465,11 @@ class DLinklist(object):
             retval = restoreCurrentPointer(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def addRecord(self, list_p, info, pFun=None):
         """
@@ -479,15 +484,15 @@ class DLinklist(object):
         """
         try:
             addRecord = self._lib.DLL_AddRecord
-            addRecord.argtypes = (POINTER(List), POINTER(Info), c_void_p,)
-            retval = addRecord(list_p, info, pFun)
+            addRecord.argtypes = (POINTER(List), c_void_p, c_void_p,)
+            retval = addRecord(list_p, cast(byref(info), c_void_p), pFun)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def insertRecord(self, list_p, info, dir):
         """
@@ -504,15 +509,15 @@ class DLinklist(object):
         """
         try:
             insertRecord = self._lib.DLL_InsertRecord
-            insertRecord.argtypes = (POINTER(List), POINTER(Info), c_int)
-            retval = insertRecord(list_p, byref(info), dir)
+            insertRecord.argtypes = (POINTER(List), c_void_p, c_int)
+            retval = insertRecord(list_p, cast(byref(info), c_void_p), dir)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def swapRecord(self, list_p, dir):
         """
@@ -533,11 +538,11 @@ class DLinklist(object):
             retval = swapRecord(list_p, dir)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def updateCurrentRecord(self, list_p, record):
         """
@@ -550,15 +555,15 @@ class DLinklist(object):
         """
         try:
             updateCurrentRecord = self._lib.DLL_UpdateCurrentRecord
-            updateCurrentRecord.argtypes = (POINTER(List), POINTER(Info),)
-            retval = updateCurrentRecord(list_p, byref(record))
+            updateCurrentRecord.argtypes = (POINTER(List), c_void_p,)
+            retval = updateCurrentRecord(list_p, cast(byref(record), c_void_p))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def deleteCurrentRecord(self, list_p):
         """
@@ -574,11 +579,11 @@ class DLinklist(object):
             retval = deleteCurrentRecord(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def deleteAllNodes(self, list_p):
         """
@@ -594,11 +599,11 @@ class DLinklist(object):
             retval = deleteEntireList(list_p)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def findRecord(self, list_p, record, match, pFun=None):
         """
@@ -617,16 +622,16 @@ class DLinklist(object):
         """
         try:
             findRecord = self._lib.DLL_FindRecord
-            findRecord.argtypes = (POINTER(List), POINTER(Info), POINTER(Info),
-                                   c_void_p,)
-            retval = findRecord(list_p, byref(record), byref(match), pFun)
+            findRecord.argtypes = (POINTER(List), c_void_p, c_void_p, c_void_p,)
+            retval = findRecord(list_p, cast(byref(record), c_void_p),
+                                cast(byref(match), c_void_p), pFun)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def findNthRecord(self, list_p, record, skip):
         """
@@ -644,15 +649,15 @@ class DLinklist(object):
         """
         try:
             findNthRecord = self._lib.DLL_FindNthRecord
-            findNthRecord.argtypes = (POINTER(List), POINTER(Info), c_ulong,)
-            retval = findNthRecord(list_p, record, skip)
+            findNthRecord.argtypes = (POINTER(List), c_void_p, c_ulong,)
+            retval = findNthRecord(list_p, cast(byref(record), c_void_p), skip)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def getCurrentRecord(self, list_p, record):
         """
@@ -665,15 +670,15 @@ class DLinklist(object):
         """
         try:
             getCurrentRecord = self._lib.DLL_GetCurrentRecord
-            getCurrentRecord.argtypes = (POINTER(List), POINTER(Info),)
-            retval = getCurrentRecord(list_p, byref(record))
+            getCurrentRecord.argtypes = (POINTER(List), c_void_p,)
+            retval = getCurrentRecord(list_p, cast(byref(record), c_void_p))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def getPriorRecord(self, list_p, record):
         """
@@ -687,15 +692,15 @@ class DLinklist(object):
         """
         try:
             getPriorRecord = self._lib.DLL_GetPriorRecord
-            getPriorRecord.argtypes = (POINTER(List), POINTER(Info),)
-            retval = getPriorRecord(list_p, byref(record))
+            getPriorRecord.argtypes = (POINTER(List), c_void_p,)
+            retval = getPriorRecord(list_p, cast(byref(record), c_void_p))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def getNextRecord(self, list_p, record):
         """
@@ -709,15 +714,15 @@ class DLinklist(object):
         """
         try:
             getNextRecord = self._lib.DLL_GetNextRecord
-            getNextRecord.argtypes = (POINTER(List), POINTER(Info),)
-            retval = getNextRecord(list_p, byref(record))
+            getNextRecord.argtypes = (POINTER(List), c_void_p,)
+            retval = getNextRecord(list_p, cast(byref(record), c_void_p))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def saveList(self, list_p, path):
         """
@@ -737,11 +742,11 @@ class DLinklist(object):
             retval = saveList(list_p, c_char_p(path))
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def loadList(self, list_p, path, pFun=None):
         """
@@ -762,11 +767,11 @@ class DLinklist(object):
             retval = loadList(list_p, c_char_p(path), pFun)
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
-            raise dlinklist.FunctionException(msg)
+            raise dll.FunctionException(msg, retval=retval)
 
     def version(self):
         """
@@ -780,7 +785,7 @@ class DLinklist(object):
             version = string_at(self._lib.DLL_Version())
         except Exception, e:
             self._log.critical("Unknown error: %s", str(e))
-            raise dlinklist.APIException(e)
+            raise dll.APIException(e)
 
         return version
 

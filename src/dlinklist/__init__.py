@@ -8,7 +8,7 @@
 
 __import__("pkg_resources").declare_namespace(__name__)
 
-from dlinklist import SrchOrigin, SrchDir, InsertDir, DLinklist
+from linklist import Return, SrchOrigin, SrchDir, InsertDir, DLinklist
 
 
 class BaseLinklistException(Exception):
@@ -24,18 +24,19 @@ class BaseLinklistException(Exception):
 
 
 class LibraryNotFoundException(BaseLinklistException):
-    __DEFAULT_MESSAGE = "%s not found"
 
-    def __init__(self, msg=""):
-        msg = self.__DEFAULT_MESSAGE % msg
+    def __init__(self, msg):
         super(LibraryNotFoundException, self).__init__(msg)
 
 
 class FunctionException(BaseLinklistException):
 
-    def __init__(self, msg):
+    def __init__(self, msg, retval=Return.NORMAL):
         super(FunctionException, self).__init__(msg)
+        self._retval = retval
 
+    def getRetval(self):
+        return self._retval
 
 class APIException(BaseLinklistException):
 
