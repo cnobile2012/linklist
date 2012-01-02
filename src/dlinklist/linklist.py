@@ -1,7 +1,7 @@
 #
 # dlinklist/linklist.py
 #
-# ctypes wrapper for the Doubly Linked list API.
+# ctypes wrappers for the Doubly Linked list API.
 #
 # $Author$
 # $Date$
