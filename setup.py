@@ -2,14 +2,7 @@ import os, sys
 
 __version__ = "2.0.0"
 
-try:
-    if 'bdist_egg' in sys.argv:
-        from setuptools import setup, find_packages
-    else:
-        from distutils.core import setup, find_packages
-except:
-    from setuptools import setup, find_packages
-
+from setuptools import setup, find_packages
 from distutils.extension import Extension
 
 ext_modules = [
@@ -31,7 +24,5 @@ setup(name='DLinklist',
       package_dir={'': 'src'},
       py_modules=['dlinklist.__init__', 'dlinklist.linklist'],
       ext_modules=ext_modules,
-      packages = find_packages(),
-      package_data={'': ['Artistic', 'eclipse-1.0.txt']},
-      #zip_safe=False
+      zip_safe=False
       )
