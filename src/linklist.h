@@ -185,7 +185,7 @@ DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
 DLL_SearchModes *DLL_GetSearchModes(List *list, DLL_SearchModes *ssp);
 unsigned long DLL_GetCurrentIndex(List *list);
 unsigned long DLL_GetNumberOfRecords(List *list);
-size_t _getListSize();
+size_t _getListSize(void);
 void _initializeList(List *list, size_t infosize);
 DLL_Return _createNewRecord(List *list, Info *info, Node **newN, Info **newI);
 void _printList(List *list);

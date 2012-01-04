@@ -1161,7 +1161,7 @@ DLL_Return DLL_LoadList(List *list, const char *path,
  *
  * Return   : Size of the List
  */
-size_t _getListSize()
+size_t _getListSize(void)
     {
     return sizeof(List);
     }
