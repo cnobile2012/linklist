@@ -146,7 +146,7 @@ class SearchModes(Structure):
 
 
 class DLinklist(object):
-    __LIBRARY = ("./libdll.so", "../src/libdll.so",)
+    __LIBRARY = ("./libdll.so", dll._RES_PATH, "../src/libdll.so",)
 
     def __init__(self, logname="", disableLogging=False):
         if not logname: logging.basicConfig()

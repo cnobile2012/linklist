@@ -6,7 +6,10 @@
 # $Revision$
 #
 
-__import__("pkg_resources").declare_namespace(__name__)
+import pkg_resources as _res
+
+_res.declare_namespace(__name__)
+_RES_PATH = _res.resource_filename(__name__, "libdll.so")
 
 from linklist import Return, SrchOrigin, SrchDir, InsertDir, DLinklist
 
