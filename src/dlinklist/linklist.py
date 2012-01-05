@@ -8,7 +8,7 @@
 # $Revision$
 #
 
-import logging
+import logging, os
 from ctypes import CDLL, CFUNCTYPE, POINTER, Structure, byref, cast, \
      string_at, c_void_p, c_int, c_ulong, c_bool, c_size_t, c_char_p
 
@@ -146,7 +146,7 @@ class SearchModes(Structure):
 
 
 class DLinklist(object):
-    __LIBRARY = ("./libdll.so", dll._RES_PATH, "../src/libdll.so",)
+    __LIBRARY = ("../libdll.so", dll._RES_PATH, "../src/libdll.so",)
 
     def __init__(self, logname="", disableLogging=False):
         if not logname: logging.basicConfig()
@@ -163,7 +163,7 @@ class DLinklist(object):
                 pass
 
         if not self._lib:
-            lib = self.__LIBRARY[0][2:]
+            lib = os.path.split(self.__LIBRARY[0])[1]
             msg = "Could not load library: %s"
             self._log.critical(msg, lib)
             raise dll.LibraryNotFoundException(msg % lib)
@@ -217,7 +217,7 @@ class DLinklist(object):
 
         return list_p
 
-    def destroy(self, list_p):
+    def destroyList(self, list_p):
         """
         void DLL_DestroyList(List **list);
 

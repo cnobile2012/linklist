@@ -435,7 +435,7 @@ class TestLibDll(unittest.TestCase, DLinklist):
         self._getCurrentIndex(self._list_p, test=2)
 
     def test_DLL_Save_LoadList(self):
-        filePath = "unittest.data"
+        filePath = "/tmp/unittest.data"
         # Test no records
         self._saveList(self._list_p, filePath, result=Return.NULL_LIST)
         # Test saving list to dick
@@ -510,7 +510,7 @@ class TestLibDll(unittest.TestCase, DLinklist):
         Returns  : void
         """
         try:
-            self.destroy(list_p)
+            self.destroyList(list_p)
         except APIException, e:
             self.fail(e)
 
