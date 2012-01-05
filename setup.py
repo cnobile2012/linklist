@@ -22,7 +22,8 @@ setup(name='DLinklist',
       url='wiki.tetrasys-design.net',
       license='Artistic and Eclipse',
       package_dir={'': 'src'},
-      py_modules=['dlinklist.__init__', 'dlinklist.linklist'],
+      py_modules=['dlinklist.__init__', 'dlinklist.linklist',],
+      data_files=[('dlinklist/test', ['test/ll_test.py'],),],
       ext_modules=ext_modules,
       zip_safe=False
       )
