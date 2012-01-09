@@ -60,7 +60,8 @@ debug-static :
 test	:
 	@(cd src; make test)
 
-runtest	: all
+runtest	:
+	@(cd src; make all)
 	@(echo; cd test; ./ll_test.py)
 
 python-api:
@@ -83,7 +84,13 @@ pdf	: postscript
 html	:
 	(cd docs; latex2html -local_icons -no_images Linklist.tex)
 
-docs	: html pdf
+python-docs:
+	@(epydoc -v --docformat epytext --name "Doubly Linklist API" \
+          -o docs/DLinklist-$(VERSION) --show-private --show-imports \
+          --graph all --url "$(URL)" src/dlinklist/*.py test/*.py \
+         )
+
+docs	: html pdf python-docs
 
 # Unless you're me you won't need this.
 tarball	: docs log
@@ -110,8 +117,8 @@ clobber	: clean
 
 distclean: clobber
 	@(cd src; make distclean)
-	@(cd docs; rm -rf Linklist *.aux *.dvi *.log *.toc *.ps *.ps.gz *.eps \
-         *.pdf *~ *-pdf.tex)
+	@(cd docs; rm -rf Linklist DLinklist-$(VERSION) *.aux *.dvi *.log \
+         *.toc *.ps *.ps.gz *.eps *.pdf *~ *-pdf.tex)
 
 install	: install-docs
 	@(cd src; make install)
