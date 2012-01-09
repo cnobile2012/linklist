@@ -214,7 +214,7 @@ unsigned long DLL_GetNumberOfRecords(List *list)
  *
  * Returns  : DLL_NORMAL       -- Values assigned were accepted
  *            DLL_NOT_MODIFIED -- Values were not assigned--invalid type
- *                                (defaults are still in place)
+ *                                (previous values are still in place)
  */
 DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
   DLL_SrchDir dir)
@@ -592,7 +592,7 @@ DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
 
 /*
  * DLL_SwapRecord() : Swaps current record up or down one place in the
- *                    list. The swaped record will still be current
+ *                    list. The swapped record will still be current
  *                    after completion.
  *
  * Status   : Public
@@ -601,7 +601,7 @@ DLL_Return DLL_InsertRecord(List *list, Info *info, DLL_InsertDir dir)
  *            dir              --  Direction to swap, can be DLL_ABOVE
  *                                 (toward head) or DLL_BELOW (toward tail)
  *
- * Returns  : DLL_NORMAL       -- Node was swaped successfully
+ * Returns  : DLL_NORMAL       -- Node was swapped successfully
  *            DLL_NULL_LIST    -- list->current is NULL
  *            DLL_NOT_MODIFIED -- Swap direction not DLL_ABOVE or DLL_BELOW
  *            DLL_NOT_FOUND    -- Current record is already at end of
@@ -724,7 +724,8 @@ DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record)
 
 
 /*
- * DLL_DeleteCurrentRecord() : Delete a record from the list.
+ * DLL_DeleteCurrentRecord() : Delete a record from the list. This removes the
+ *                             Node and Info objects.
  *
  * Status   : Public
  *
@@ -777,7 +778,9 @@ DLL_Return DLL_DeleteCurrentRecord(List *list)
 
 
 /*
- * DLL_DeleteEntireList() : Delete the entire list.
+ * DLL_DeleteEntireList() : Deletes all the Node structures from the list then
+ *                          reinitializes the control List structure for
+ *                          continued use.
  *
  * Status   : Public
  *
@@ -809,12 +812,12 @@ DLL_Return DLL_DeleteEntireList(List *list)
     }
 
 
-/******************
- * Search Functions
+/********************************
+ * Search and Retrieval Functions
  */
 
 /*
- * DLL_FindRecord() : Find a record in list with search criteria
+ * DLL_FindRecord() : Find a record in list with search criteria.
  *
  * Status   : Public
  *
@@ -964,7 +967,7 @@ DLL_Return DLL_FindNthRecord(List *list, Info *record, unsigned long skip)
 
 
 /*
- * DLL_GetCurrentRecord() : Gets the record pointed to by current
+ * DLL_GetCurrentRecord() : Get the current record.
  *
  * Status   : Public
  *
@@ -985,7 +988,7 @@ DLL_Return DLL_GetCurrentRecord(List *list, Info *record)
 
 
 /*
- * DLL_GetPriorRecord() : Gets the record pointed to by current->prior
+ * DLL_GetPriorRecord() : Get the record pointed to by current->prior
  *
  * Status   : Public
  *
@@ -1012,7 +1015,7 @@ DLL_Return DLL_GetPriorRecord(List *list, Info *record)
 
 
 /*
- * DLL_GetNextRecord() : Gets the record pointed to by current->next
+ * DLL_GetNextRecord() : Get the record pointed to by current->next
  *
  * Status   : Public
  *
@@ -1043,7 +1046,7 @@ DLL_Return DLL_GetNextRecord(List *list, Info *record)
  */
 
 /*
- * DLL_SaveList() : Save list to disk
+ * DLL_SaveList() : Save list to disk.
  *
  * Status   : Public
  *
@@ -1090,7 +1093,7 @@ DLL_Return DLL_SaveList(List *list, const char *path)
 
 
 /*
- * DLL_LoadList() : Load list to disk
+ * DLL_LoadList() : Load list to disk.
  *
  * Status   : Public
  *
