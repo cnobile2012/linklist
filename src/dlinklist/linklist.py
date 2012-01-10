@@ -263,8 +263,8 @@ class DLinklist(object):
           list.
         - C{updateCurrentRecord()} -- Updates the current record.
         - C{deleteCurrentRecord()} -- Delete a record from the list.
-        - C{deleteAllNodes()} -- Deletes all the C{Node} objects from the list
-          then reinitializes the control C{List}.
+        - C{deleteAllNodes()} -- Deletes all the C{Info} and their C{Node}
+          objects from the list then reinitializes the control C{List}.
 
       5. Search and Retrieval Methods
         - C{findRecord()} -- Find a C{record} in the list with search criteria
@@ -298,6 +298,7 @@ class DLinklist(object):
                                  turns logging on, and C{True} turns logging
                                  off.
         @type disableLogging: C{bool}
+        @raise LibraryNotFoundException: If the C{C} library cannot be found.
         """
         if not logname: logging.basicConfig()
         self._log = logging.getLogger(logname)
@@ -1005,8 +1006,8 @@ class DLinklist(object):
 
     def deleteAllNodes(self):
         """
-        Deletes all the C{Node} objects from the list then reinitializes the
-        control C{List} for continued use.
+        Deletes all the C{Info} and their C{Node} objects from the list then
+        reinitializes the control C{List} for continued use.
 
         The C{C} function doc string::
 
