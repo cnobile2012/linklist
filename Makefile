@@ -43,6 +43,7 @@ include linklist.mk
 
 DISTNAME	= linklist-$(VERSION)
 EXCLUDEFILE	= $(DISTNAME)/tar-exclude
+URL		= http://wiki.tetrasys-design.net
 
 all	: egg
 	@(cd src; make all)
