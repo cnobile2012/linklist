@@ -28,22 +28,60 @@ class Info(Structure):
 
 
 class TestLibDll(unittest.TestCase):
+    """
+    This class runs testunit test on all the function in my C{C} linklist
+    library.
+    """
 
     def __init__(self, name):
+        """
+        Initializes the C{TestLibDll} class.
+
+          1. Call the constructor of the base class.
+          2. Create an aggreget of the C{DLinklist} class.
+          3. Define an object to be used for a C{ctypes} C{POINTER} object.
+
+        @param name: The name used by the C{TestCase} class.
+        @raise LibraryNotFoundException: If the C{C} library cannot be found.
+        """
         super(TestLibDll, self).__init__(name)
         self._dll = DLinklist(disableLogging=True)
         self._list_p = None
 
     def setUp(self):
-        # Initialize the list.
+        """
+        Initialize the list for each unit test.
+
+        @return: C{None}
+        """
+        # Create and initialize list
         self._list_p = self._initList(sizeof(Info))
         #print "Address of list_p: %s" % hex(cast(self._list_p, c_void_p).value)
 
     def tearDown(self):
+        """
+        Destroy entire list.
+
+        @return: C{None}
+        """
         # Destroy list.
         self._destroyList()
 
+    def test_InfoType(self):
+        """
+        Check that the C{Info} class is the correct type.
+
+        @return: C{None}
+        """
+        self.assertTrue(self._dll.checkInfoType(Info()))
+
     def test_sizeofList(self):
+        """
+        Test that the C{Python} C{List} object is the same size as the C{C}
+        C{List} structure.
+
+        @return: C{None}
+        """
         pSizeof = sizeof(List)
         cSizeof = self._dll._lib._getListSize()
         msg = "Python sizeof(List): %s, C sizeof(List): %s" % (pSizeof, cSizeof)
@@ -51,6 +89,7 @@ class TestLibDll(unittest.TestCase):
 
     def test_DDL_Version(self):
         """
+        Test that a string is returned.
 
         The C{C} function doc string::
 
@@ -62,6 +101,8 @@ class TestLibDll(unittest.TestCase):
                          Wai-Sun Chia
                          Mark M. Feenstra
                          Lianqi Qiu
+
+        @return: C{None}
         """
         devBy = " Developed by: Carl J. Nobile"
         version = string_at(self._dll.version())
@@ -72,15 +113,28 @@ class TestLibDll(unittest.TestCase):
             self.assertTrue(devBy in version)
 
     def test_DLL_IsListEmpty(self):
-        # Check that the list is empty.
+        """
+        Check that the list is empty.
+
+        @return: C{None}
+        """
         self._isListEmpty(test=True)
 
     def test_DLL_IsListFull(self):
-        # Check that the list is not full.
+        """
+        Check that the list is not full.
+
+        @return: C{None}
+        """
         self._isListFull(test=False)
 
     def test_DLL_GetNumberOfRecords(self):
-        # Test empty list
+        """
+        Check that the correct number of records are returned.
+
+        @return: C{None}
+        """
+        # Test that list is empty
         self._getNumberOfRecords(test=0)
         # Test list with one record
         value = "This is a test."
@@ -88,6 +142,12 @@ class TestLibDll(unittest.TestCase):
         self._getNumberOfRecords(test=1)
 
     def test_DLL_SetSearchModes(self):
+        """
+        Check that the correct return codes are returned when setting the
+        search modes.
+
+        @return: C{None}
+        """
         # Test the defaults
         self._setSearchModes(SrchOrigin.ORIGIN_DEFAULT,
                              SrchDir.DIRECTION_DEFAULT)
@@ -99,6 +159,11 @@ class TestLibDll(unittest.TestCase):
                              result=Return.NOT_MODIFIED)
 
     def test_DLL_GetSearchModes(self):
+        """
+        Check that the set search modes are returned.
+
+        @return: C{None}
+        """
         # Test the defaults
         self._getSearchModes()
         # Test SrchOrigin.TAIL and SrchDir.UP
@@ -106,6 +171,11 @@ class TestLibDll(unittest.TestCase):
         self._getSearchModes(test=(SrchOrigin.TAIL, SrchDir.UP))
 
     def test_DLL_GetCurrentIndex(self):
+        """
+        Check that the current index is returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._getCurrentIndex()
         # Test one record
@@ -114,6 +184,12 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=1)
 
     def test_DLL_CurrentPointerToHead(self):
+        """
+        Check that the current pointer gets moved to the head of the list
+        properly and that the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._currentPointerToHead(result=Return.NULL_LIST)
         # Test with two records
@@ -126,6 +202,12 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=1)
 
     def test_DLL_CurrentPointerToTail(self):
+        """
+        Check that the current pointer gets moved to the tail of the list
+        properly and that the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._currentPointerToTail(result=Return.NULL_LIST)
         # Test with two records
@@ -139,6 +221,12 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=2)
 
     def test_DLL_IncrementCurrentPointer(self):
+        """
+        Check that the current pointer gets incremented properly and that the
+        correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._incrementCurrentPointer(result=Return.NULL_LIST)
         # Test with two records
@@ -153,6 +241,12 @@ class TestLibDll(unittest.TestCase):
         self._incrementCurrentPointer(result=Return.NOT_FOUND)
 
     def test_DLL_DecrementCurrentPointer(self):
+        """
+        Check that the current pointer gets decremented properly and that the
+        correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._decrementCurrentPointer(result=Return.NULL_LIST)
         # Test with two records
@@ -166,6 +260,12 @@ class TestLibDll(unittest.TestCase):
         self._decrementCurrentPointer(result=Return.NOT_FOUND)
 
     def test_DLL_Store_RestoreCurrentPointer(self):
+        """
+        Check that the store and restore of the current pointer is properly
+        done and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._storeCurrentPointer(result=Return.NOT_FOUND)
         self._restoreCurrentPointer(result=Return.NOT_FOUND)
@@ -181,6 +281,13 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=2)
 
     def test_DLL_AddRecord(self):
+        """
+        Check that records are added to the link list properly, the index
+        values are correct after each add, and the correct return codes are
+        returned.
+
+        @return: C{None}
+        """
         # Test non-sorted addRecord.
         value = "This is a test."
         self._addRecord(Info(value))
@@ -213,6 +320,13 @@ class TestLibDll(unittest.TestCase):
         self.assertTrue(idx == (size-1))
 
     def test_DLL_InsertRecord(self):
+        """
+        Check that inserted records are added properly based on C{InsertDir},
+        the index values are correct after each insert, and the correct return
+        codes are returned.
+
+        @return: C{None}
+        """
         values = []
         values.append("ZZZZ - This is test record one.")
         values.append("AAAA - This is test record two.")
@@ -239,6 +353,13 @@ class TestLibDll(unittest.TestCase):
         self.assertTrue(idx == (size-1))
 
     def test_DLL_SwapRecord(self):
+        """
+        Check that the current record is swapped correctly based on
+        C{InsertDir}, the index values are correct after each swap, and the
+        correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._swapRecord(InsertDir.ABOVE, result=Return.NULL_LIST)
         # Test invalid direction
@@ -278,20 +399,37 @@ class TestLibDll(unittest.TestCase):
         self.assertTrue(idx == (size-1))
 
     def test_DLL_UpdateCurrentRecord(self):
+        """
+        Check that a record gets updated correctly, the index values are
+        correct after each update, and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         value = "This is a text."
         self._updateCurrentRecord(Info(value),
                                   result=Return.NULL_LIST)
+        self._getCurrentIndex(test=0)
         # Test that the record got updated
         self._addRecord(Info(value))
         self._getCurrentRecord(Info(), test=value)
+        self._getCurrentIndex(test=1)
         value = "This is another text."
         self._updateCurrentRecord(Info(value))
+        self._getCurrentIndex(test=1)
         self._getCurrentRecord(Info(), test=value)
+        self._getCurrentIndex(test=1)
 
     def test_DLL_DeleteCurrentRecord(self):
+        """
+        Check that a record gets deleted correctly, the index values are
+        correct after each update, and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._deleteCurrentRecord(result=Return.NULL_LIST)
+        self._getCurrentIndex(test=0)
         # Test that the record got deleted
         value = "This is a text."
         self._addRecord(Info(value))
@@ -300,6 +438,12 @@ class TestLibDll(unittest.TestCase):
         self._isListEmpty(test=True)
 
     def test_DLL_DeleteEntireList(self):
+        """
+        Check that the entire list is deleted properly, the index values are
+        correct after the delete, and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._deleteEntireList(result=Return.NULL_LIST)
         # Test thst the list gets deleted
@@ -316,6 +460,12 @@ class TestLibDll(unittest.TestCase):
         self._isListEmpty(test=True)
 
     def test_DLL_FindRecord(self):
+        """
+        Check that records are found correctly, the index values are correct
+        after each query, and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test for null function pointer
         self._findRecord(Info(), Info(), None,
                          result=Return.NULL_FUNCTION)
@@ -339,6 +489,13 @@ class TestLibDll(unittest.TestCase):
                          self._dll.compare(), result=Return.NOT_FOUND)
 
     def test_DLL_FindNthRecord(self):
+        """
+        Check that records are found correctly based on the skip value, the
+        index values are correct after each query, and the correct return
+        codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._findNthRecord(Info(), 1, result=Return.NULL_LIST)
         # Test for the Nth record, step = 1 then 5
@@ -396,8 +553,15 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=3)
 
     def test_DLL_GetCurrentRecord(self):
+        """
+        Check that the current record is returned correctly, the index values
+        are correct after the get, and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._getCurrentRecord(Info(), result=Return.NULL_LIST)
+        self._getCurrentIndex(test=0)
         # Test for curent record
         value = "This is test record."
         self._addRecord(Info(value))
@@ -405,6 +569,12 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=1)
 
     def test_DLL_GetPriorRecord(self):
+        """
+        Check that the prior record is returned correctly, the index values
+        are correct after the get, and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._getPriorRecord(Info(), result=Return.NULL_LIST)
         # Test for curent record
@@ -420,6 +590,12 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=1)
 
     def test_DLL_GetNextRecord(self):
+        """
+        Check that the next record is returned correctly, the index values are
+        correct after the get, and the correct return codes are returned.
+
+        @return: C{None}
+        """
         # Test no records
         self._getNextRecord(Info(), result=Return.NULL_LIST)
         # Test for curent record
@@ -435,6 +611,13 @@ class TestLibDll(unittest.TestCase):
         self._getCurrentIndex(test=2)
 
     def test_DLL_Save_LoadList(self):
+        """
+        Check that the list is saved and loaded correctly, the index values are
+        correct after the loads, the sorting on load is done properly, and the
+        correct return codes are returned.
+
+        @return: C{None}
+        """
         filePath = "/tmp/unittest.data"
         # Test no records
         self._saveList(filePath, result=Return.NULL_LIST)
@@ -471,24 +654,14 @@ class TestLibDll(unittest.TestCase):
     #
     def _initList(self, infoSize):
         """
+        Prepare the link list for use and asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and the C{list_p}
+        object is valid.
 
-        The C{C} function doc string::
-
-          List *DLL_CreateList(List **list);
-
-          Arguments: list -- Pointer to a pointer to a name of a structure to
-                             create.
-          Returns  : Pointer to created structure
-                     NULL if unsuccessful
-
-
-          DLL_Return DLL_InitializeList(List *list, size_t infosize);
-
-          Arguments: list          -- Pointer to type List
-                     infosize      -- Size of user Info
-          Returns  : DLL_NORMAL    -- Initialization was done successfully
-                     DLL_ZERO_INFO -- sizeof(Info) is zero
-                     DLL_NULL_LIST -- Info is NULL
+        @param infoSize: The size in bytes of the user defined C{Info} class.
+        @type infoSize: C{int}
+        @return: A pinter to the link list.
+        @rtype: C{ctypes POINTER}
         """
         try:
             list_p = self._dll.create(infoSize)
@@ -504,14 +677,10 @@ class TestLibDll(unittest.TestCase):
 
     def _destroyList(self):
         """
+        Executes the C{destroyList} method and asserts that there are no
+        C{APIException} exceptions.
 
-        The C{C} function doc string::
-
-          void DLL_DestroyList(List **list);
-
-          Arguments: list -- Pointer to a pointer to a name of a structure to
-                             destroy.
-          Returns  : void
+        @return: C{None}
         """
         try:
             self._dll.destroyList()
@@ -520,14 +689,13 @@ class TestLibDll(unittest.TestCase):
 
     def _isListEmpty(self, test=True):
         """
+        Executes the C{isListEmpty} method, asserts that there are no
+        C{APIException} exceptions, and asserts that the returned value is
+        correct.
 
-        The C{C} function doc string::
-
-          DLL_Boolean DLL_IsListEmpty(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_TRUE  -- List is empty
-                     DLL_FALSE -- List has items in it
+        @keyword test: The expected value, the default is C{True}.
+        @type test: C{bool}
+        @return: C{None}
         """
         try:
             retval = self._dll.isListEmpty()
@@ -539,14 +707,13 @@ class TestLibDll(unittest.TestCase):
 
     def _isListFull(self, test=True):
         """
+        Execute the C{isListFull} method, asserts that there are no
+        C{APIException} exceptions, and asserts that the return value is
+        correct.
 
-        The C{C} function doc string::
-
-          DLL_Boolean DLL_IsListFull(List *list);
-
-          Arguments: list      -- Pointer to type List
-          Returns  : DLL_TRUE  -- List is full (memory dependent)
-                     DLL_FALSE -- List is empty or partially full
+        @keyword test: The expected value, the default is C{True}.
+        @type test: C{bool}
+        @return: C{None}
         """
         try:
             retval = self._dll.isListFull()
@@ -558,13 +725,13 @@ class TestLibDll(unittest.TestCase):
 
     def _getNumberOfRecords(self, test=0):
         """
+        Execute the C{getNumberOfRecords} method, asserts that there are no
+        C{APIException} exceptions, and asserts that the returned value is
+        correct.
 
-        The C{C} function doc string::
-
-          unsigned long DLL_GetNumberOfRecords(List *list);
-
-          Arguments: list -- Pointer to type List
-          Returns  : Number of records in list
+        @keyword test: The expected value, the default is C{0}.
+        @type test: C{int}
+        @return: C{None}
         """
         try:
             retval = self._dll.getNumberOfRecords()
@@ -576,19 +743,13 @@ class TestLibDll(unittest.TestCase):
 
     def _setSearchModes(self, origin, dir, result=Return.NORMAL):
         """
+        Execute the C{setSearchModes} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_SetSearchModes(List *list, DLL_SrchOrigin origin,
-                                        DLL_SrchDir dir);
-
-          Arguments: list             -- Pointer to type List
-                     origin           -- Indicates the start search pointer to
-                                         use
-                     dir              -- Indicates the direction to search in
-          Returns  : DLL_NORMAL       -- Values assigned were accepted
-                     DLL_NOT_MODIFIED -- Values were not assigned--invalid type
-                                       (defaults are still in place)
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.setSearchModes(origin, dir)
@@ -600,20 +761,20 @@ class TestLibDll(unittest.TestCase):
 
     def _getSearchModes(self, test=(SrchOrigin.HEAD, SrchDir.DOWN)):
         """
+        Execute the C{getSearchModes} method, asserts that there are no
+        C{APIException} exceptions, and asserts that the returned C{tuple} is
+        correct.
 
-        The C{C} function doc string::
-
-          DLL_SearchModes DLL_GetSearchModes(List *list, DLL_SearchModes *ssp);
-
-          Arguments: list -- Pointer to type List
-                     ssp  -- Save structure pointer
-          Returns  : Pointer to type DLL_SearchModes
+        @keyword test: The expected value, the default is
+                       C{(SrchOrigin.HEAD, SrchDir.DOWN)}.
+        @type test: C{tuple} of C{SrchOrigin} and C{SrchDir}
+        @return: C{None}
         """
         try:
             origin, direction = self._dll.getSearchModes()
         except APIException, e:
             self.fail(e)
- 
+
         #self._dll._lib._printList(self._list_p)
         msg = "SrchOrigin.%s: %s" % SrchOrigin.getMessage(origin)
         self.assertTrue(origin == test[0], msg=msg)
@@ -622,13 +783,13 @@ class TestLibDll(unittest.TestCase):
 
     def _getCurrentIndex(self, test=0):
         """
+        Execute the C{getCurrentIndex} method, asserts that there are no
+        C{APIException} exceptions, and asserts that the returned value is
+        correct.
 
-        The C{C} function doc string::
-
-          unsigned long DLL_GetCurrentIndex(List *list);
-
-          Arguments: list -- Pointer to type List
-          Returns  : Current record's index
+        @keyword test: The expected value, the default is C{0}.
+        @type test: C{int}
+        @return: C{None}
         """
         try:
             retval = self._dll.getCurrentIndex()
@@ -640,14 +801,13 @@ class TestLibDll(unittest.TestCase):
 
     def _currentPointerToHead(self, result=Return.NORMAL):
         """
+        Execute the C{currentPointerToHead} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_CurrentPointerToHead(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- Record found
-                     DLL_NULL_LIST -- Empty list
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.currentPointerToHead()
@@ -659,14 +819,13 @@ class TestLibDll(unittest.TestCase):
 
     def _currentPointerToTail(self, result=Return.NORMAL):
         """
- 
-        The C{C} function doc string::
+        Execute the C{currentPointerToTail} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-          DLL_Return DLL_CurrentPointerToTail(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- Record found
-                     DLL_NULL_LIST -- Empty list
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.currentPointerToTail()
@@ -678,15 +837,13 @@ class TestLibDll(unittest.TestCase):
 
     def _incrementCurrentPointer(self, result=Return.NORMAL):
         """
+        Execute the C{incrementCurrentPointer} method, asserts that there are
+        no C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_IncrementCurrentPointer(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- Record found
-                     DLL_NULL_LIST -- Empty list
-                     DLL_NOT_FOUND -- Record not found
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.incrementCurrentPointer()
@@ -698,15 +855,13 @@ class TestLibDll(unittest.TestCase):
 
     def _decrementCurrentPointer(self, result=Return.NORMAL):
         """
+        Execute the C{decrementCurrentPointer} method, asserts that there are
+        no C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_DecrementCurrentPointer(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- Record found
-                     DLL_NULL_LIST -- Empty list
-                     DLL_NOT_FOUND -- Record not found
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.decrementCurrentPointer()
@@ -718,14 +873,13 @@ class TestLibDll(unittest.TestCase):
 
     def _storeCurrentPointer(self, result=Return.NORMAL):
         """
+        Execute the C{storeCurrentPointer} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_StoreCurrentPointer(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- Record found
-                     DLL_NOT_FOUND -- Record not found
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.storeCurrentPointer()
@@ -737,14 +891,13 @@ class TestLibDll(unittest.TestCase):
 
     def _restoreCurrentPointer(self, result=Return.NORMAL):
         """
+        Execute the C{restoreCurrentPointer} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_restoreCurrentPointer(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- Record found
-                     DLL_NOT_FOUND -- Record not found
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.restoreCurrentPointer()
@@ -756,17 +909,17 @@ class TestLibDll(unittest.TestCase):
 
     def _addRecord(self, info, pFun=None, result=Return.NORMAL):
         """
+        Execute the C{addRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_AddRecord(List *list, Info *info,
-                                   int (*pFun)(Info *, Info *));
-
-          Arguments: list          -- Pointer to type List
-                     info          -- Pointer to record to add
-                     pFun          -- Pointer to search function
-          Returns  : DLL_NORMAL    -- Node was added successfully
-                     DLL_MEM_ERROR -- Memory allocation failed
+        @param info: An instance of the C{Info} class.
+        @type info: C{Info}
+        @keyword pFun: An optional compare function, the default is C{None}.
+        @type pFun: C{ctypes CFUNCTYPE}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.addRecord(info, pFun=pFun)
@@ -778,21 +931,17 @@ class TestLibDll(unittest.TestCase):
 
     def _insertRecord(self, info, dir, result=Return.NORMAL):
         """
+        Execute the C{insertRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_InsertRecord(List *list, Info *info,
-                                      DLL_InsertDir dir);
-
-          Arguments: list             -- Pointer to type List
-                     info             -- Record to add
-                     dir              -- Direction to insert, can be DLL_ABOVE
-                                         (toward head) or DLL_BELOW (toward
-                                         tail)
-          Returns  : DLL_NORMAL       -- Node was added successfully
-                     DLL_MEM_ERROR    -- Memory allocation failed
-                     DLL_NOT_MODIFIED -- Insert direction is invalid
-                                         (not DLL_ABOVE or DLL_BELOW)
+        @param info: An instance of the C{Info} class.
+        @type info: C{Info}
+        @param dir: The direction to insert indicator.
+        @type dir: C{InsertDir}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.insertRecord(info, dir)
@@ -804,21 +953,15 @@ class TestLibDll(unittest.TestCase):
 
     def _swapRecord(self, dir, result=Return.NORMAL):
         """
+        Execute the C{swapRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_SwapRecord(List *list, DLL_InsertDir dir);
-
-          Arguments: list             -- Pointer to type List
-                     dir              -- Direction to swap, can be DLL_ABOVE
-                                         (toward head) or DLL_BELOW (toward
-                                         tail)
-          Returns  : DLL_NORMAL       -- Node was swaped successfully
-                     DLL_NULL_LIST    -- list->current is NULL
-                     DLL_NOT_MODIFIED -- Swap direction not DLL_ABOVE or
-                                         DLL_BELOW
-                     DLL_NOT_FOUND    -- Current record is already at end of
-                                         list indicated by dir.
+        @param dir: The direction to swap indicator.
+        @type dir: C{InsertDir}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.swapRecord(dir)
@@ -830,15 +973,15 @@ class TestLibDll(unittest.TestCase):
 
     def _updateCurrentRecord(self, record, result=Return.NORMAL):
         """
+        Execute the C{updateCurrentRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_UpdateCurrentRecord(List *list, Info *record);
-
-          Arguments: list          -- Pointer to type List
-                     record        -- Pointer to an Info structure in list
-          Returns  : DLL_NORMAL    -- Record updated
-                     DLL_NULL_LIST -- Empty list
+        @param record: Will contains the results of the get.
+        @type record: C{Info}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.updateCurrentRecord(record)
@@ -850,14 +993,13 @@ class TestLibDll(unittest.TestCase):
 
     def _deleteCurrentRecord(self, result=Return.NORMAL):
         """
+        Execute the C{} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_DeleteCurrentRecord(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- Record deleted
-                     DLL_NULL_LIST -- List is empty
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.deleteCurrentRecord()
@@ -869,14 +1011,13 @@ class TestLibDll(unittest.TestCase):
 
     def _deleteEntireList(self, result=Return.NORMAL):
         """
+        Execute the C{deleteAllNodes} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_DeleteEntireList(List *list);
-
-          Arguments: list          -- Pointer to type List
-          Returns  : DLL_NORMAL    -- List deleted
-                     DLL_NULL_LIST -- List is empty
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.deleteAllNodes()
@@ -888,21 +1029,19 @@ class TestLibDll(unittest.TestCase):
 
     def _findRecord(self, record, match, pFun=None, result=Return.NORMAL):
         """
+        Execute the C{findRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, assert that the
+        test value is correct, and asserts that the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_FindRecord(List *list, Info *record, Info *match,
-                                    int (*pFun)(Info *, Info *));
-
-          Arguments: list              -- Pointer to type List
-                     record            -- Pointer to an Info structure in list
-                     match             -- Pointer to an Info structure to match
-                                          to Node in list
-                     pFun              -- Pointer to search function
-          Returns  : DLL_NORMAL        -- Record found
-                     DLL_NULL_LIST     -- Empty list
-                     DLL_NOT_FOUND     -- Record not found
-                     DLL_NULL_FUNCTION -- pFun is NULL
+        @param record:  Will contain the results of the find.
+        @type record: C{Info}
+        @param match: Provides the query information.
+        @type match: C{Info}
+        @keyword pFun: An optional compare function, the default is C{None}.
+        @type pFun: C{ctypes CFUNCTYPE}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.findRecord(record, match, pFun=pFun)
@@ -918,21 +1057,19 @@ class TestLibDll(unittest.TestCase):
 
     def _findNthRecord(self, record, skip, test="", result=Return.NORMAL):
         """
+        Execute the C{findNthRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, assert that the
+        test value is correct, and asserts that the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_FindNthRecord(List *list, Info *record,
-                                       unsigned long skip);
-
-          Arguments: list          -- Pointer to type List
-                     record        -- Record to hold return data
-                     skip          -- Number of records to skip
-                                      (Always a positive number)
-          Returns  : DLL_NORMAL    -- Node was found successfully
-                     DLL_NULL_LIST -- list->current is NULL
-                     DLL_NOT_FOUND -- Index value is too large or wrong dir
-                                      value (current record index remains
-                                      unchanged)
+        @param record:  Will contain the results of the find.
+        @type record: C{Info}
+        @param skip: The number of records to skip over.
+        @type skip: C{int}
+        @keyword test: Value to test, default is an empty string.
+        @type test: C{str}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.findNthRecord(record, skip)
@@ -949,15 +1086,17 @@ class TestLibDll(unittest.TestCase):
 
     def _getCurrentRecord(self, record, test="", result=Return.NORMAL):
         """
+        Execute the C{getCurrentRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, assert that the
+        test value is correct, and asserts that the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_GetCurrentRecord(List *list, Info *record);
-
-          Arguments: list          -- Pointer to type List
-                     record        -- Pointer to an Info structure
-          Returns  : DLL_NORMAL    -- Record returned
-                     DLL_NULL_LIST -- List is empty
+        @param record:  Will contain the results of the find.
+        @type record: C{Info}
+        @keyword test: Value to test, default is an empty string.
+        @type test: C{str}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.getCurrentRecord(record)
@@ -972,16 +1111,17 @@ class TestLibDll(unittest.TestCase):
 
     def _getPriorRecord(self, record, test="", result=Return.NORMAL):
         """
+        Execute the C{getPriorRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, assert that the
+        test value is correct, and asserts that the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_GetPriorRecord(List *list, Info *record);
-
-          Arguments: list          -- Pointer to type List
-                     record        -- Pointer to an Info structure
-          Returns  : DLL_NORMAL    -- Record returned
-                     DLL_NULL_LIST -- List is empty
-                     DLL_NOT_FOUND -- Beginning of list
+        @param record:  Will contain the results of the find.
+        @type record: C{Info}
+        @keyword test: Value to test, default is an empty string.
+        @type test: C{str}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.getPriorRecord(record)
@@ -996,16 +1136,17 @@ class TestLibDll(unittest.TestCase):
 
     def _getNextRecord(self, record, test="", result=Return.NORMAL):
         """
+        Execute the C{getNextRecord} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, assert that the
+        test value is correct, and asserts that the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_GetNextRecord(List *list, Info *record);
-
-          Arguments: list          -- Pointer to type List
-                     record        -- Pointer to an Info structure
-          Returns  : DLL_NORMAL    -- Record returned
-                     DLL_NULL_LIST -- List is empty
-                     DLL_NOT_FOUND -- End of list
+        @param record:  Will contain the results of the find.
+        @type record: C{Info}
+        @keyword test: Value to test, default is an empty string.
+        @type test: C{str}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.getNextRecord(record)
@@ -1020,18 +1161,15 @@ class TestLibDll(unittest.TestCase):
 
     def _saveList(self, path, result=Return.NORMAL):
         """
+        Execute the C{saveList} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_SaveList(List *list, const char *path);
-
-          Arguments: list             -- Pointer to type List
-                     path             -- Pointer to path and filename
-          Return   : DLL_NORMAL       -- File written successfully
-                     DLL_NULL_LIST    -- List is empty
-                     DLL_OPEN_ERROR   -- File open error
-                     DLL_WRITE_ERROR  -- File write error
-                     DLL_NOT_MODIFIED -- Unmodified list no save was done
+        @param path: The full path to the data file.
+        @type path: C{str}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.saveList(path)
@@ -1043,19 +1181,17 @@ class TestLibDll(unittest.TestCase):
 
     def _loadList(self, path, pFun=None, result=Return.NORMAL):
         """
+        Execute the C{loadList} method, asserts that there are no
+        C{APIException} or C{FunctionException} exceptions, and asserts that
+        the return code is correct.
 
-        The C{C} function doc string::
-
-          DLL_Return DLL_LoadList(List *list, const char *path,
-                                  int (*pFun)(Info *, Info *));
-
-          Arguments: list           -- Pointer to type List
-                     path           -- Pointer to path and filename
-                     pFun           -- Pointer to search function
-          Return   : DLL_NORMAL     -- File written successfully
-                     DLL_MEM_ERROR  -- Memory allocation failed
-                     DLL_OPEN_ERROR -- File open error
-                     DLL_READ_ERROR -- File read error
+        @param path: The full path to the data file.
+        @type path: C{str}
+        @keyword pFun: An optional compare function, the default is C{None}.
+        @type pFun: C{ctypes CFUNCTYPE}
+        @keyword result: The expected value, the default is C{Return.NORMAL}.
+        @type result: C{Return}
+        @return: C{None}
         """
         try:
             retval = self._dll.loadList(path, pFun=pFun)

@@ -205,6 +205,10 @@ class List(Structure):
         )
 
 
+class Info(Structure):
+    _fields_ = []
+
+
 class SearchModes(Structure):
     """
     This class is returned by the getSearchModes() method and contains the
@@ -237,8 +241,8 @@ class DLinklist(object):
         - C{getNumberOfRecords()} -- Get the number of records in the link
           list.
         - C{setSearchModes()} -- Sets the search C{origin} and C{dir} modes.
-        - C{getSearchModes()} -- Get the search modes, returns a tuple of
-          origin and direction.
+        - C{getSearchModes()} -- Get the search modes, a tuple of origin and
+          direction.
         - C{getCurrentIndex()} -- Get the current index value.
 
       3. Pointer Manipulation Methods
@@ -259,8 +263,8 @@ class DLinklist(object):
         - C{addRecord()} -- Adds a record to the link list.
         - C{insertRecord()} -- Inserts a record relative to the current
           pointer.
-        - C{swapRecord()} -- Swaps current record up or down one place in the
-          list.
+        - C{swapRecord()} -- Swaps current record up or down one position in
+          the list.
         - C{updateCurrentRecord()} -- Updates the current record.
         - C{deleteCurrentRecord()} -- Delete a record from the list.
         - C{deleteAllNodes()} -- Deletes all the C{Info} and their C{Node}
@@ -279,11 +283,13 @@ class DLinklist(object):
 
       6. Input/Output Methods
         - C{saveList()} -- Save list to disk.
-        - C{loadList()} -- Load list to disk.
+        - C{loadList()} -- Load list from disk.
 
       7. Miscellaneous Helper Methods
         - C{compare()} -- A basic compare function. You may need to write
           your own.
+        - C{checkInfoType()} -- Utility method to check that the C{Info}
+          object is valid.
     """
     __LIBRARY = ("../src/libdll.so", dll._RES_PATH, "../libdll.so",)
 
@@ -333,9 +339,10 @@ class DLinklist(object):
 
         @param infoSize: The size of the user defined C{Info} class.
         @type infoSize: C{int}
-        @return: The C{ctypes} C{POINTER} object that points to the top level
-                 C{List} class.
-        @rtype: C{ctypes} C{POINTER}
+        @return: A pointer to the top level C{List} class. This return value
+                 can be disregarded in most situations as it is not needed for
+                 normal use.
+        @rtype: C{ctypes POINTER}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
                                   C{Return.NORMAL}.
@@ -356,8 +363,10 @@ class DLinklist(object):
                              create.
           Returns  : Pointer to created structure NULL if unsuccessful}
 
-        @return: A pointer to the top level C{List} class.
-        @rtype: C{ctypes} C{POINTER}
+        @return: A pointer to the top level C{List} class. This return value
+                 can be disregarded in most situations as it is not needed for
+                 normal use.
+        @rtype: C{ctypes POINTER}
         @raise APIException: If a low level error occurred in the C{C} code.
         """
         try:
@@ -578,7 +587,7 @@ class DLinklist(object):
 
     def getSearchModes(self):
         """
-        Get the search modes, returns a tuple of origin and direction.
+        Get the search modes, a tuple of origin and direction.
 
         The C{C} function doc string::
 
@@ -834,10 +843,10 @@ class DLinklist(object):
                      DLL_MEM_ERROR -- Memory allocation failed
 
         @param info: The C{Info} class instantiated object.
-        @type info: C{Info} and is defined internally as C{c_void_p}
+        @type info: C{Info} is defined internally as C{c_void_p}
         @keyword pFun: A C{CFUNCTYPE} object for comparing data in the user
                        C{Info} class. The default is C{None}.
-        @type pFun: C{ctypes} C{CFUNCTYPE}
+        @type pFun: C{ctypes CFUNCTYPE}
         @return: C{None}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If status return value is not
@@ -878,7 +887,7 @@ class DLinklist(object):
                                          (not DLL_ABOVE or DLL_BELOW)
 
         @param info: The C{Info} class instantiated object.
-        @type info: C{Info} and is defined internally as C{c_void_p}
+        @type info: C{Info} is defined internally as C{c_void_p}
         @param dir: A value from the C{InsertDir} class.
         @type dir: C{int}
         @return: C{None}
@@ -901,7 +910,7 @@ class DLinklist(object):
 
     def swapRecord(self, dir):
         """
-        Swaps current record up or down one place in the list. The swapped
+        Swaps current record up or down one position in the list. The swapped
         record will still be current after completion. If C{dir} is
         C{InsertDir.ABOVE} the record will be swapped toward the head of the
         list, if C{InsertDir.BELOW} the record will be swapped toward the tail
@@ -955,7 +964,7 @@ class DLinklist(object):
                      DLL_NULL_LIST -- Empty list
 
         @param record: An C{Info} object with new data.
-        @type record: C{Info}
+        @type record: C{Info} is defined internally as C{c_void_p}
         @return: C{None}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
@@ -1060,12 +1069,12 @@ class DLinklist(object):
                      DLL_NULL_FUNCTION -- pFun is NULL
 
         @param record: An C{Info} object that will have the retrieved data.
-        @type record: C{Info}
+        @type record: C{Info} is defined internally as C{c_void_p}
         @param match: An C{Info} object with the search criteria.
-        @type match: C{Info}
+        @type match: C{Info} is defined internally as C{c_void_p}
         @keyword pFun: A C{CFUNCTYPE} object for comparing data in the user
                        C{Info} class. The default is C{None}.
-        @type pFun: C{ctypes} C{CFUNCTYPE}
+        @type pFun: C{ctypes CFUNCTYPE}
         @return: C{None}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
@@ -1105,7 +1114,7 @@ class DLinklist(object):
                                       unchanged)
 
         @param record: An C{Info} object that will have the retrieved data.
-        @type record: C{Info}
+        @type record: C{Info} is defined internally as C{c_void_p}
         @param skip: The number of records to skip over while doing the search.
         @type skip: C{int}
         @return: C{None}
@@ -1140,7 +1149,7 @@ class DLinklist(object):
                      DLL_NULL_LIST -- List is empty
 
         @param record: An C{Info} object that will have the retrieved data.
-        @type record: C{Info}
+        @type record: C{Info} is defined internally as C{c_void_p}
         @return: C{None}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
@@ -1174,7 +1183,7 @@ class DLinklist(object):
                      DLL_NOT_FOUND -- Beginning of list
 
         @param record: An C{Info} object that will have the retrieved data.
-        @type record: C{Info}
+        @type record: C{Info} is defined internally as C{c_void_p}
         @return: C{None}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
@@ -1207,7 +1216,7 @@ class DLinklist(object):
                      DLL_NOT_FOUND -- End of list
 
         @param record: An C{Info} object that will have the retrieved data.
-        @type record: C{Info}
+        @type record: C{Info} is defined internally as C{c_void_p}
         @return: C{None}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
@@ -1270,8 +1279,8 @@ class DLinklist(object):
 
     def loadList(self, path, pFun=None):
         """
-        Load list to disk. When using the C{pFun} keyword argument the function
-        passed will sort the incoming data.
+        Load list from disk. When using the C{pFun} keyword argument the
+        function passed will sort the incoming data.
 
         The C{C} function doc string::
 
@@ -1286,6 +1295,11 @@ class DLinklist(object):
                      DLL_OPEN_ERROR -- File open error
                      DLL_READ_ERROR -- File read error
 
+        @param path: The full path to the data file.
+        @type path: C{str}
+        @keyword pFun: A C{CFUNCTYPE} object for comparing data in the user
+                       C{Info} class. The default is C{None}.
+        @type pFun: C{ctypes CFUNCTYPE}
         @return: C{None}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
@@ -1303,13 +1317,29 @@ class DLinklist(object):
             msg = "Return.%s: %s" % Return.getMessage(retval)
             raise dll.FunctionException(msg, retval=retval)
 
+    #
+    # Miscellaneous Helper Methods
+    #
+
     def compare(self):
         """
         A basic compare function. You may need to write your own.
 
-        @return: The results will be one of C{< 0}, C{0}, or C{> 0}.
+        @return: Function pointer.
+        @rtype: C{ctypes POINTER}
         """
         # Create a prototype function for the compare function.
         #cmpField(c_char_p("abcde"), c_char_p("bcdef"))
         cmpPrototype = CFUNCTYPE(c_int, c_char_p, c_char_p)
         return cmpPrototype(cmp)
+
+    def checkInfoType(self, info):
+        """
+        Utility method to check that the C{Info} object is valid.
+
+        @param info: An instance of an C{Info} class.
+        @type info: C{Info}
+        @return: C{True} if a valid C{ctypes Structure} type else C{False}.
+        @rtype: C{bool}
+        """
+        return isinstance(info, Structure)
