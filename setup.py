@@ -23,7 +23,9 @@ setup(name='DLinklist',
       license='Artistic and Eclipse',
       package_dir={'': 'src'},
       py_modules=['dlinklist.__init__', 'dlinklist.linklist',],
-      data_files=[('dlinklist/test', ['test/ll_test.py'],),],
+      data_files=[('dlinklist/test',
+                   ['test/ll_test.py',],),
+                 ],
       ext_modules=ext_modules,
       zip_safe=False
       )
