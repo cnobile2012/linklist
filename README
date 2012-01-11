@@ -10,12 +10,16 @@ Copyright (c) 1996-2012  Carl J. Nobile
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the Artistic License.
+it under the terms of either the Artistic or Eclipse Licenses.
 
 This program is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 or FITNESS FOR A PARTICULAR PURPOSE.  See the Artistic License for more
-details. 
+details.
+
+THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC LICE
+NSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM CONSTITU
+TES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
 
 --------------------------------------------------------------------------
 
@@ -34,12 +38,12 @@ COMPILATION
 
 Not much to say here, the package is fairly easy to compile and use. Read
 the docs for how to use the API.  The INSTALL file explains how to compile
-and install/uninstall the package.
+and/or install/uninstall both the C and Python packages.
 
 LIBRARY USAGE
 
 When new code is compiled it will link to libdll.so, and when a program
-executes it will look for libdll.so.1.  This is why they are sym-linked
+executes it will look for libdll.so.2.  This is why they are sym-linked
 to libdll.so.2.0.0 the current version.
 
 TO-DO
