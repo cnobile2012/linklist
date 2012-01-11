@@ -10,7 +10,7 @@ LIBDIR	= $(PREFIX)/lib
 INCDIR	= $(PREFIX)/include
 DOCLIB	= $(PREFIX)/share/doc
 
-# Version and date info
+# Version and date info (DO NOT MODIFY)
 MAJORVERSION	= 2
 MINORVERSION	= 0
 PATCHLEVEL	= 0
