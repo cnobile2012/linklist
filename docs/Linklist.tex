@@ -269,7 +269,7 @@ This package is sufficiently abstracted so that the programmer will neither need
 \vspace{8pt}
 
 \noindent
-Within this package is found the: source files written in C; make files for various platforms and compilers; a text script which sets the environment correctly when it runs the demo program created by the make utility; README, INSTALL, and HISTORY text files; Artistic License; and the documentation in \LaTeXe\/ form.
+Within this package is found the: source files written in C; make files for various platforms and compilers; a text script which sets the environment correctly when it runs the demo program created by the make utility; README and INSTALL text files; Artistic and Eclipse Licenses; documentation in \LaTeXe\/ form; and Python epydoc API documentation; however, most of this document is dedicated to the C API.
 \vspace{8pt}
 
 \noindent
@@ -277,27 +277,32 @@ A short overview will follow, discussing the philosophy of how the package works
 \vspace{8pt}
 
 \noindent
-Then the library itself is broken into six groups: \textbf{initialization}, \textbf{status and state}, \textbf{pointer manipulation}, \textbf{list update}, \textbf{search}, and \textbf{input/output}.
+Then the library itself is broken into six groups: \textbf{initialization}, \textbf{status and state}, \textbf{pointer manipulation}, \textbf{list update}, \textbf{search}, and \textbf{input/output}. The Python version has a seventh \textbf{miscellaneous helper methods}.
 
 \begin{lquote}
-(a) The initialization group handles the creation, initializing, and destruction of the link list.
+(a) The \textbf{initialization} group handles the creation, initializing, and destruction of the link list.
 
-(b) The status and state group returns various kinds of information about the status of the link list during its operation.
+(b) The \textbf{status and state} group returns various kinds of information about the status of the link list during its operation.
 
-(c) The pointer manipulation group allows the positioning of the current pointer to the head, the tail, or an arbitrary node within the list.
+(c) The \textbf{pointer manipulation} group allows the positioning of the current pointer to the head, the tail, or an arbitrary node within the list.
 
-(d) The list update group adds and deletes nodes.
+(d) The \textbf{list update} group adds and deletes nodes.
 
-(e) The search group returns the record information based on key data or on the absolute record position.
+(e) The \textbf{search} group returns the record information based on key data or on the absolute record position.
 
-(f) The input/output group saves or retrieves record data to or from a disk file.
+(f) The \textbf{input/output} group saves or retrieves record data to or from a disk file.
+
+(g) The Python \textbf{miscellaneous helper methods} group adds some functionality for comparison and testing the Info object.
 \end{lquote}
 
 \noindent
-At this writing there are 29 functions in the library, each one of which is thoroughly explained and examples given when needed.
+At this writing there are 29 functions in the C library, each one of which is thoroughly explained and examples given when needed.
 \newpage
 
-\section{Overview}
+\section{Python epydoc Overview}
+It is best to read the epydoc HTML documentation to get a better ideas of how the Python API is used and operates. It has the exact same functionality as the C API, but is in a class which takes care of most of the low level work that needs to be done. The Python API uses ctypes to thinly wrap the C API, so it will be fast.
+
+\section{C API Overview}
 When writing tools such as this, one needs to be concerned with how it affects the entire programming environment.  One of the most important aspects of this environment is the problem concerning \emph{namespace} pollution.  To minimize this problem I have used DLL\_ as a prefix to all function names and enumerated \emph{typedef}s.
 \vspace{8pt}
 
@@ -591,7 +596,7 @@ Contributions: Charlie Buckheit
                Mark M. Feenstra
                Lianqi Qiu
 \end{verbatim}
-\vspace{-16pt}
+
 \item[DLL\_IsListEmpty]\quad\\
  This function determines if the link list has any nodes defined by testing if the head and tail pointers are NULL.  It returns \textbf{DLL\_TRUE} if the list is empty and \textbf{DLL\_FALSE} if the list has valid nodes.
 
