@@ -11,19 +11,19 @@
 
 import os, sys
 import unittest
-from ctypes import Structure, sizeof, c_char
+from ctypes import Structure, sizeof, string_at, cast, c_char, c_void_p
 
 path = os.path.join(os.path.split(os.getcwd())[0], "src")
 sys.path.insert(0, path)
 #print sys.path
 
-from dlinklist import *
-from dlinklist.linklist import *
-
+from dlinklist import APIException, FunctionException, DLinklist, Return, \
+     SrchOrigin, SrchDir, InsertDir
+from dlinklist.linklist import List
 
 class Info(Structure):
     _fields_ = (
-        ('value', c_char *50),
+        ('value', c_char * 50),
         )
 
 
