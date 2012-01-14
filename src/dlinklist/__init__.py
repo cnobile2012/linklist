@@ -6,6 +6,73 @@
 # $Revision$
 #
 
+"""
+B{Overview}
+
+The Python API is a I{ctypes} representation of the C API. It has slightly
+different functionality that the C API, however its usage is very similar.
+
+Instead of function in a module it has been implimented as a class therefore
+taking advantage of private and protected objects to give a cleaner interface.
+
+B{Installation}
+
+It is simple to install the Python egg::
+
+  $ sudo easy_install linklist-2.0.0.tar.gz
+
+  or
+
+  $ cd linklist-2.0.0
+  $ make egg
+  $ sudo easy_install dist/DLinklist*.egg
+
+B{Usage}
+
+The first thing that needs to be done is to create your C{Info} class. There
+are two ways to do this.
+
+  1. Use the class that is already created::
+    from dlinklist import Info
+
+    Info._fields_.append(('field01', c_char * 100))
+    Info._fields_.append(('field02', c_char * 100))
+
+  2. Make a new class::
+    from ctypes import Structure
+
+    class Info(Structure):
+        _fields_ = (
+            ('field01', c_char * 100),
+            ('field02', c_char * 100),
+            )
+
+Note: If you need to make a reference to the C{Info} class itself it will
+need to be done as in number 1 above, even if you create your own class.
+
+The next thing that needs to be done is to create the C{List} object. We
+actually will not be creating a C{List} object as we did with the C{Info} class,
+this will be done within the library itself.
+
+Instantiate the C{DLinklist} class and create the C{List} object::
+  from dlinklist import *
+  from ctypes import sizeof
+
+  dll = DLinklist()
+  dll.create(sizeof(Info))
+
+And you are done, just call any method in the C{DLinklist} class on the
+C{dll} object.
+
+@note: All the C{pFun} objects in the API need to return C{< 0}, C{0}, and
+       C{> 0} as in the Python I{cmp} function. The C{compare} method in the
+       API is very basic, so you will probably need to write your own. However,
+       use the C{compare} method in the source code as an example of how it
+       should be written.
+"""
+
+__all__ = ('linklist',)
+
 import pkg_resources as _res
 
 _res.declare_namespace(__name__)
