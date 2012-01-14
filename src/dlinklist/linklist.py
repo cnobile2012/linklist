@@ -181,8 +181,8 @@ class Node(Structure):
     _fields_ = [
         ('info', c_void_p),
         ]
-Node._fields_.append([('next', POINTER(Node)),
-                      ('prior', POINTER(Node))])
+Node._fields_.append(('next', POINTER(Node)))
+Node._fields_.append(('prior', POINTER(Node)))
 
 
 class List(Structure):
@@ -273,12 +273,12 @@ class DLinklist(object):
       5. Search and Retrieval Methods
         - C{findRecord()} -- Find a C{record} in the list with search criteria
           passed into C{match}.
-        - C{findNthRecord()} -- Returns the Nth record in the list based on
+        - C{findNthRecord()} -- Return the Nth record in the list based on
           the setting of origin and direction values in the control C{List}.
-        - C{getCurrentRecord()} -- Get the current record.
-        - C{getPriorRecord()} -- Get the prior record relative to the current
+        - C{getCurrentRecord()} -- Return the current record.
+        - C{getPriorRecord()} -- Return the prior record relative to the current
           pointer.
-        - C{getNextRecord()} -- Get the next record relative to the current
+        - C{getNextRecord()} -- Return the next record relative to the current
           pointer.
 
       6. Input/Output Methods
@@ -549,7 +549,8 @@ class DLinklist(object):
 
     def setSearchModes(self, origin, dir):
         """
-        Sets the search C{origin} and C{dir} modes.
+        Sets the search C{origin} and C{dir} modes and returns the previously
+        set modes.
 
         The C{C} function doc string::
 
@@ -568,11 +569,14 @@ class DLinklist(object):
         @type origin: C{int}
         @param dir: A value from  the C{SrchDir} class.
         @type dir: C{int}
-        @return: C{None}
+        @return: The previously set modes: C{(origin, direction)}
+        @rtype: C{tuple}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
                                   C{Return.NORMAL}.
         """
+        modes = self.getSearchModes()
+
         try:
             setSearchModes = self._lib.DLL_SetSearchModes
             setSearchModes.argtypes = (POINTER(List), c_int, c_int)
@@ -584,6 +588,8 @@ class DLinklist(object):
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
             raise dll.FunctionException(msg, retval=retval)
+
+        return modes
 
     def getSearchModes(self):
         """
@@ -1051,7 +1057,7 @@ class DLinklist(object):
         """
         Find a C{record} in the list with search criteria passed into C{match}.
         If the C{pFun} is a comparison function the found record will be
-        determined by this function.
+        determined by this function. Return the found record.
 
         The C{C} function doc string::
 
@@ -1075,7 +1081,8 @@ class DLinklist(object):
         @keyword pFun: A C{CFUNCTYPE} object for comparing data in the user
                        C{Info} class. The default is C{None}.
         @type pFun: C{ctypes CFUNCTYPE}
-        @return: C{None}
+        @return: The found record.
+        @rtype: C{Info}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
                                   C{Return.NORMAL}.
@@ -1093,10 +1100,12 @@ class DLinklist(object):
             msg = "Return.%s: %s" % Return.getMessage(retval)
             raise dll.FunctionException(msg, retval=retval)
 
+        return record
+
     def findNthRecord(self, record, skip):
         """
         Returns the Nth record in the list based on the setting of origin and
-        direction values in the control C{List}.
+        direction values in the control C{List}. Return the found record.
 
         The C{C} function doc string::
 
@@ -1117,7 +1126,8 @@ class DLinklist(object):
         @type record: C{Info} is defined internally as C{c_void_p}
         @param skip: The number of records to skip over while doing the search.
         @type skip: C{int}
-        @return: C{None}
+        @return: The found record.
+        @rtype: C{Info}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
                                   C{Return.NORMAL}.
@@ -1135,9 +1145,11 @@ class DLinklist(object):
             msg = "Return.%s: %s" % Return.getMessage(retval)
             raise dll.FunctionException(msg, retval=retval)
 
+        return record
+
     def getCurrentRecord(self, record):
         """
-        Get the current record.
+        Return the current record.
 
         The C{C} function doc string::
 
@@ -1150,7 +1162,8 @@ class DLinklist(object):
 
         @param record: An C{Info} object that will have the retrieved data.
         @type record: C{Info} is defined internally as C{c_void_p}
-        @return: C{None}
+        @return: The current record.
+        @rtype: C{Info}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
                                   C{Return.NORMAL}.
@@ -1168,9 +1181,11 @@ class DLinklist(object):
             msg = "Return.%s: %s" % Return.getMessage(retval)
             raise dll.FunctionException(msg, retval=retval)
 
+        return record
+
     def getPriorRecord(self, record):
         """
-        Get the prior record relative to the current pointer.
+        Return the prior record relative to the current pointer.
 
         The C{C} function doc string::
 
@@ -1184,7 +1199,8 @@ class DLinklist(object):
 
         @param record: An C{Info} object that will have the retrieved data.
         @type record: C{Info} is defined internally as C{c_void_p}
-        @return: C{None}
+        @return: The prior record.
+        @rtype: C{Info}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
                                   C{Return.NORMAL}.
@@ -1201,9 +1217,11 @@ class DLinklist(object):
             msg = "Return.%s: %s" % Return.getMessage(retval)
             raise dll.FunctionException(msg, retval=retval)
 
+        return record
+
     def getNextRecord(self, record):
         """
-        Get the next record relative to the current pointer.
+        Return the next record relative to the current pointer.
 
         The C{C} function doc string::
 
@@ -1217,7 +1235,8 @@ class DLinklist(object):
 
         @param record: An C{Info} object that will have the retrieved data.
         @type record: C{Info} is defined internally as C{c_void_p}
-        @return: C{None}
+        @return: The next record.
+        @rtype: C{Info}
         @raise APIException: If a low level error occurred in the C{C} code.
         @raise FunctionException: If the status return value is not
                                   C{Return.NORMAL}.
@@ -1233,6 +1252,8 @@ class DLinklist(object):
         if retval != Return.NORMAL:
             msg = "Return.%s: %s" % Return.getMessage(retval)
             raise dll.FunctionException(msg, retval=retval)
+
+        return record
 
     #
     # Input/Output Methods
