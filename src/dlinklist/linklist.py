@@ -1360,7 +1360,8 @@ class DLinklist(object):
 
         @param info: An instance of an C{Info} class.
         @type info: C{Info}
-        @return: C{True} if a valid C{ctypes Structure} type else C{False}.
-        @rtype: C{bool}
+        @raise APIException: If a low level error occurred in the C{C} code.
         """
-        return isinstance(info, Structure)
+        if not isinstance(info, Structure):
+            msg = "Invalid Info type is not a subclass of ctypes Structure."
+            raise dll.APIException(msg)

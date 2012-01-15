@@ -73,7 +73,29 @@ class TestLibDll(unittest.TestCase):
 
         @return: C{None}
         """
-        self.assertTrue(self._dll.checkInfoType(Info()))
+        msg = "Invalid Info type is not a subclass of ctypes Structure."
+
+        try: # Python >= 2.7
+            self.assertNotIsInstance(self._dll.checkInfoType(Info()),
+                                     APIException, msg)
+        except AttributeError:
+            try: # Python <= 2.6
+                self._dll.checkInfoType(Info())
+            except:
+                self.fail(msg)
+
+        class BadInfo(object):
+            pass
+
+        try: # Python >= 2.7
+            self.assertIsInstance(self._dll.checkInfoType(BadInfo()),
+                                  APIException, msg)
+        except AttributeError:
+            try: # Python <= 2.6
+                self._dll.checkInfoType(BadInfo())
+                self.fail(msg)
+            except APIException:
+                pass
 
     def test_sizeofList(self):
         """
