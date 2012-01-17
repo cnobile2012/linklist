@@ -95,7 +95,8 @@ docs	: html pdf python-docs
 
 # Unless you're me you won't need this.
 tarball	: docs log
-	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME))
+	(cd ..; tar -czvf $(DISTNAME).tar.gz -X $(EXCLUDEFILE) $(DISTNAME); \
+         md5sum $(DISTNAME).tar.gz > $(DISTNAME).md5)
 
 cvs-tag	:
 	cvs tag ll-${MAJORVERSION}-${MINORVERSION}-${PATCHLEVEL}-${TODAY}
