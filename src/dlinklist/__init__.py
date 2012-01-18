@@ -71,8 +71,6 @@ C{dll} object.
        should be written.
 """
 
-__all__ = ('linklist',)
-
 import pkg_resources as _res
 
 _res.declare_namespace(__name__)
