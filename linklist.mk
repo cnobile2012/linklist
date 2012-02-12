@@ -16,3 +16,14 @@ MINORVERSION	= 0
 PATCHLEVEL	= 0
 VERSION		= ${MAJORVERSION}.${MINORVERSION}.${PATCHLEVEL}
 TODAY		= $(shell date +"%Y-%m-%d_%H%M")
+
+# Platform determination
+UNAME := $(shell uname -s)
+
+ifeq ($(UNAME),Linux)
+  OS = LINUX
+endif
+
+ifeq ($(UNAME),Darwin)
+  OS = MAC
+endif

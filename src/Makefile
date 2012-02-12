@@ -47,11 +47,25 @@ CC	= gcc
 DEBUG	= -g -DDEBUG
 OFP	= -fomit-frame-pointer
 SHARED	= -fPIC
-OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall \
-          -Wno-unused-result
 
-# The options below should be used instead of the above on the Mac
-#OPTIONS	= -O3 -fstrength-reduce -finline-functions -Wall
+ifeq ($(OS),LINUX)
+  OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall \
+		  -Wno-unused-result
+  LDFLAGS	= -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
+		  -o libdll.so.$(VERSION) $(OBJS1)
+  FLIBNAME	= libdll.so.$(VERSION)
+  MLIBNAME	= libdll.so.$(MAJORVERSION)
+  LIBNAME	= libdll.so
+endif
+
+ifeq ($(OS),MAC)
+  OPTIONS	= -O3 -ansi -fstrength-reduce -finline-functions -Wall
+  LDFLAGS	= -dynamiclib -current_version $(VERSION) \
+		  -install_name $(LIBDIR)/libdll.dylib
+  FLIBNAME	= libdll.$(VERSION).dylib
+  MLIBNAME	= libdll.$(MAJORVERSION).dylib
+  LIBNAME	= libdll.dylib
+endif
 
 # There should be no need to change anything below this line.
 THISLIB		= -L. -ldll
@@ -65,11 +79,11 @@ OBJS1	= $(PROG).o
 OBJS2	= $(TEST).o
 #--------------------------------------------------------------
 all	: 
-	make libdll.so.$(VERSION) DEBUG=
+	make libdll DEBUG=
 	make $(TEST) DEBUG=
 
 debug	:
-	make libdll.so.$(VERSION) OFP=
+	make libdll OFP=
 	make $(TEST) OFP=
 
 static	:
@@ -87,11 +101,14 @@ test	:
 .c.o	: $(SRCS)
 	$(CC) $(CFLAGS) -c $<
 
-libdll.so.$(VERSION): $(OBJS1)
-	$(CC) -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
-         -o libdll.so.$(VERSION) $(OBJS1)
-	-ln -sf libdll.so.$(VERSION) libdll.so.$(MAJORVERSION)
-	-ln -sf libdll.so.$(MAJORVERSION) libdll.so
+libdll	: $(OBJS1)
+	$(CC) $(LDFLAGS)
+	-ln -sf $(FLIBNAME) $(MLIBNAME)
+	-ln -sf $(FLIBNAME) $(LIBNAME)
+
+libdll.$(VERSION).dylib: $(OBJS1)
+	$(CC) -dynamiclib -current-version $(VERSION) \
+         -install_name $(LIBDER)/libdll.dylib
 
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
@@ -114,8 +131,8 @@ distclean: clobber
 install	:
 	cp ./libdll.so.$(VERSION) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
-	-(cd $(LIBDIR); ln -s libdll.so.$(VERSION) libdll.so.$(MAJORVERSION))
-	-(cd $(LIBDIR); ln -s libdll.so.$(MAJORVERSION) libdll.so)
+	-(cd $(LIBDIR); ln -s $(FLIBNAME) $(MLIBNAME))
+	-(cd $(LIBDIR); ln -s $(FLIBNAME) $(LIBNAME))
 	/sbin/ldconfig
 
 install-static:
@@ -123,7 +140,4 @@ install-static:
 	cp ./libdll.a $(LIBDIR)/libdll.a
 
 uninstall:
-	rm -f $(LIBDIR)/libdll.so* $(INCDIR)/linklist.h
-
-uninstall-static:
-	rm -f $(LIBDIR)/libdll.a $(INCDIR)/linklist.h
+	rm -f $(LIBDIR)/libdll.* $(INCDIR)/linklist.h
