@@ -291,7 +291,8 @@ class DLinklist(object):
         - C{checkInfoType()} -- Utility method to check that the C{Info}
           object is valid.
     """
-    __LIBRARY = ("../src/libdll.so", dll._RES_PATH, "../libdll.so",)
+    __LIBRARY = ("../src/libdll.so", dll._RES_PATH, "../libdll.so",
+                 "../src/libdll.dylib", "../libdll.dylib",)
 
     def __init__(self, logname="", disableLogging=False):
         """

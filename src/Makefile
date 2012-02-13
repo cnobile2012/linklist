@@ -48,35 +48,37 @@ DEBUG	= -g -DDEBUG
 OFP	= -fomit-frame-pointer
 SHARED	= -fPIC
 
-ifeq ($(OS),LINUX)
-  OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall \
-		  -Wno-unused-result
-  LDFLAGS	= -shared -Wl,-soname,libdll.so.$(MAJORVERSION) \
-		  -o libdll.so.$(VERSION) $(OBJS1)
-  FLIBNAME	= libdll.so.$(VERSION)
-  MLIBNAME	= libdll.so.$(MAJORVERSION)
-  LIBNAME	= libdll.so
-endif
-
-ifeq ($(OS),MAC)
-  OPTIONS	= -O3 -ansi -fstrength-reduce -finline-functions -Wall
-  LDFLAGS	= -dynamiclib -current_version $(VERSION) \
-		  -install_name $(LIBDIR)/libdll.dylib
-  FLIBNAME	= libdll.$(VERSION).dylib
-  MLIBNAME	= libdll.$(MAJORVERSION).dylib
-  LIBNAME	= libdll.dylib
-endif
-
 # There should be no need to change anything below this line.
-THISLIB		= -L. -ldll
-
-CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
 #--------------------------------------------------------------
 PROG	= dll_main
 TEST	= dll_test
 SRCS	= $(PROG).c $(TEST).c
 OBJS1	= $(PROG).o
 OBJS2	= $(TEST).o
+
+ifeq ($(OS),LINUX)
+  FLIBNAME	= libdll.so.$(VERSION)
+  MLIBNAME	= libdll.so.$(MAJORVERSION)
+  LIBNAME	= libdll.so
+  OPTIONS	= -O3 -ansi -pipe -fstrength-reduce -finline-functions -Wall \
+		  -Wno-unused-result
+  LDFLAGS	= -shared -Wl,-soname,$(MLIBNAME) -o $(FLIBNAME) $(OBJS1)
+  THISLIB	= -L. -ldll
+endif
+
+ifeq ($(OS),MAC)
+  FLIBNAME	= libdll.$(VERSION).dylib
+  MLIBNAME	= libdll.$(MAJORVERSION).dylib
+  LIBNAME	= libdll.dylib
+  OPTIONS	= -O3 -ansi -fstrength-reduce -finline-functions -Wall
+  LDFLAGS	= -dynamiclib -flat_namespace -current_version $(VERSION) \
+		  -o $(FLIBNAME)  $(OBJS1) #\
+#		  -install_name $(LIBDIR)/$(FLIBNAME)
+  THISLIB	= -L. -ldll
+endif
+
+CFLAGS	= $(SHARED) $(OPTIONS) $(OFP) $(DEBUG)
+
 #--------------------------------------------------------------
 all	: 
 	make libdll DEBUG=
@@ -106,10 +108,6 @@ libdll	: $(OBJS1)
 	-ln -sf $(FLIBNAME) $(MLIBNAME)
 	-ln -sf $(FLIBNAME) $(LIBNAME)
 
-libdll.$(VERSION).dylib: $(OBJS1)
-	$(CC) -dynamiclib -current-version $(VERSION) \
-         -install_name $(LIBDER)/libdll.dylib
-
 libdll.a: $(OBJS1)
 	$(AR) $@ $(OBJS1)
 
@@ -128,7 +126,7 @@ clobber	: clean
 
 distclean: clobber
 
-install	:
+install	: 
 	cp ./libdll.so.$(VERSION) $(LIBDIR)
 	cp ./linklist.h $(INCDIR)/linklist.h
 	-(cd $(LIBDIR); ln -s $(FLIBNAME) $(MLIBNAME))
