@@ -71,6 +71,14 @@ python-api:
 egg	: python-api
 	@python setup.py bdist_egg
 
+osx-egg	: python-api
+	@ARCHFLAGS="-arch i386 -arch x86_64" python setup.py bdist_egg
+
+#env MACOSX_DEPLOYMENT_TARGET=10.6 \
+#      SDKROOT=/                     \
+#      ARCHFLAGS='-arch x86_64'      \
+#      python setup.py build [options]
+
 #--------------------------------------------------------------
 # Be sure to run latex twice or there won't be
 # a Table of Contents in the postscript file.
