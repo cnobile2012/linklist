@@ -1,12 +1,6 @@
-Doubly Linked List API Ver. 2.0.0
+# Doubly Linked List API Ver. 2.0.0
 
-*** Begin CVS Information ***
-$Author$
-$Date$
-$Revision$
-*** End CVS Information ***
-
-Copyright (c) 1996-2012  Carl J. Nobile
+Copyright (c) 1996-2015  Carl J. Nobile
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
@@ -23,7 +17,7 @@ TES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
 
 --------------------------------------------------------------------------
 
-VERSION NUMBERS
+## VERSION NUMBERS
 
 I feel an explanation of how the version numbers for the package change is
 important so we all know what to expect in future releases.  The major
@@ -34,19 +28,19 @@ revision number changes when important new features are added and the minor
 version number changes generally for bug fixes and patches.  There should
 be no incompatibilities between mid and minor version changes.
 
-COMPILATION
+## COMPILATION
 
 Not much to say here, the package is fairly easy to compile and use. Read
 the docs for how to use the API.  The INSTALL file explains how to compile
 and/or install/uninstall both the C and Python packages.
 
-LIBRARY USAGE
+## LIBRARY USAGE
 
 When new code is compiled it will link to libdll.so, and when a program
 executes it will look for libdll.so.2.  This is why they are sym-linked
 to libdll.so.2.0.0 the current version.
 
-TO-DO
+## TO-DO
 
 The major version will change with the following code changes.  At present
 the linklist defaults to doing memory allocations for each node created. This
@@ -59,7 +53,7 @@ off for some years now. If ever I decide that it is something that people
 really want I may continue with it, but for now it will stay in a maybe-will-do
 state.
 
-WEB SITE
+## WEB SITE
 
 Yes I have a WIKI for this and my other projects at:
 

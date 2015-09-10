@@ -1,10 +1,4 @@
-Installation of the Doubly Linked List
-
-*** Begin CVS Information ***
-$Author$
-$Date$
-$Revision$
-*** End CVS Information ***
+# Installation of the Doubly Linked List
 
 Installing on Windows
 ---------------------
