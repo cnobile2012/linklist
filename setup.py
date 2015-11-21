@@ -15,7 +15,7 @@ def read(fname):
 setup(name='DLinklist',
       version=__version__,
       description="Python wrapper for the Doubly Linked List C API.",
-      long_description=read('README'),
+      long_description=read('README.md'),
       keywords="DLL doubly linked list linklist python  C API",
       author='Carl J. Nobile',
       author_email='carl.nobile@gmail.com',

@@ -4,6 +4,12 @@
 *.obj
 *.elf
 
+# Directories & binaries
+build
+dist
+src/DLinklist.egg-info
+src/dll_test
+
 # Precompiled Headers
 *.gch
 *.pch
